@@ -18,12 +18,12 @@
 package agollo
 
 import (
-	"xlddz/servers/config/agollo/agcache"
-	"xlddz/servers/config/agollo/cluster"
-	"xlddz/servers/config/agollo/component/log"
-	"xlddz/servers/config/agollo/env/file"
-	"xlddz/servers/config/agollo/extension"
-	"xlddz/servers/config/agollo/protocol/auth"
+	"xlddz/third_party/agollo/agcache"
+	"xlddz/third_party/agollo/cluster"
+	"xlddz/third_party/agollo/component/log"
+	"xlddz/third_party/agollo/env/file"
+	"xlddz/third_party/agollo/extension"
+	"xlddz/third_party/agollo/protocol/auth"
 )
 
 //SetSignature 设置自定义 http 授权控件

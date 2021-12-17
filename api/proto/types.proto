@@ -1,6 +1,6 @@
 syntax = "proto2";
 package bs.types;
-option go_package ="xlddz/protocol/types";
+option go_package ="xlddz/api/types";
 
 enum ClientOS{
 	UNKNOW = 0;

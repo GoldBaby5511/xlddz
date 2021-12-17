@@ -19,8 +19,8 @@ package yaml
 
 import (
 	"testing"
-	"xlddz/servers/config/agollo/utils"
-	"xlddz/servers/config/agollo/utils/parse"
+	"xlddz/third_party/agollo/utils"
+	"xlddz/third_party/agollo/utils/parse"
 
 	. "github.com/tevid/gohamcrest"
 )

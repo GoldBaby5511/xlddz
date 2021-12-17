@@ -4,8 +4,8 @@ import (
 	"container/list"
 	"runtime"
 	"sync"
-	"xlddz/core/conf"
-	"xlddz/core/log"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/log"
 )
 
 // one Go per goroutine (goroutine not safe)

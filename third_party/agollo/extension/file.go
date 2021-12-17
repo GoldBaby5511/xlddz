@@ -17,7 +17,7 @@
 
 package extension
 
-import "xlddz/servers/config/agollo/env/file"
+import "xlddz/third_party/agollo/env/file"
 
 var fileHandler file.FileHandler
 

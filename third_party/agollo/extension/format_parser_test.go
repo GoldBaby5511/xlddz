@@ -20,7 +20,7 @@ package extension
 import (
 	"testing"
 
-	"xlddz/servers/config/agollo/constant"
+	"xlddz/third_party/agollo/constant"
 
 	. "github.com/tevid/gohamcrest"
 )

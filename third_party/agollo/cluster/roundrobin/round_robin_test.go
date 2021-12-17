@@ -20,13 +20,13 @@ package roundrobin
 import (
 	"testing"
 
-	"xlddz/servers/config/agollo/component/serverlist"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/env/server"
-	"xlddz/servers/config/agollo/protocol/http"
+	"xlddz/third_party/agollo/component/serverlist"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/env/server"
+	"xlddz/third_party/agollo/protocol/http"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/env"
+	"xlddz/third_party/agollo/env"
 )
 
 const servicesConfigResponseStr = `[{

@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"xlddz/servers/config/agollo/component/log"
+	"xlddz/third_party/agollo/component/log"
 )
 
 const (

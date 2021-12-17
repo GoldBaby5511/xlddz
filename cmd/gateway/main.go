@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 	"os"
-	"xlddz/core"
-	"xlddz/core/log"
-	_ "xlddz/servers/gateway/business"
+	_ "xlddz/cmd/gateway/business"
+	"xlddz/pkg"
+	"xlddz/pkg/log"
 )
 
 func main() {

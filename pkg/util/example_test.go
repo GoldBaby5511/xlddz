@@ -2,7 +2,7 @@ package util_test
 
 import (
 	"fmt"
-	"xlddz/core/util"
+	"xlddz/pkg/util"
 )
 
 func ExampleMap() {

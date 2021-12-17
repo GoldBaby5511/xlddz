@@ -22,7 +22,7 @@ import (
 	"sync"
 	"time"
 
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 )
 
 // ip -> server

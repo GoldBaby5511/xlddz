@@ -20,10 +20,10 @@ package extension
 import (
 	"testing"
 
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/env/file"
+	"xlddz/third_party/agollo/env/file"
 )
 
 type TestFileHandler struct {

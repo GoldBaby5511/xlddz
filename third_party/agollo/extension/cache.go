@@ -17,7 +17,7 @@
 
 package extension
 
-import "xlddz/servers/config/agollo/agcache"
+import "xlddz/third_party/agollo/agcache"
 
 var (
 	globalCacheFactory agcache.CacheFactory

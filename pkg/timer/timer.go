@@ -1,10 +1,10 @@
 package timer
 
 import (
-	"xlddz/core/conf"
-	"xlddz/core/log"
 	"runtime"
 	"time"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/log"
 )
 
 // one dispatcher per goroutine (goroutine not safe)

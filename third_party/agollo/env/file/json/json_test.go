@@ -21,11 +21,11 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/utils"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/extension"
 )
 
 func TestJSONFileHandler_WriteConfigFile(t *testing.T) {

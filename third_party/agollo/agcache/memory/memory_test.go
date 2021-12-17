@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/agcache"
+	"xlddz/third_party/agollo/agcache"
 )
 
 var testDefaultCache agcache.CacheInterface

@@ -4,11 +4,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"reflect"
 	"time"
-	"xlddz/core/conf"
-	"xlddz/core/conf/apollo"
-	"xlddz/core/log"
-	n "xlddz/core/network"
-	"xlddz/protocol/center"
+	"xlddz/api/center"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/conf/apollo"
+	"xlddz/pkg/log"
+	n "xlddz/pkg/network"
 )
 
 type agentServer struct {

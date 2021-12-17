@@ -1,15 +1,12 @@
 package json
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"xlddz/core/chanrpc"
-	"xlddz/core/log"
-	"xlddz/core/network"
 	"reflect"
+	"xlddz/pkg/chanrpc"
+	"xlddz/pkg/log"
 )
 
 type Processor struct {
@@ -137,31 +134,31 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, interface{}, error) {
 	head := make([]byte, 8)
 	copy(head, data[0:8])
 
-	buf := bytes.NewBuffer(head)
+	//buf := bytes.NewBuffer(head)
 
-	tcpHead := &network.TCPHead{}
-	binary.Read(buf, binary.LittleEndian, &tcpHead.DataKind)
-	binary.Read(buf, binary.LittleEndian, &tcpHead.CheckCode)
-	binary.Read(buf, binary.LittleEndian, &tcpHead.PacketSize)
-	binary.Read(buf, binary.LittleEndian, &tcpHead.MainCmdID)
-	binary.Read(buf, binary.LittleEndian, &tcpHead.SubCmdID)
-
-	//log.Debug("JSON 解析数据% d\n", data)
-
-	if tcpHead.PacketSize == 8 {
-		tcpData, err := p.Marshal(&tcpHead)
-		if err != nil {
-			log.Error("json", "marshal message %v error: %v", reflect.TypeOf(&network.TCPHead{}), err)
-			return nil, nil, errors.New("数据包头序列化失败")
-		}
-		l := 0
-		for i := 0; i < len(tcpData); i++ {
-			copy(data[l:], tcpData[i])
-			l += len(tcpData[i])
-		}
-	} else {
-		data = data[8:]
-	}
+	//tcpHead := &network.PackageHeader{}
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.DataKind)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.CheckCode)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.PacketSize)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.MainCmdID)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.SubCmdID)
+	//
+	////log.Debug("JSON 解析数据% d\n", data)
+	//
+	//if tcpHead.PacketSize == 8 {
+	//	tcpData, err := p.Marshal(&tcpHead)
+	//	if err != nil {
+	//		log.Error("json", "marshal message %v error: %v", reflect.TypeOf(&network.TCPHead{}), err)
+	//		return nil, nil, errors.New("数据包头序列化失败")
+	//	}
+	//	l := 0
+	//	for i := 0; i < len(tcpData); i++ {
+	//		copy(data[l:], tcpData[i])
+	//		l += len(tcpData[i])
+	//	}
+	//} else {
+	//	data = data[8:]
+	//}
 
 	//log.Debug("JSON 解析数据% d\n", data)
 

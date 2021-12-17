@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/utils"
 )
 
 func TestCurrentApolloConfig(t *testing.T) {

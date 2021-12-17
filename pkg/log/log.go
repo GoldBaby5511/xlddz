@@ -7,7 +7,7 @@ import (
 	"path"
 	"runtime"
 	"time"
-	"xlddz/core/util"
+	"xlddz/pkg/util"
 )
 
 type LogInfo struct {

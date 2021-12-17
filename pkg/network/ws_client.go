@@ -3,7 +3,7 @@ package network
 import (
 	"sync"
 	"time"
-	"xlddz/core/log"
+	"xlddz/pkg/log"
 
 	"github.com/gorilla/websocket"
 )

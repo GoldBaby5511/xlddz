@@ -22,18 +22,18 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/servers/config/agollo/agcache/memory"
-	"xlddz/servers/config/agollo/env/config"
-	jsonFile "xlddz/servers/config/agollo/env/file/json"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/agcache/memory"
+	"xlddz/third_party/agollo/env/config"
+	jsonFile "xlddz/third_party/agollo/env/file/json"
+	"xlddz/third_party/agollo/extension"
 
 	. "github.com/tevid/gohamcrest"
-	_ "xlddz/servers/config/agollo/agcache/memory"
-	"xlddz/servers/config/agollo/env"
-	_ "xlddz/servers/config/agollo/env/file/json"
+	_ "xlddz/third_party/agollo/agcache/memory"
+	"xlddz/third_party/agollo/env"
+	_ "xlddz/third_party/agollo/env/file/json"
 
-	_ "xlddz/servers/config/agollo/utils/parse/normal"
-	_ "xlddz/servers/config/agollo/utils/parse/properties"
+	_ "xlddz/third_party/agollo/utils/parse/normal"
+	_ "xlddz/third_party/agollo/utils/parse/properties"
 )
 
 //init param

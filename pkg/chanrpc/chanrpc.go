@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
-	"xlddz/core/conf"
-	"xlddz/core/log"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/log"
 )
 
 // one server per goroutine (goroutine not safe)

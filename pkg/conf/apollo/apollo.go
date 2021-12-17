@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"xlddz/core/conf"
-	"xlddz/core/log"
-	"xlddz/core/network"
-	"xlddz/protocol/config"
+	"xlddz/api/config"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/log"
+	"xlddz/pkg/network"
 )
 
 var (

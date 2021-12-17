@@ -23,16 +23,16 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/servers/config/agollo/cluster/roundrobin"
-	"xlddz/servers/config/agollo/component/log"
-	"xlddz/servers/config/agollo/env/server"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/cluster/roundrobin"
+	"xlddz/third_party/agollo/component/log"
+	"xlddz/third_party/agollo/env/server"
+	"xlddz/third_party/agollo/extension"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/env"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/env/config/json"
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/env"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/env/config/json"
+	"xlddz/third_party/agollo/utils"
 
 	json2 "encoding/json"
 )

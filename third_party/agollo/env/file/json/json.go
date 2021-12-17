@@ -22,10 +22,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 
-	"xlddz/servers/config/agollo/component/log"
-	jsonConfig "xlddz/servers/config/agollo/env/config/json"
+	"xlddz/third_party/agollo/component/log"
+	jsonConfig "xlddz/third_party/agollo/env/config/json"
 )
 
 //Suffix 默认文件保存类型

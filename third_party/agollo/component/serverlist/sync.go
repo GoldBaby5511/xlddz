@@ -22,13 +22,13 @@ import (
 	"strconv"
 	"time"
 
-	"xlddz/servers/config/agollo/env/server"
+	"xlddz/third_party/agollo/env/server"
 
-	"xlddz/servers/config/agollo/component"
-	"xlddz/servers/config/agollo/component/log"
-	"xlddz/servers/config/agollo/env"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/protocol/http"
+	"xlddz/third_party/agollo/component"
+	"xlddz/third_party/agollo/component/log"
+	"xlddz/third_party/agollo/env"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/protocol/http"
 )
 
 const (

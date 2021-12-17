@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
-	"xlddz/core/log"
-	"xlddz/core/util"
+	"xlddz/pkg/log"
+	"xlddz/pkg/util"
 )
 
 type TCPServer struct {

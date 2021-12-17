@@ -3,9 +3,9 @@ package core
 import (
 	"os"
 	"os/signal"
-	"xlddz/core/conf"
-	"xlddz/core/gate"
-	"xlddz/core/log"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/gate"
+	"xlddz/pkg/log"
 )
 
 func Start(appName string) {

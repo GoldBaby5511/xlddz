@@ -1,9 +1,9 @@
 package main
 
 import (
-	"xlddz/core"
-	_ "xlddz/servers/config/business"
-	_ "xlddz/servers/config/conf"
+	_ "xlddz/cmd/config/business"
+	_ "xlddz/cmd/config/conf"
+	"xlddz/pkg"
 )
 
 func main() {

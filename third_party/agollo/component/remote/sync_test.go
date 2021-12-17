@@ -25,15 +25,15 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/constant"
-	"xlddz/servers/config/agollo/env"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/env/server"
-	"xlddz/servers/config/agollo/extension"
-	"xlddz/servers/config/agollo/utils/parse/normal"
-	"xlddz/servers/config/agollo/utils/parse/properties"
-	"xlddz/servers/config/agollo/utils/parse/yaml"
-	"xlddz/servers/config/agollo/utils/parse/yml"
+	"xlddz/third_party/agollo/constant"
+	"xlddz/third_party/agollo/env"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/env/server"
+	"xlddz/third_party/agollo/extension"
+	"xlddz/third_party/agollo/utils/parse/normal"
+	"xlddz/third_party/agollo/utils/parse/properties"
+	"xlddz/third_party/agollo/utils/parse/yaml"
+	"xlddz/third_party/agollo/utils/parse/yml"
 )
 
 var (

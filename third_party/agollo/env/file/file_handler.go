@@ -18,7 +18,7 @@
 package file
 
 import (
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 )
 
 //FileHandler 备份文件读写

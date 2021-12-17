@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
-	"xlddz/core/util"
+	"xlddz/pkg/util"
 )
 
 var (

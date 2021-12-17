@@ -25,14 +25,14 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/servers/config/agollo/agcache/memory"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/env/server"
+	"xlddz/third_party/agollo/agcache/memory"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/env/server"
 
 	. "github.com/tevid/gohamcrest"
-	_ "xlddz/servers/config/agollo/env/file/json"
-	"xlddz/servers/config/agollo/extension"
-	"xlddz/servers/config/agollo/storage"
+	_ "xlddz/third_party/agollo/env/file/json"
+	"xlddz/third_party/agollo/extension"
+	"xlddz/third_party/agollo/storage"
 )
 
 const testDefaultNamespace = "application"

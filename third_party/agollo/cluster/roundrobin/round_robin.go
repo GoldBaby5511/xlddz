@@ -18,7 +18,7 @@
 package roundrobin
 
 import (
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 )
 
 //RoundRobin 轮询调度

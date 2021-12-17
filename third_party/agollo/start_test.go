@@ -25,12 +25,12 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/agcache/memory"
-	"xlddz/servers/config/agollo/component/log"
-	"xlddz/servers/config/agollo/env"
-	"xlddz/servers/config/agollo/env/config"
-	jsonFile "xlddz/servers/config/agollo/env/config/json"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/agcache/memory"
+	"xlddz/third_party/agollo/component/log"
+	"xlddz/third_party/agollo/env"
+	"xlddz/third_party/agollo/env/config"
+	jsonFile "xlddz/third_party/agollo/env/config/json"
+	"xlddz/third_party/agollo/extension"
 )
 
 var (

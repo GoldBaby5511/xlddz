@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/extension"
 )
 
 func TestRawHandler_WriteConfigFile(t *testing.T) {

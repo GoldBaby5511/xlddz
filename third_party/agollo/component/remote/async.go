@@ -24,13 +24,13 @@ import (
 	"path"
 	"time"
 
-	"xlddz/servers/config/agollo/component/log"
-	"xlddz/servers/config/agollo/constant"
-	"xlddz/servers/config/agollo/env"
-	"xlddz/servers/config/agollo/env/config"
-	"xlddz/servers/config/agollo/extension"
-	"xlddz/servers/config/agollo/protocol/http"
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/component/log"
+	"xlddz/third_party/agollo/constant"
+	"xlddz/third_party/agollo/env"
+	"xlddz/third_party/agollo/env/config"
+	"xlddz/third_party/agollo/extension"
+	"xlddz/third_party/agollo/protocol/http"
+	"xlddz/third_party/agollo/utils"
 )
 
 const (

@@ -18,7 +18,7 @@
 package extension
 
 import (
-	"xlddz/servers/config/agollo/protocol/auth"
+	"xlddz/third_party/agollo/protocol/auth"
 )
 
 var authSign auth.HTTPAuth

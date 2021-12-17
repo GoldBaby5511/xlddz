@@ -24,7 +24,7 @@ import (
 	"strings"
 	"sync"
 
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/utils"
 )
 
 var (

@@ -5,9 +5,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"math"
 	"reflect"
-	"xlddz/core/chanrpc"
-	"xlddz/core/log"
-	"xlddz/core/network"
+	"xlddz/pkg/chanrpc"
+	"xlddz/pkg/log"
+	"xlddz/pkg/network"
 )
 
 // -------------------------

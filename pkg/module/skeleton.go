@@ -2,10 +2,9 @@ package module
 
 import (
 	"time"
-	"xlddz/core/chanrpc"
-	"xlddz/core/timer"
-
-	g "xlddz/core/go"
+	"xlddz/pkg/chanrpc"
+	g "xlddz/pkg/go"
+	"xlddz/pkg/timer"
 )
 
 type Skeleton struct {

@@ -17,7 +17,7 @@
 
 package extension
 
-import "xlddz/servers/config/agollo/cluster"
+import "xlddz/third_party/agollo/cluster"
 
 var defaultLoadBalance cluster.LoadBalance
 

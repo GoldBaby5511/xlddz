@@ -2,12 +2,12 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
-	g "xlddz/core/gate"
-	"xlddz/core/log"
-	n "xlddz/core/network"
-	"xlddz/protocol/client"
-	"xlddz/protocol/gate"
-	"xlddz/protocol/types"
+	"xlddz/api/client"
+	"xlddz/api/gate"
+	"xlddz/api/types"
+	g "xlddz/pkg/gate"
+	"xlddz/pkg/log"
+	n "xlddz/pkg/network"
 )
 
 func init() {

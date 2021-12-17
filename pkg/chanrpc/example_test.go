@@ -2,8 +2,8 @@ package chanrpc_test
 
 import (
 	"fmt"
-	"xlddz/core/chanrpc"
 	"sync"
+	"xlddz/pkg/chanrpc"
 )
 
 func Example() {

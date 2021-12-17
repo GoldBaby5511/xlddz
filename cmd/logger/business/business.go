@@ -6,11 +6,11 @@ import (
 	"os"
 	"path"
 	"time"
-	g "xlddz/core/gate"
-	"xlddz/core/log"
-	n "xlddz/core/network"
-	"xlddz/core/util"
-	"xlddz/protocol/logger"
+	"xlddz/api/logger"
+	g "xlddz/pkg/gate"
+	"xlddz/pkg/log"
+	n "xlddz/pkg/network"
+	"xlddz/pkg/util"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"xlddz/core/log"
+	"xlddz/pkg/log"
 )
 
 //TCPClient 客户端连接

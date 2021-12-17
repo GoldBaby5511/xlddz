@@ -4,13 +4,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"net"
 	"reflect"
-	"xlddz/core/conf"
-	"xlddz/core/conf/apollo"
-	"xlddz/core/log"
-	n "xlddz/core/network"
-	"xlddz/protocol/center"
-	"xlddz/protocol/config"
-	"xlddz/protocol/gate"
+	"xlddz/api/center"
+	"xlddz/api/config"
+	"xlddz/api/gate"
+	"xlddz/pkg/conf"
+	"xlddz/pkg/conf/apollo"
+	"xlddz/pkg/log"
+	n "xlddz/pkg/network"
 )
 
 //代理

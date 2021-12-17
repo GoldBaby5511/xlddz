@@ -22,9 +22,9 @@ import (
 	"os"
 	"sync"
 
-	"xlddz/servers/config/agollo/env/config"
-	jsonConfig "xlddz/servers/config/agollo/env/config/json"
-	"xlddz/servers/config/agollo/utils"
+	"xlddz/third_party/agollo/env/config"
+	jsonConfig "xlddz/third_party/agollo/env/config/json"
+	"xlddz/third_party/agollo/utils"
 )
 
 const (

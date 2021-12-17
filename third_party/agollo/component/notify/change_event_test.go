@@ -24,17 +24,17 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/servers/config/agollo/agcache/memory"
-	"xlddz/servers/config/agollo/cluster/roundrobin"
-	"xlddz/servers/config/agollo/component/remote"
-	"xlddz/servers/config/agollo/env/config"
-	jsonFile "xlddz/servers/config/agollo/env/file/json"
-	"xlddz/servers/config/agollo/extension"
+	"xlddz/third_party/agollo/agcache/memory"
+	"xlddz/third_party/agollo/cluster/roundrobin"
+	"xlddz/third_party/agollo/component/remote"
+	"xlddz/third_party/agollo/env/config"
+	jsonFile "xlddz/third_party/agollo/env/file/json"
+	"xlddz/third_party/agollo/extension"
 
 	. "github.com/tevid/gohamcrest"
-	_ "xlddz/servers/config/agollo/agcache/memory"
-	_ "xlddz/servers/config/agollo/env/file/json"
-	"xlddz/servers/config/agollo/storage"
+	_ "xlddz/third_party/agollo/agcache/memory"
+	_ "xlddz/third_party/agollo/env/file/json"
+	"xlddz/third_party/agollo/storage"
 )
 
 func init() {

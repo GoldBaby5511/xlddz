@@ -6,12 +6,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	"math/rand"
 	"time"
-	lconf "xlddz/core/conf"
-	"xlddz/core/conf/apollo"
-	g "xlddz/core/gate"
-	"xlddz/core/log"
-	n "xlddz/core/network"
-	"xlddz/protocol/center"
+	"xlddz/api/center"
+	lconf "xlddz/pkg/conf"
+	"xlddz/pkg/conf/apollo"
+	g "xlddz/pkg/gate"
+	"xlddz/pkg/log"
+	n "xlddz/pkg/network"
 )
 
 var (

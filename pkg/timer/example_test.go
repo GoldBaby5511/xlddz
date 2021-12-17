@@ -2,8 +2,8 @@ package timer_test
 
 import (
 	"fmt"
-	"xlddz/core/timer"
 	"time"
+	"xlddz/pkg/timer"
 )
 
 func ExampleTimer() {

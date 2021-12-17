@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 	"sync"
-	"xlddz/core/log"
+	"xlddz/pkg/log"
 
 	"github.com/gorilla/websocket"
 )

@@ -30,7 +30,7 @@ Agollo - Go Client for Apollo
 ### 导入 agollo
 
 ```
-go get -u xlddz/servers/config/agollo@latest
+go get -u xlddz/third_party/agollo@latest
 ```
 
 ### 启动 agollo
@@ -40,8 +40,8 @@ package main
 
 import (
 	"fmt"
-	"xlddz/servers/config/agollo"
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo"
+	"xlddz/third_party/agollo/env/config"
 )
 
 func main() {

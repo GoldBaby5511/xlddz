@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/servers/config/agollo/env/config"
+	"xlddz/third_party/agollo/env/config"
 )
 
 type TestLoadBalance struct {
