@@ -2,6 +2,8 @@ package gate
 
 import (
 	"github.com/golang/protobuf/proto"
+	"os"
+	"os/signal"
 	"reflect"
 	"strings"
 	"sync"
@@ -65,7 +67,18 @@ func init() {
 	closeSig = make(chan bool, 1)
 }
 
-func Start() {
+func Start(appName string) {
+	conf.AppInfo.AppName = appName
+	// logger
+	logger, err := log.New(conf.AppInfo.AppName)
+	if err != nil {
+		panic(err)
+	}
+	log.Export(logger)
+	defer logger.Close()
+
+	//args
+	conf.ParseCmdArgs()
 
 	if conf.AppInfo.AppType == n.AppCenter {
 		apollo.RegisterConfig("", conf.AppInfo.AppType, conf.AppInfo.AppID, nil)
@@ -81,6 +94,13 @@ func Start() {
 		Run()
 		wg.Done()
 	}()
+
+	// close
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	sig := <-c
+	log.Info("主流程", "服务器关闭 (signal: %v)", sig)
+	Stop()
 }
 
 func Stop() {

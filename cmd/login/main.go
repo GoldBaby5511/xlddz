@@ -2,9 +2,9 @@ package main
 
 import (
 	_ "xlddz/cmd/login/business"
-	"xlddz/pkg"
+	"xlddz/pkg/gate"
 )
 
 func main() {
-	core.Start("login")
+	gate.Start("login")
 }

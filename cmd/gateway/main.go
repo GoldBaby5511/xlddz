@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 	_ "xlddz/cmd/gateway/business"
-	"xlddz/pkg"
+	"xlddz/pkg/gate"
 	"xlddz/pkg/log"
 )
 
@@ -17,6 +17,6 @@ func main() {
 		os.Exit(0)
 	}()
 
-	core.Start("gateway")
+	gate.Start("gateway")
 
 }
