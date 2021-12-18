@@ -19,11 +19,6 @@ var (
 
 	//服务基础属性
 	AppInfo BaseInfo
-	//AppName         string
-	//AppID           uint32
-	//AppType         uint32
-	//ListenOnAddress string
-	//CenterAddr      string
 )
 
 type BaseInfo struct {
@@ -36,7 +31,7 @@ type BaseInfo struct {
 
 func ParseCmdArgs() {
 	if AppInfo.AppName != "" {
-		data, err := ioutil.ReadFile(fmt.Sprintf("conf/%v.json", AppInfo.AppName))
+		data, err := ioutil.ReadFile(fmt.Sprintf("configs/%s/%s.json", AppInfo.AppName, AppInfo.AppName))
 		if err == nil {
 			err = json.Unmarshal(data, &AppInfo)
 		}

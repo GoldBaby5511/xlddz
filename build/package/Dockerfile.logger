@@ -11,10 +11,7 @@ RUN mkdir /xlddz
 WORKDIR /xlddz
 
 COPY . .
-RUN go build ./servers/logger/
-
-RUN mkdir conf
-COPY servers/logger/conf/logger.json conf/
+RUN go build ./cmd/logger/
 
 EXPOSE 20001
 

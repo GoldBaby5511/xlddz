@@ -11,10 +11,7 @@ RUN mkdir /xlddz
 WORKDIR /xlddz
 
 COPY . .
-RUN go build ./servers/login/
-
-RUN mkdir conf
-COPY servers/login/conf/login.json conf/
+RUN go build ./cmd/login/
 
 EXPOSE 10010
 

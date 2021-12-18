@@ -11,10 +11,7 @@ RUN mkdir /xlddz
 WORKDIR /xlddz
 
 COPY . .
-RUN go build ./servers/gateway/
-
-RUN mkdir conf
-COPY servers/gateway/conf/gateway.json conf/
+RUN go build ./cmd/gateway/
 
 EXPOSE 10102 
 

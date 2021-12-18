@@ -13,7 +13,7 @@ var Server struct {
 	AppID           uint32
 	AppName         string
 	MaxConnNum      int
-	ConsolePort     int
+	FilePath        string
 	ScreenPrint     bool
 	UseApollo       bool `default:"false" json:"UseApollo"`
 	Config          aConfig.AppConfig
@@ -30,7 +30,7 @@ type ApolloConfig struct {
 }
 
 func init() {
-	data, err := ioutil.ReadFile("conf/config.json")
+	data, err := ioutil.ReadFile("configs/config/config.json")
 	if err != nil {
 		log.Fatal("jsonconf", "%v", err)
 	}

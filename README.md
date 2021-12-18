@@ -1,5 +1,7 @@
 # xlddz
 
+---
+
 ## 概述
 
 站在巨人肩膀，核心部分基于[leaf](https://github.com/name5566/leaf)，一个经典开源游戏服务。但leaf为单进程多模块模型，无法进行分布式部署。本项目即在此基础上做了扩展，实现了多进程分布式部署，业务模型为本人之前做过的一个项目，兴隆斗地主。定义为分布式框架，适用所有分区、分房间类游戏。
@@ -32,11 +34,11 @@
 * 本机部署好Docker环境，命令行下依次执行一下命令，生成镜像
 
 ```bash
-docker build --target center --file ./servers/center/Dockerfile --tag xlddz/center .
-docker build --target config --file ./servers/config/Dockerfile --tag xlddz/config .
-docker build --target gateway --file ./servers/gateway/Dockerfile --tag xlddz/gateway .
-docker build --target logger --file ./servers/logger/Dockerfile --tag xlddz/logger .
-docker build --target login --file ./servers/login/Dockerfile --tag xlddz/login .
+docker build --target center --file ./build/package/Dockerfile.center --tag xlddz/center .
+docker build --target config --file ./build/package/Dockerfile.config --tag xlddz/config .
+docker build --target gateway --file ./build/package/Dockerfile.gateway --tag xlddz/gateway .
+docker build --target logger --file ./build/package/Dockerfile.logger --tag xlddz/logger .
+docker build --target login --file ./build/package/Dockerfile.login --tag xlddz/login .
 ```
 
 * 创建网桥
@@ -79,12 +81,19 @@ docker run -d -p 10102:10102 --name="gateway" --network xlddz xlddz/gateway
 
 ---
 
+## 相关博客
+
+xlddz(一)：杂谈项目由来：https://blog.csdn.net/weixin_42780662/article/details/122006434
+
+---
+
 ## 参考引用
 
 * leaf：https://github.com/name5566/leaf.git
 * agollo：https://github.com/apolloconfig/agollo.git
 * fsnotify：https://github.com/fsnotify/fsnotify.git
 * proto：https://github.com/protocolbuffers/protobuf.git
+* project-layout：https://github.com/golang-standards/project-layout.git
 
 ---
 

@@ -10,10 +10,7 @@ ENV GO111MODULE=on \
 RUN mkdir /xlddz
 WORKDIR /xlddz
 COPY . .
-RUN go build ./servers/center/
-
-RUN mkdir conf
-COPY servers/center/conf/center.json conf/
+RUN go build ./cmd/center/
 
 EXPOSE 10001
 
