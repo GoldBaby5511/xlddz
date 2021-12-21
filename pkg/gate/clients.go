@@ -5,10 +5,8 @@ import (
 	"net"
 	"reflect"
 	"xlddz/api/center"
-	"xlddz/api/config"
 	"xlddz/api/gate"
 	"xlddz/pkg/conf"
-	"xlddz/pkg/conf/apollo"
 	"xlddz/pkg/log"
 	n "xlddz/pkg/network"
 )
@@ -31,10 +29,10 @@ func (a *agentClient) Run() {
 			log.Error("agentClient", "异常,解析器为nil断开连接,cmd=%v", &bm.Cmd)
 			break
 		}
-		if bm.Cmd.MainCmdID == uint16(n.CMDConfig) && bm.Cmd.SubCmdID == uint16(config.CMDID_Config_IDApolloCfgRsp) {
-			apollo.ProcessReq(&bm.Cmd, msgData)
-			continue
-		}
+		//if bm.Cmd.MainCmdID == uint16(n.CMDConfig) && bm.Cmd.SubCmdID == uint16(config.CMDID_Config_IDApolloCfgRsp) {
+		//	apollo.ProcessReq(&bm.Cmd, msgData)
+		//	continue
+		//}
 		if conf.AppInfo.AppType != n.AppCenter && bm.Cmd.MainCmdID == uint16(n.CMDCenter) {
 			if bm.Cmd.SubCmdID == uint16(center.CMDID_Center_IDAppRegReq) {
 				var m center.RegisterAppReq

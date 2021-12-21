@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 	"xlddz/api/center"
+	"xlddz/api/config"
 	"xlddz/api/gate"
 	"xlddz/api/logger"
 	"xlddz/pkg/chanrpc"
@@ -23,11 +24,12 @@ import (
 
 //网络事件
 const (
-	ConnectSuccess   string = "ConnectSuccess"
-	Disconnect       string = "Disconnect"
-	CenterConnected  string = "CenterConnected"
-	CenterDisconnect string = "CenterDisconnect"
-	CenterRegResult  string = "CenterRegResult"
+	ConnectSuccess     string = "ConnectSuccess"
+	Disconnect         string = "Disconnect"
+	ConfigChangeNotify string = "ConfigChangeNotify"
+	CenterConnected    string = "CenterConnected"
+	CenterDisconnect   string = "CenterDisconnect"
+	CenterRegResult    string = "CenterRegResult"
 )
 
 const (
@@ -41,9 +43,9 @@ var (
 	mxServers          sync.Mutex
 	wg                 sync.WaitGroup
 	servers            map[uint64]*agentServer = make(map[uint64]*agentServer)
-	agentChanRPC       *chanrpc.Server
-	Skeleton           = module.NewSkeleton(conf.GoLen, conf.TimerDispatcherLen, conf.AsynCallLen, conf.ChanRPCLen)
-	processor          = protobuf.NewProcessor()
+	agentChanRPC       *chanrpc.Server         = nil
+	Skeleton           *module.Skeleton        = nil
+	processor                                  = protobuf.NewProcessor()
 	MaxConnNum         int
 	PendingWriteNum    int
 	MaxMsgLen          uint32
@@ -62,20 +64,21 @@ var (
 func init() {
 	tcpLog = new(n.TCPClient)
 	cbCenterDisconnect = append(cbCenterDisconnect, apollo.CenterDisconnect)
-	apollo.RegPublicCB(ApolloNotify)
+	Skeleton = module.NewSkeleton(conf.GoLen, conf.TimerDispatcherLen, conf.AsynCallLen, conf.ChanRPCLen)
 	agentChanRPC = Skeleton.ChanRPCServer
 	closeSig = make(chan bool, 1)
+	MsgRegister(&config.ApolloCfgRsp{}, n.CMDConfig, uint16(config.CMDID_Config_IDApolloCfgRsp), handleApolloCfgRsp)
 }
 
 func Start(appName string) {
 	conf.AppInfo.AppName = appName
 	// logger
-	logger, err := log.New(conf.AppInfo.AppName)
+	l, err := log.New(conf.AppInfo.AppName)
 	if err != nil {
 		panic(err)
 	}
-	log.Export(logger)
-	defer logger.Close()
+	log.Export(l)
+	defer l.Close()
 
 	//args
 	conf.ParseCmdArgs()
@@ -121,7 +124,6 @@ func EventRegister(id interface{}, f interface{}) {
 }
 
 func Run() {
-
 	log.Debug("", "Run,ListenOnAddress=%v", conf.AppInfo.ListenOnAddress)
 
 	var wsServer *n.WSServer
@@ -184,11 +186,25 @@ func Run() {
 	}
 }
 
-func ApolloNotify(k apollo.ConfKey, v apollo.ConfValue) {
-	if conf.AppInfo.AppType != n.AppLogger && k.Key == "日志服务器地址" && v.Value != "" &&
-		v.RspCount == 1 && tcpLog != nil && !tcpLog.IsRunning() {
-		logAddr := v.Value
-		if v, ok := util.ParseArgs("/DockerRun"); ok && v == 1 {
+func handleApolloCfgRsp(args []interface{}) {
+	apollo.ProcessConfigRsp(args[n.DataIndex].(n.BaseMessage).MyMessage.(*config.ApolloCfgRsp))
+
+	logAddr := apollo.GetConfig("日志服务器地址", "")
+	if logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
+		ConnectLogServer(logAddr)
+	}
+
+	go func() {
+		if agentChanRPC != nil {
+			agentChanRPC.Call0(ConfigChangeNotify)
+		}
+	}()
+}
+
+func ConnectLogServer(logAddr string) {
+	log.Info("gate", "开始日志服务器,Addr=%v", logAddr)
+	if conf.AppInfo.AppType != n.AppLogger && logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
+		if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
 			addr := strings.Split(logAddr, "|")
 			logAddr = ""
 			for i, v := range addr {
@@ -206,8 +222,7 @@ func ApolloNotify(k apollo.ConfKey, v apollo.ConfValue) {
 		tcpLog.AutoReconnect = true
 		tcpLog.NewAgent = func(conn *n.TCPConn) n.AgentServer {
 			a := &agentServer{tcpClient: tcpLog, conn: conn, info: n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "logger", AppType: n.AppLogger, AppID: 0, ListenOnAddress: logAddr}}
-			log.Info("gate", "日志服务器连接成功,Addr=%v", logAddr)
-			log.Info("gate", "服务启动完成,阔以开始了... ...")
+			log.Info("gate", "日志服务器连接成功,服务启动完成,阔以开始了... ...")
 
 			log.SetCallback(func(i log.LogInfo) {
 				var logReq logger.LogReq
@@ -239,7 +254,7 @@ func sendRegAppReq(a *agentServer) {
 	registerReq.AppType = proto.Uint32(conf.AppInfo.AppType)
 	registerReq.AppId = proto.Uint32(conf.AppInfo.AppID)
 	myAddress := conf.AppInfo.ListenOnAddress
-	if v, ok := util.ParseArgs("/DockerRun"); ok && v == 1 {
+	if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
 		addr := strings.Split(conf.AppInfo.ListenOnAddress, ":")
 		if len(addr) == 2 {
 			myAddress = conf.AppInfo.AppName + ":" + addr[1]
@@ -252,10 +267,7 @@ func sendRegAppReq(a *agentServer) {
 func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) {
 	cmd := n.TCPCommand{MainCmdID: uint16(mainCmdID), SubCmdID: uint16(subCmdID)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
-	destAgents := getDestAppInfo(destAppType, destAppid)
-	for _, a := range destAgents {
-		a.SendMessage(bm)
-	}
+	sendData(bm, destAppType, destAppid)
 }
 
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) {
@@ -269,9 +281,13 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) {
 	dataReq.AttSessionid = proto.Uint64(sessionID)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
-	destAgents := getDestAppInfo(n.AppGate, uint32(gateConnID>>32))
+	sendData(transBM, n.AppGate, uint32(gateConnID>>32))
+}
+
+func sendData(bm n.BaseMessage, destAppType, destAppid uint32) {
+	destAgents := getDestAppInfo(destAppType, destAppid)
 	for _, a := range destAgents {
-		a.SendMessage(transBM)
+		a.SendMessage(bm)
 	}
 }
 

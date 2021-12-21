@@ -58,7 +58,7 @@ func loadConfigs() {
 			listener.configs[key.(string)] = value.(string)
 
 			switch key.(string) {
-			case "common-server":
+			case "common-server", "room", "table":
 				var s []conf.ApolloConfig
 				err := json.Unmarshal([]byte(value.(string)), &s)
 				if err != nil {
@@ -95,9 +95,7 @@ func loadConfigs() {
 					}
 				}
 			case "日志服务器地址":
-				k := apollo.ConfKey{Key: "日志服务器地址"}
-				v := apollo.ConfValue{}
-				g.ApolloNotify(k, v)
+				g.ConnectLogServer(value.(string))
 			default:
 				log.Warning("", "没有处理的,k=%v,v=%v", key, value)
 			}

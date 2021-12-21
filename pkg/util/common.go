@@ -12,11 +12,10 @@ func CurMemory() int64 {
 	return int64(rtm.Alloc / 1024)
 }
 
-//解析参数
-func ParseArgs(argType string) (uint32, bool) {
+func ParseArgsUint32(name string) (uint32, bool) {
 	args := os.Args
 	for i := 0; i < len(args); i++ {
-		if args[i] == argType && i+1 < len(args) {
+		if args[i] == name && i+1 < len(args) {
 			v, err := strconv.Atoi(args[i+1])
 			if err == nil {
 				return uint32(v), true
@@ -24,4 +23,14 @@ func ParseArgs(argType string) (uint32, bool) {
 		}
 	}
 	return 0, false
+}
+
+func ParseArgsString(name string) (string, bool) {
+	args := os.Args
+	for i := 0; i < len(args); i++ {
+		if args[i] == name && i+1 < len(args) {
+			return args[i+1], true
+		}
+	}
+	return "", false
 }

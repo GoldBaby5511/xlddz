@@ -24,6 +24,8 @@ const (
 	CMDAppFrame       uint32 = 11
 	CMDGate           uint32 = 12 //gate
 	CMDClient         uint32 = 13
+	CMDTable          uint32 = 14
+	CMDRoom           uint32 = 15
 )
 
 //apptype类型
@@ -34,6 +36,8 @@ const (
 	AppGate            uint32 = 5
 	AppLogin           uint32 = 7
 	AppOnline          uint32 = 8
+	AppTable           uint32 = 14
+	AppRoom            uint32 = 15
 	AppApollo          uint32 = 56
 	AppMatchSVCManager uint32 = 58
 	AppActionData      uint32 = 73

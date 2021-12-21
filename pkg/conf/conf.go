@@ -5,7 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"xlddz/pkg/log"
 	"xlddz/pkg/util"
+)
+
+const (
+	ArgAppName    string = "/AppName"
+	ArgAppType    string = "/AppType"
+	ArgAppID      string = "/AppID"
+	ArgCenterAddr string = "/CenterAddr"
+	ListenOnAddr  string = "/ListenOnAddr"
+	ArgDockerRun  string = "/DockerRun"
 )
 
 var (
@@ -36,16 +46,28 @@ func ParseCmdArgs() {
 			err = json.Unmarshal(data, &AppInfo)
 		}
 	}
-	if v, ok := util.ParseArgs("/AppID"); ok {
-		AppInfo.AppID = v
+
+	if v, ok := util.ParseArgsString(ArgAppName); ok {
+		AppInfo.AppName = v
 	}
-	if v, ok := util.ParseArgs("/AppType"); ok {
+	if v, ok := util.ParseArgsUint32(ArgAppType); ok {
 		AppInfo.AppType = v
 	}
-	if v, ok := util.ParseArgs("/DockerRun"); ok && v == 1 {
+	if v, ok := util.ParseArgsUint32(ArgAppID); ok {
+		AppInfo.AppID = v
+	}
+	if v, ok := util.ParseArgsString(ArgCenterAddr); ok {
+		AppInfo.CenterAddr = v
+	}
+	if v, ok := util.ParseArgsString(ListenOnAddr); ok {
+		AppInfo.ListenOnAddress = v
+	}
+	if v, ok := util.ParseArgsUint32(ArgDockerRun); ok && v == 1 {
 		addr := strings.Split(AppInfo.CenterAddr, ":")
 		if len(addr) == 2 {
 			AppInfo.CenterAddr = "center:" + addr[1]
 		}
 	}
+
+	log.Debug("", "参数解析,%v", AppInfo)
 }

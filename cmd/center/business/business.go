@@ -1,14 +1,12 @@
 package business
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"math/rand"
 	"time"
 	"xlddz/api/center"
 	lconf "xlddz/pkg/conf"
-	"xlddz/pkg/conf/apollo"
 	g "xlddz/pkg/gate"
 	"xlddz/pkg/log"
 	n "xlddz/pkg/network"
@@ -49,8 +47,9 @@ func init() {
 	g.MsgRegister(&center.AppUpdateReq{}, n.CMDCenter, uint16(center.CMDID_Center_IDAppUpdateReq), handleAppUpdateReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
+	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 
-	apollo.RegPublicCB(configChangeNotify)
+	//apollo.RegPublicCB(configChangeNotify)
 }
 
 func connectSuccess(args []interface{}) {
@@ -78,30 +77,30 @@ func disconnect(args []interface{}) {
 	}
 }
 
-func configChangeNotify(k apollo.ConfKey, v apollo.ConfValue) {
-
-	key := apollo.ConfKey{AppType: lconf.AppInfo.AppType, AppId: lconf.AppInfo.AppID, Key: "服务维护"}
-	if k == key {
-		type appInfo struct {
-			AppType uint32
-			AppId   uint32
-			OpType  uint32
-		}
-		var info appInfo
-		err := json.Unmarshal([]byte(v.Value), &info)
-		if err != nil {
-			log.Error("配置", "%v", err)
-			return
-		}
-
-		if _, ok := appRegData[makeRegKey(info.AppType, info.AppId)]; !ok {
-			log.Warning("配置", "要维护的服务不存在啊,info=%v", info)
-			return
-		}
-		appRegData[makeRegKey(info.AppType, info.AppId)].regInfo.curStatus = int(info.OpType)
-
-		log.Debug("配置", "收到服务维护配置,%v", info)
-	}
+func configChangeNotify(args []interface{}) {
+	log.Info("配置", "真的收到了配置消息=%d", len(args))
+	//key := apollo.ConfKey{AppType: lconf.AppInfo.AppType, AppId: lconf.AppInfo.AppID, Key: "服务维护"}
+	//if k == key {
+	//	type appInfo struct {
+	//		AppType uint32
+	//		AppId   uint32
+	//		OpType  uint32
+	//	}
+	//	var info appInfo
+	//	err := json.Unmarshal([]byte(v.Value), &info)
+	//	if err != nil {
+	//		log.Error("配置", "%v", err)
+	//		return
+	//	}
+	//
+	//	if _, ok := appRegData[makeRegKey(info.AppType, info.AppId)]; !ok {
+	//		log.Warning("配置", "要维护的服务不存在啊,info=%v", info)
+	//		return
+	//	}
+	//	appRegData[makeRegKey(info.AppType, info.AppId)].regInfo.curStatus = int(info.OpType)
+	//
+	//	log.Debug("配置", "收到服务维护配置,%v", info)
+	//}
 }
 
 func handleRegisterAppReq(args []interface{}) {

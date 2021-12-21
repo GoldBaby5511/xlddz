@@ -5,5 +5,7 @@ echo "go proto"
 @.\protoc.exe --go_out=.. types.proto
 @.\protoc.exe --go_out=.. logger.proto
 @.\protoc.exe --go_out=.. config.proto
+@.\protoc.exe --go_out=.. room.proto
+@.\protoc.exe --go_out=.. table.proto
 
 pause

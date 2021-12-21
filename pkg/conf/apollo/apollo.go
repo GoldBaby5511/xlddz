@@ -1,9 +1,7 @@
 package apollo
 
 import (
-	"errors"
 	"github.com/golang/protobuf/proto"
-	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -17,7 +15,6 @@ var (
 	configValues map[ConfKey]*ConfValue = make(map[ConfKey]*ConfValue)
 	regSubList   map[ConfKey]*ConfValue = make(map[ConfKey]*ConfValue)
 	netAgent     network.AgentServer    = nil
-	apolloNotify []cbNotify
 	mutexConfig  sync.Mutex
 	mxRegSub     sync.Mutex
 )
@@ -40,7 +37,6 @@ func init() {
 	log.GetMinLevelConfig = GetConfigAsInt64
 }
 
-//设置代理
 func SetNetAgent(a network.AgentServer) {
 	netAgent = a
 
@@ -65,55 +61,38 @@ func CenterDisconnect() {
 	regSubList = make(map[ConfKey]*ConfValue)
 }
 
-//消息处理
-func ProcessReq(cmd *network.TCPCommand, data []byte) error {
-	switch cmd.SubCmdID {
-	case uint16(config.CMDID_Config_IDApolloCfgRsp): //配置响应
-		var m config.ApolloCfgRsp
-		proto.Unmarshal(data, &m)
-
-		//不接受空内容，毫无意义
-		if len(m.GetKey()) == 0 || (len(m.GetKey()) != len(m.GetValue())) {
-			log.Error("apollo", "异常,收到空的Apollo配置,PacketId=%v,ns=%v,key=%v,type=%v,appid=%v",
-				m.GetPacketId(), m.GetNameSpace(), m.GetKeyName(), m.GetSubAppType(), m.GetSubAppId())
-			return errors.New("异常，异常,k,v不相等")
-		}
-
-		nsKey := ConfKey{Key: m.GetKeyName(), AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
-		mxRegSub.Lock()
-		if _, ok := regSubList[nsKey]; !ok {
-			mxRegSub.Unlock()
-			log.Error("apollo", "异常，返回的竟然是自己没订阅的")
-			return errors.New("异常，返回的竟然是自己没订阅的")
-		}
-		regSubList[nsKey].RspCount += 1
-		mxRegSub.Unlock()
-
-		for i := 0; i < len(m.GetKey()); i++ {
-			key := ConfKey{Key: m.GetKey()[i], AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
-			if m.GetKey()[i] == "LogScreenPrint" {
-				p, _ := strconv.Atoi(m.GetValue()[i])
-				log.SetScreenPrint(p)
-			}
-			mutexConfig.Lock()
-			if _, ok := configValues[key]; ok {
-				configValues[key].Value = m.GetValue()[i]
-				configValues[key].RspCount += 1
-			} else {
-				configValues[key] = &ConfValue{Value: m.GetValue()[i], RspCount: 1}
-			}
-			cbValue := *configValues[key]
-			mutexConfig.Unlock()
-			//获取回调
-			for _, cb := range apolloNotify {
-				cb(key, cbValue)
-			}
-		}
-	default:
-		log.Warning("apollo", "apollo,还未处理消息,%v", cmd)
+func ProcessConfigRsp(m *config.ApolloCfgRsp) {
+	if len(m.GetKey()) == 0 || (len(m.GetKey()) != len(m.GetValue())) {
+		log.Error("apollo", "异常,收到空的Apollo配置,PacketId=%v,ns=%v,key=%v,type=%v,appid=%v",
+			m.GetPacketId(), m.GetNameSpace(), m.GetKeyName(), m.GetSubAppType(), m.GetSubAppId())
+		return
 	}
 
-	return nil
+	nsKey := ConfKey{Key: m.GetKeyName(), AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
+	mxRegSub.Lock()
+	if _, ok := regSubList[nsKey]; !ok {
+		mxRegSub.Unlock()
+		log.Error("apollo", "异常，返回的竟然是自己没订阅的")
+		return
+	}
+	regSubList[nsKey].RspCount += 1
+	mxRegSub.Unlock()
+
+	for i := 0; i < len(m.GetKey()); i++ {
+		key := ConfKey{Key: m.GetKey()[i], AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
+		if m.GetKey()[i] == "LogScreenPrint" {
+			p, _ := strconv.Atoi(m.GetValue()[i])
+			log.SetScreenPrint(p)
+		}
+		mutexConfig.Lock()
+		if _, ok := configValues[key]; ok {
+			configValues[key].Value = m.GetValue()[i]
+			configValues[key].RspCount += 1
+		} else {
+			configValues[key] = &ConfValue{Value: m.GetValue()[i], RspCount: 1}
+		}
+		mutexConfig.Unlock()
+	}
 }
 
 func GetConfig(key, defaultValue string) string {
@@ -150,7 +129,6 @@ func SendSubscribeReq(k ConfKey, cancel bool) {
 	if netAgent == nil {
 		return
 	}
-	//没注册过的走你
 	mxRegSub.Lock()
 	defer mxRegSub.Unlock()
 	if _, ok := regSubList[k]; !ok {
@@ -163,30 +141,16 @@ func SendSubscribeReq(k ConfKey, cancel bool) {
 	req.SubAppType = proto.Uint32(k.AppType)
 	req.SubAppId = proto.Uint32(k.AppId)
 	req.KeyName = proto.String(k.Key)
-	Subscribe := config.ApolloCfgReq_SUBSCRIBE
+	subscribe := config.ApolloCfgReq_SUBSCRIBE
 	if regSubList[k].RspCount == 0 {
-		Subscribe = Subscribe | config.ApolloCfgReq_NEED_RSP
+		subscribe = subscribe | config.ApolloCfgReq_NEED_RSP
 	}
 	if cancel {
-		Subscribe = config.ApolloCfgReq_UNSUBSCRIBE
+		subscribe = config.ApolloCfgReq_UNSUBSCRIBE
 	}
-	req.Subscribe = proto.Uint32(uint32(Subscribe))
+	req.Subscribe = proto.Uint32(uint32(subscribe))
 
 	cmd := network.TCPCommand{MainCmdID: uint16(network.AppConfig), SubCmdID: uint16(config.CMDID_Config_IDApolloCfgReq)}
 	bm := network.BaseMessage{MyMessage: &req, Cmd: cmd}
 	netAgent.SendMessage(bm)
-}
-
-func RegPublicCB(cb cbNotify) {
-	if cb == nil {
-		return
-	}
-	//重复判断
-	regPointer := reflect.ValueOf(cb).Pointer()
-	for i := 0; i < len(apolloNotify); i++ {
-		if reflect.ValueOf(apolloNotify[i]).Pointer() == regPointer {
-			return
-		}
-	}
-	apolloNotify = append(apolloNotify, cb)
 }
