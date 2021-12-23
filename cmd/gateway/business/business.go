@@ -11,6 +11,7 @@ import (
 	g "xlddz/pkg/gate"
 	"xlddz/pkg/log"
 	n "xlddz/pkg/network"
+	"xlddz/pkg/timer"
 )
 
 var (
@@ -35,7 +36,7 @@ func init() {
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.CenterConnected, centerConnected)
 
-	g.Skeleton.AfterFunc(30*time.Second, checkConnectionAlive)
+	g.Skeleton.LoopFunc(1*time.Second, checkConnectionAlive, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {
@@ -61,7 +62,6 @@ func disconnect(args []interface{}) {
 	if v, ok := userConnData[connId]; ok {
 		log.Debug("agent1", "走了老弟,userId=%v,connId=%v,当前连接数=%d", v.userId, v.connId, len(userConnData))
 
-		//发送退出
 		var logout client.LogoutReq
 		logout.UserId = proto.Uint64(v.userId)
 		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.CMDClient, uint32(client.CMDID_Client_IDLogoutReq), &logout)
@@ -76,7 +76,6 @@ func centerConnected(args []interface{}) {
 }
 
 func handlePulseReq(args []interface{}) {
-	//m := args[n.DataIndex].(*gcmd.PulseReq)
 	a := args[n.AgentIndex].(n.AgentClient)
 
 	connData, err := getUserConnData(a)
@@ -117,13 +116,23 @@ func handleTransferDataReq(args []interface{}) {
 	} else {
 		m.Gateid = proto.Uint32(conf.AppInfo.AppID)
 		m.Gateconnid = proto.Uint64(makeGateConnID(connData.connId))
+		m.UserId = proto.Uint64(connData.userId)
 		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.CMDGate, uint32(gcmd.CMDID_Gate_IDTransferDataReq), m)
 	}
 
 }
 
 func handleAuthInfo(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*gcmd.AuthInfo)
+	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
+	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppID, m.GetUserId())
+	connData, ok := userConnData[m.GetGateconnid()&0xFFFFFFFF]
+	if !ok {
+		return
+	}
+	connData.userId = m.GetUserId()
 }
 
 func handleHelloReq(args []interface{}) {
@@ -175,7 +184,6 @@ func getUserAgent(gateConnId uint64) (n.AgentClient, error) {
 }
 
 func checkConnectionAlive() {
-
 	var da []connectionData
 	for _, v := range userConnData {
 		if time.Now().Unix()-v.lastPulseTk > apollo.GetConfigAsInt64("心跳间隔", 180) && v.a.AgentInfo().AgentType != n.CommonServer {
@@ -187,6 +195,4 @@ func checkConnectionAlive() {
 		log.Debug("心跳", "心跳超时断开,userId=%v,connId=%v,info=%v", c.userId, c.connId, c.a.AgentInfo())
 		c.a.Close()
 	}
-
-	g.Skeleton.AfterFunc(30*time.Second, checkConnectionAlive)
 }

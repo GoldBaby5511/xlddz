@@ -33,7 +33,7 @@ func handleLoginReq(args []interface{}) {
 
 	log.Debug("登录", "收到登录,主渠道=%d,子渠道=%d", m.GetChannelId(), m.GetSiteId())
 
-	sendLoginRsp(srcData.GetGateconnid(), "成功", int32(client.LoginRsp_SUCCESS))
+	sendLoginRsp(srcData.GetGateconnid(), "成功", uint32(client.LoginRsp_SUCCESS))
 }
 
 func handleLogoutReq(args []interface{}) {
@@ -43,12 +43,18 @@ func handleLogoutReq(args []interface{}) {
 }
 
 // 发送登录响应
-func sendLoginRsp(gateConnId uint64, info string, code int32) {
+func sendLoginRsp(gateConnId uint64, info string, code uint32) {
 	log.Info("登录", "发送登录响应,gateConnId=%v,info=%v,code=%v", gateConnId, info, code)
+
+	var authRsp gate.AuthInfo
+	authRsp.UserId = proto.Uint64(10001)
+	authRsp.Gateconnid = proto.Uint64(gateConnId)
+	authRsp.Result = proto.Uint32(code)
+	g.SendData2App(n.AppGate, uint32(gateConnId>>32), n.CMDGate, uint32(gate.CMDID_Gate_IDAuthInfo), &authRsp)
 
 	var rsp client.LoginRsp
 	rsp.LoginInfo = proto.String(info)
-	rsp.LoginResult = (*client.LoginRsp_Result)(proto.Int32(code))
+	rsp.LoginResult = (*client.LoginRsp_Result)(proto.Int32(int32(code)))
 	rsp.BaseInfo = new(types.BaseUserInfo)
 	rsp.BaseInfo.UserId = proto.Uint64(10001)
 	rsp.BaseInfo.GameId = proto.Uint64(10001)

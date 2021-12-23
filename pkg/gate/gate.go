@@ -1,6 +1,7 @@
 package gate
 
 import (
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"os"
 	"os/signal"
@@ -22,7 +23,7 @@ import (
 	"xlddz/pkg/util"
 )
 
-//网络事件
+//事件
 const (
 	ConnectSuccess     string = "ConnectSuccess"
 	Disconnect         string = "Disconnect"
@@ -66,7 +67,7 @@ func init() {
 	cbCenterDisconnect = append(cbCenterDisconnect, apollo.CenterDisconnect)
 	Skeleton = module.NewSkeleton(conf.GoLen, conf.TimerDispatcherLen, conf.AsynCallLen, conf.ChanRPCLen)
 	agentChanRPC = Skeleton.ChanRPCServer
-	closeSig = make(chan bool, 1)
+	closeSig = make(chan bool, 0)
 	MsgRegister(&config.ApolloCfgRsp{}, n.CMDConfig, uint16(config.CMDID_Config_IDApolloCfgRsp), handleApolloCfgRsp)
 }
 
@@ -108,8 +109,13 @@ func Start(appName string) {
 
 func Stop() {
 	defer util.TryE(conf.AppInfo.AppName)
-	Skeleton.Close()
+	for k, v := range servers {
+		v.Close()
+		delete(servers, k)
+	}
 	closeSig <- true
+	time.Sleep(time.Second / 2)
+	Skeleton.Close()
 	wg.Wait()
 }
 
@@ -264,13 +270,13 @@ func sendRegAppReq(a *agentServer) {
 	a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppRegReq), &registerReq)
 }
 
-func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) {
+func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) error {
 	cmd := n.TCPCommand{MainCmdID: uint16(mainCmdID), SubCmdID: uint16(subCmdID)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
-	sendData(bm, destAppType, destAppid)
+	return sendData(bm, destAppType, destAppid)
 }
 
-func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) {
+func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	var dataReq gate.TransferDataReq
 	dataReq.AttApptype = proto.Uint32(n.AppGate)
 	dataReq.AttAppid = proto.Uint32(uint32(gateConnID >> 32))
@@ -281,14 +287,18 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) {
 	dataReq.AttSessionid = proto.Uint64(sessionID)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
-	sendData(transBM, n.AppGate, uint32(gateConnID>>32))
+	return sendData(transBM, n.AppGate, uint32(gateConnID>>32))
 }
 
-func sendData(bm n.BaseMessage, destAppType, destAppid uint32) {
+func sendData(bm n.BaseMessage, destAppType, destAppid uint32) error {
 	destAgents := getDestAppInfo(destAppType, destAppid)
+	if len(destAgents) == 0 {
+		return fmt.Errorf("目标没找到,destAppType=%d,destAppid=%d", destAppType, destAppid)
+	}
 	for _, a := range destAgents {
 		a.SendMessage(bm)
 	}
+	return nil
 }
 
 func getDestAppInfo(destAppType, destAppid uint32) []*agentServer {

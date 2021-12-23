@@ -7,6 +7,11 @@ import (
 	"xlddz/pkg/log"
 )
 
+const (
+	Invalid     = -1
+	LoopForever = 0
+)
+
 // one dispatcher per goroutine (goroutine not safe)
 type Dispatcher struct {
 	ChanTimer chan *Timer
@@ -20,8 +25,9 @@ func NewDispatcher(l int) *Dispatcher {
 
 // Timer
 type Timer struct {
-	t  *time.Timer
-	cb func()
+	t         *time.Timer
+	loopCount int
+	cb        func()
 }
 
 func (t *Timer) Stop() {
@@ -31,7 +37,9 @@ func (t *Timer) Stop() {
 
 func (t *Timer) Cb() {
 	defer func() {
-		t.cb = nil
+		if t.loopCount == Invalid {
+			t.cb = nil
+		}
 		if r := recover(); r != nil {
 			if conf.LenStackBuf > 0 {
 				buf := make([]byte, conf.LenStackBuf)
@@ -51,6 +59,7 @@ func (t *Timer) Cb() {
 func (disp *Dispatcher) AfterFunc(d time.Duration, cb func()) *Timer {
 	t := new(Timer)
 	t.cb = cb
+	t.loopCount = Invalid
 	t.t = time.AfterFunc(d, func() {
 		disp.ChanTimer <- t
 	})
@@ -92,4 +101,30 @@ func (disp *Dispatcher) CronFunc(cronExpr *CronExpr, _cb func()) *Cron {
 
 	c.t = disp.AfterFunc(nextTime.Sub(now), cb)
 	return c
+}
+
+func (disp *Dispatcher) LoopFunc(d time.Duration, cb func(), loopCount int) *Timer {
+	if loopCount < LoopForever {
+		return nil
+	}
+
+	t := new(Timer)
+	t.loopCount = loopCount
+	t.cb = cb
+	t.t = time.NewTimer(d)
+	go func() {
+		for {
+			<-t.t.C
+			disp.ChanTimer <- t
+			if t.loopCount != LoopForever {
+				t.loopCount--
+				if t.loopCount == 0 {
+					t.loopCount = Invalid
+					break
+				}
+			}
+			t.t.Reset(d)
+		}
+	}()
+	return t
 }

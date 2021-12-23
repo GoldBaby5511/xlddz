@@ -99,6 +99,14 @@ func (s *Skeleton) CronFunc(cronExpr *timer.CronExpr, cb func()) *timer.Cron {
 	return s.dispatcher.CronFunc(cronExpr, cb)
 }
 
+func (s *Skeleton) LoopFunc(d time.Duration, cb func(), loopCount int) *timer.Timer {
+	if s.TimerDispatcherLen == 0 {
+		panic("invalid TimerDispatcherLen")
+	}
+
+	return s.dispatcher.LoopFunc(d, cb, loopCount)
+}
+
 func (s *Skeleton) Go(f func(), cb func()) {
 	if s.GoLen == 0 {
 		panic("invalid GoLen")
