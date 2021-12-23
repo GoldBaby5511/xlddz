@@ -39,3 +39,15 @@
 @go build
 @start .\login.exe
 @cd ../..
+
+@echo build room
+@cd .\cmd\room\
+@go build
+@start .\room.exe /AppType 15  /AppID 1000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:11000
+@cd ../..
+
+@echo build table
+@cd .\cmd\table\
+@go build
+@start .\table.exe /AppType 14  /AppID 2000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:12000
+@cd ../..

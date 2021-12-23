@@ -18,7 +18,6 @@ var (
 	userConnData map[uint64]*connectionData = make(map[uint64]*connectionData)
 )
 
-//连接数据
 type connectionData struct {
 	a           n.AgentClient
 	userId      uint64
@@ -36,7 +35,7 @@ func init() {
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.CenterConnected, centerConnected)
 
-	g.Skeleton.LoopFunc(1*time.Second, checkConnectionAlive, timer.LoopForever)
+	g.Skeleton.LoopFunc(30*time.Second, checkConnectionAlive, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {

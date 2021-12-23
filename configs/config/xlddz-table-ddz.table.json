@@ -1,0 +1,10 @@
+{
+    "appId": "xlddz-table",
+    "cluster": "dev",
+    "namespaceName": "ddz.table",
+    "releaseKey": "20211221170953-acdc8ee651246388",
+    "configurations": {
+		"日志服务器地址": "127.0.0.1:20001",
+        "桌子数量": "2000"
+    }
+}

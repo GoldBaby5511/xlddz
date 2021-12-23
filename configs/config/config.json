@@ -48,6 +48,20 @@
             "namespaceName":"configs/config/xlddz-gateway-ddz.gateway-102.json",
             "servertype":5,
             "serverid":102
+        },
+        {
+            "appid":"",
+            "cluster":"",
+            "namespaceName":"configs/config/xlddz-table-ddz.table.json",
+            "servertype":14,
+            "serverid":2000
+        },
+        {
+            "appid":"",
+            "cluster":"",
+            "namespaceName":"configs/config/xlddz-room-ddz.room.json",
+            "servertype":15,
+            "serverid":1000
         }
     ]
 }
