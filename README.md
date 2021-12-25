@@ -1,4 +1,4 @@
-# xlddz
+# mango
 
 ---
 
@@ -34,27 +34,27 @@
 * 本机部署好Docker环境，命令行下依次执行一下命令，生成镜像
 
 ```bash
-docker build --target center --file ./build/package/Dockerfile.center --tag xlddz/center .
-docker build --target config --file ./build/package/Dockerfile.config --tag xlddz/config .
-docker build --target gateway --file ./build/package/Dockerfile.gateway --tag xlddz/gateway .
-docker build --target logger --file ./build/package/Dockerfile.logger --tag xlddz/logger .
-docker build --target login --file ./build/package/Dockerfile.login --tag xlddz/login .
+docker build --target center --file ./build/package/Dockerfile.center --tag mango/center .
+docker build --target config --file ./build/package/Dockerfile.config --tag mango/config .
+docker build --target gateway --file ./build/package/Dockerfile.gateway --tag mango/gateway .
+docker build --target logger --file ./build/package/Dockerfile.logger --tag mango/logger .
+docker build --target login --file ./build/package/Dockerfile.login --tag mango/login .
 ```
 
 * 创建网桥
 
 ```bash
-docker network create xlddz
+docker network create mango
 ```
 
 * 执行以下命令，运行本地容器
 
 ```bash
-docker run -d --name="logger" --network xlddz xlddz/logger
-docker run -d --name="center" --network xlddz xlddz/center
-docker run -d --name="config" --network xlddz xlddz/config
-docker run -d --name="login" --network xlddz xlddz/login
-docker run -d -p 10102:10102 --name="gateway" --network xlddz xlddz/gateway
+docker run -d --name="logger" --network mango mango/logger
+docker run -d --name="center" --network mango mango/center
+docker run -d --name="config" --network mango mango/config
+docker run -d --name="login" --network mango mango/login
+docker run -d -p 10102:10102 --name="gateway" --network mango mango/gateway
 ```
 
 ---
@@ -83,7 +83,7 @@ docker run -d -p 10102:10102 --name="gateway" --network xlddz xlddz/gateway
 
 ## 相关博客
 
-xlddz(一)：杂谈项目由来：https://blog.csdn.net/weixin_42780662/article/details/122006434
+mango(一)：杂谈项目由来：https://blog.csdn.net/weixin_42780662/article/details/122006434
 
 ---
 
