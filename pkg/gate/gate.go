@@ -81,8 +81,8 @@ func Start(appName string) {
 	log.Export(l)
 	defer l.Close()
 
-	//args
-	conf.ParseCmdArgs()
+	//baseConfig
+	conf.LoadBaseConfig()
 
 	if conf.AppInfo.AppType == n.AppCenter {
 		apollo.RegisterConfig("", conf.AppInfo.AppType, conf.AppInfo.AppID, nil)

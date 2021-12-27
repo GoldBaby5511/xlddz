@@ -17,7 +17,9 @@
 * logger：日志服
 * config：配置中心，支持协程apollo配置中心 或本地json文本配置文件，配置更新实时通知相应服务
 * login：登录服务
-* 其他业务服务：比如 list、fund、room、table... ...(暂未实现)
+* room：房间服务
+* table：桌子服务
+* 其他业务服务：比如 list、fund... ...(暂未实现)
 
 ---
 
@@ -84,6 +86,8 @@ docker run -d -p 10102:10102 --name="gateway" --network mango mango/gateway
 ## 相关博客
 
 mango(一)：杂谈项目由来：https://blog.csdn.net/weixin_42780662/article/details/122006434
+
+mango(二)：架构：https://blog.csdn.net/weixin_42780662/article/details/122172058
 
 ---
 

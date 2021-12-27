@@ -39,7 +39,7 @@ type BaseInfo struct {
 	CenterAddr      string
 }
 
-func ParseCmdArgs() {
+func LoadBaseConfig() {
 	if AppInfo.AppName != "" {
 		data, err := ioutil.ReadFile(fmt.Sprintf("configs/%s/%s.json", AppInfo.AppName, AppInfo.AppName))
 		if err == nil {
