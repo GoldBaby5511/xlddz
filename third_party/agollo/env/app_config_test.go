@@ -25,9 +25,9 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/env/config"
-	jsonConfig "xlddz/third_party/agollo/env/config/json"
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/env/config"
+	jsonConfig "mango/third_party/agollo/env/config/json"
+	"mango/third_party/agollo/utils"
 )
 
 const servicesConfigResponseStr = `[{

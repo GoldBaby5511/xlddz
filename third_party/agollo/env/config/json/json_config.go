@@ -23,8 +23,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/utils"
 )
 
 //ConfigFile json文件读写

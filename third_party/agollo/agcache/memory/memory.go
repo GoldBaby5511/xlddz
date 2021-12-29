@@ -22,7 +22,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"xlddz/third_party/agollo/agcache"
+	"mango/third_party/agollo/agcache"
 )
 
 //DefaultCache 默认缓存

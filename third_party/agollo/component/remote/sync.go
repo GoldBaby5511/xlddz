@@ -23,12 +23,12 @@ import (
 	"net/url"
 	"path"
 
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/constant"
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/extension"
-	"xlddz/third_party/agollo/protocol/http"
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/constant"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/extension"
+	"mango/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/utils"
 )
 
 // CreateSyncApolloConfig 创建同步获取 Apollo 配置

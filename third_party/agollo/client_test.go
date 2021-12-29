@@ -25,14 +25,14 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/third_party/agollo/agcache/memory"
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/env/server"
+	"mango/third_party/agollo/agcache/memory"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/server"
 
 	. "github.com/tevid/gohamcrest"
-	_ "xlddz/third_party/agollo/env/file/json"
-	"xlddz/third_party/agollo/extension"
-	"xlddz/third_party/agollo/storage"
+	_ "mango/third_party/agollo/env/file/json"
+	"mango/third_party/agollo/extension"
+	"mango/third_party/agollo/storage"
 )
 
 const testDefaultNamespace = "application"

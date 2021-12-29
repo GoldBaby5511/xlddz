@@ -2,9 +2,9 @@ package module
 
 import (
 	"time"
-	"xlddz/pkg/chanrpc"
-	g "xlddz/pkg/go"
-	"xlddz/pkg/timer"
+	"mango/pkg/chanrpc"
+	g "mango/pkg/go"
+	"mango/pkg/timer"
 )
 
 type Skeleton struct {

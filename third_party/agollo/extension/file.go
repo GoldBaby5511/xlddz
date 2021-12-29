@@ -17,7 +17,7 @@
 
 package extension
 
-import "xlddz/third_party/agollo/env/file"
+import "mango/third_party/agollo/env/file"
 
 var fileHandler file.FileHandler
 

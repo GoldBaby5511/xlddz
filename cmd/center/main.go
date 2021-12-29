@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "xlddz/cmd/center/business"
-	"xlddz/pkg/gate"
+	_ "mango/cmd/center/business"
+	"mango/pkg/gate"
 )
 
 func main() {

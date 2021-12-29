@@ -4,11 +4,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"net"
 	"reflect"
-	"xlddz/api/center"
-	"xlddz/api/gate"
-	"xlddz/pkg/conf"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
+	"mango/api/center"
+	"mango/api/gate"
+	"mango/pkg/conf"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 //代理

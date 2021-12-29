@@ -18,7 +18,7 @@
 package cluster
 
 import (
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 //LoadBalance 负载均衡器

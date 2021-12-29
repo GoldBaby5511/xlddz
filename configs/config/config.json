@@ -6,7 +6,7 @@
     "ListenOnAddress": "0.0.0.0:10011",
     "UseApollo": false,
     "Config": {
-        "appId": "xlddz-apollo",
+        "appId": "mango-apollo",
         "cluster": "dev",
         "ip": "http://192.168.22.47:8080",
         "namespaceName": "application",
@@ -31,35 +31,35 @@
         {
             "appid":"",
             "cluster":"10100",
-            "namespaceName":"configs/config/xlddz-gateway-ddz.gateway-100.json",
+            "namespaceName":"configs/config/mango-gateway-ddz.gateway-100.json",
             "servertype":5,
             "serverid":100
         },
         {
             "appid":"",
             "cluster":"",
-            "namespaceName":"configs/config/xlddz-gateway-ddz.gateway-101.json",
+            "namespaceName":"configs/config/mango-gateway-ddz.gateway-101.json",
             "servertype":5,
             "serverid":101
         },
         {
             "appid":"",
             "cluster":"",
-            "namespaceName":"configs/config/xlddz-gateway-ddz.gateway-102.json",
+            "namespaceName":"configs/config/mango-gateway-ddz.gateway-102.json",
             "servertype":5,
             "serverid":102
         },
         {
             "appid":"",
             "cluster":"",
-            "namespaceName":"configs/config/xlddz-table-ddz.table.json",
+            "namespaceName":"configs/config/mango-table-ddz.table.json",
             "servertype":14,
             "serverid":2000
         },
         {
             "appid":"",
             "cluster":"",
-            "namespaceName":"configs/config/xlddz-room-ddz.room.json",
+            "namespaceName":"configs/config/mango-room-ddz.room.json",
             "servertype":15,
             "serverid":1000
         }

@@ -18,8 +18,8 @@
 package remote
 
 import (
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/protocol/http"
 )
 
 // ApolloConfig apollo 配置

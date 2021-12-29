@@ -20,16 +20,16 @@ package component
 import (
 	"testing"
 
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/env/server"
-	"xlddz/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/env/server"
+	"mango/third_party/agollo/protocol/http"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/cluster/roundrobin"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/env/config/json"
-	"xlddz/third_party/agollo/extension"
+	"mango/third_party/agollo/cluster/roundrobin"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config/json"
+	"mango/third_party/agollo/extension"
 
 	json2 "encoding/json"
 )

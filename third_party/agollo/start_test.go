@@ -25,12 +25,12 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/agcache/memory"
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	jsonFile "xlddz/third_party/agollo/env/config/json"
-	"xlddz/third_party/agollo/extension"
+	"mango/third_party/agollo/agcache/memory"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	jsonFile "mango/third_party/agollo/env/config/json"
+	"mango/third_party/agollo/extension"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
-	"xlddz/pkg/log"
-	"xlddz/pkg/util"
+	"mango/pkg/log"
+	"mango/pkg/util"
 )
 
 const (

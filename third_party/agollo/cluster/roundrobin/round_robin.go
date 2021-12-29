@@ -18,7 +18,7 @@
 package roundrobin
 
 import (
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 //RoundRobin 轮询调度

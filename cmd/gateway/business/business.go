@@ -4,14 +4,14 @@ import (
 	"errors"
 	"github.com/golang/protobuf/proto"
 	"time"
-	"xlddz/api/client"
-	gcmd "xlddz/api/gate"
-	"xlddz/pkg/conf"
-	"xlddz/pkg/conf/apollo"
-	g "xlddz/pkg/gate"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
-	"xlddz/pkg/timer"
+	"mango/api/client"
+	gcmd "mango/api/gate"
+	"mango/pkg/conf"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
+	"mango/pkg/timer"
 )
 
 var (

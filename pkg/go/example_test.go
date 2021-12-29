@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	g "xlddz/pkg/go"
+	g "mango/pkg/go"
 )
 
 func Example() {

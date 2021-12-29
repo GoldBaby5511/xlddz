@@ -17,7 +17,7 @@
 
 package extension
 
-import "xlddz/third_party/agollo/cluster"
+import "mango/third_party/agollo/cluster"
 
 var defaultLoadBalance cluster.LoadBalance
 

@@ -5,11 +5,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"math/rand"
 	"time"
-	"xlddz/api/center"
-	lconf "xlddz/pkg/conf"
-	g "xlddz/pkg/gate"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
+	"mango/api/center"
+	lconf "mango/pkg/conf"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 var (

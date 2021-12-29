@@ -20,10 +20,10 @@ package notify
 import (
 	"time"
 
-	"xlddz/third_party/agollo/component/remote"
-	"xlddz/third_party/agollo/storage"
+	"mango/third_party/agollo/component/remote"
+	"mango/third_party/agollo/storage"
 
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 const (

@@ -19,8 +19,8 @@ package yaml
 
 import (
 	"testing"
-	"xlddz/third_party/agollo/utils"
-	"xlddz/third_party/agollo/utils/parse"
+	"mango/third_party/agollo/utils"
+	"mango/third_party/agollo/utils/parse"
 
 	. "github.com/tevid/gohamcrest"
 )

@@ -2,7 +2,7 @@ package util_test
 
 import (
 	"fmt"
-	"xlddz/pkg/util"
+	"mango/pkg/util"
 )
 
 func ExampleMap() {

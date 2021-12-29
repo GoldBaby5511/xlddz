@@ -6,11 +6,11 @@ import (
 	"os"
 	"path"
 	"time"
-	"xlddz/api/logger"
-	g "xlddz/pkg/gate"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
-	"xlddz/pkg/util"
+	"mango/api/logger"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
+	"mango/pkg/util"
 )
 
 var (

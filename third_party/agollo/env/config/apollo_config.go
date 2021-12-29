@@ -20,7 +20,7 @@ package config
 import (
 	"sync"
 
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/utils"
 )
 
 // CurrentApolloConfig 当前 apollo 返回的配置信息

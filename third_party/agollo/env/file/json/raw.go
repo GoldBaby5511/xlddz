@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 
-	"xlddz/third_party/agollo/env/file"
+	"mango/third_party/agollo/env/file"
 )
 
 var (

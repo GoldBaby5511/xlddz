@@ -1,9 +1,9 @@
 package table
 
 import (
-	"xlddz/cmd/table/business/player"
-	g "xlddz/pkg/gate"
-	n "xlddz/pkg/network"
+	"mango/cmd/table/business/player"
+	g "mango/pkg/gate"
+	n "mango/pkg/network"
 )
 
 const InvalidSeadID = 0xFFFF

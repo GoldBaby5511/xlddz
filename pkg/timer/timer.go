@@ -3,8 +3,8 @@ package timer
 import (
 	"runtime"
 	"time"
-	"xlddz/pkg/conf"
-	"xlddz/pkg/log"
+	"mango/pkg/conf"
+	"mango/pkg/log"
 )
 
 const (

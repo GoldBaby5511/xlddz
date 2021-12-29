@@ -18,7 +18,7 @@
 package extension
 
 import (
-	"xlddz/third_party/agollo/protocol/auth"
+	"mango/third_party/agollo/protocol/auth"
 )
 
 var authSign auth.HTTPAuth

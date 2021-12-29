@@ -22,7 +22,7 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 var name = "abc"

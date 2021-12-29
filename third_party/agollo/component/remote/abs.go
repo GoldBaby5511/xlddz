@@ -18,10 +18,10 @@
 package remote
 
 import (
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/protocol/http"
 )
 
 // AbsApolloConfig 抽象 apollo 配置

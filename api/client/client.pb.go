@@ -11,7 +11,7 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
-	types "xlddz/api/types"
+	types "mango/api/types"
 )
 
 const (

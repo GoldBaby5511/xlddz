@@ -25,15 +25,15 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/constant"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	"xlddz/third_party/agollo/env/server"
-	"xlddz/third_party/agollo/extension"
-	"xlddz/third_party/agollo/utils/parse/normal"
-	"xlddz/third_party/agollo/utils/parse/properties"
-	"xlddz/third_party/agollo/utils/parse/yaml"
-	"xlddz/third_party/agollo/utils/parse/yml"
+	"mango/third_party/agollo/constant"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/server"
+	"mango/third_party/agollo/extension"
+	"mango/third_party/agollo/utils/parse/normal"
+	"mango/third_party/agollo/utils/parse/properties"
+	"mango/third_party/agollo/utils/parse/yaml"
+	"mango/third_party/agollo/utils/parse/yml"
 )
 
 var (

@@ -3,7 +3,7 @@ package chanrpc_test
 import (
 	"fmt"
 	"sync"
-	"xlddz/pkg/chanrpc"
+	"mango/pkg/chanrpc"
 )
 
 func Example() {

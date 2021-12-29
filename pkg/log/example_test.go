@@ -1,7 +1,7 @@
 package log_test
 
 import (
-	"xlddz/pkg/log"
+	"mango/pkg/log"
 )
 
 func Example() {

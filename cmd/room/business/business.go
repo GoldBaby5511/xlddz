@@ -3,14 +3,14 @@ package business
 import (
 	"github.com/golang/protobuf/proto"
 	"time"
-	"xlddz/api/gate"
-	rCMD "xlddz/api/room"
-	tCMD "xlddz/api/table"
-	"xlddz/cmd/room/business/player"
-	"xlddz/pkg/conf/apollo"
-	g "xlddz/pkg/gate"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
+	"mango/api/gate"
+	rCMD "mango/api/room"
+	tCMD "mango/api/table"
+	"mango/cmd/room/business/player"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 var (

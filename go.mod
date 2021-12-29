@@ -1,4 +1,4 @@
-module xlddz
+module mango
 
 go 1.15
 

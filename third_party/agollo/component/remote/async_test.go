@@ -26,13 +26,13 @@ import (
 	"time"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/cluster/roundrobin"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	jsonFile "xlddz/third_party/agollo/env/file/json"
-	"xlddz/third_party/agollo/env/server"
-	"xlddz/third_party/agollo/extension"
-	http2 "xlddz/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/cluster/roundrobin"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	jsonFile "mango/third_party/agollo/env/file/json"
+	"mango/third_party/agollo/env/server"
+	"mango/third_party/agollo/extension"
+	http2 "mango/third_party/agollo/protocol/http"
 )
 
 var asyncApollo *asyncApolloConfig

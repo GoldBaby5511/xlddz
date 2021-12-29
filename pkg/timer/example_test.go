@@ -3,7 +3,7 @@ package timer_test
 import (
 	"fmt"
 	"time"
-	"xlddz/pkg/timer"
+	"mango/pkg/timer"
 )
 
 func ExampleTimer() {

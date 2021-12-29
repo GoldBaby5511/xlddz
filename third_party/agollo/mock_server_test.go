@@ -23,7 +23,7 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 const (

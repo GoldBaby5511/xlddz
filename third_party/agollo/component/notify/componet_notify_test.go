@@ -22,14 +22,14 @@ import (
 	"testing"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/cluster/roundrobin"
-	_ "xlddz/third_party/agollo/cluster/roundrobin"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
-	jsonConfig "xlddz/third_party/agollo/env/config/json"
-	_ "xlddz/third_party/agollo/env/file/json"
-	jsonFile "xlddz/third_party/agollo/env/file/json"
-	"xlddz/third_party/agollo/extension"
+	"mango/third_party/agollo/cluster/roundrobin"
+	_ "mango/third_party/agollo/cluster/roundrobin"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
+	jsonConfig "mango/third_party/agollo/env/config/json"
+	_ "mango/third_party/agollo/env/file/json"
+	jsonFile "mango/third_party/agollo/env/file/json"
+	"mango/third_party/agollo/extension"
 )
 
 func init() {

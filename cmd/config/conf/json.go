@@ -3,8 +3,8 @@ package conf
 import (
 	"encoding/json"
 	"io/ioutil"
-	"xlddz/pkg/log"
-	aConfig "xlddz/third_party/agollo/env/config"
+	"mango/pkg/log"
+	aConfig "mango/third_party/agollo/env/config"
 )
 
 var Server struct {

@@ -24,7 +24,7 @@ import (
 	"strings"
 	"sync"
 
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/utils"
 )
 
 var (

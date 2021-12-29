@@ -20,7 +20,7 @@ package yml
 import (
 	"bytes"
 	"github.com/spf13/viper"
-	"xlddz/third_party/agollo/utils"
+	"mango/third_party/agollo/utils"
 )
 
 var vp = viper.New()

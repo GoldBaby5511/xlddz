@@ -18,12 +18,12 @@
 package agollo
 
 import (
-	"xlddz/third_party/agollo/agcache"
-	"xlddz/third_party/agollo/cluster"
-	"xlddz/third_party/agollo/component/log"
-	"xlddz/third_party/agollo/env/file"
-	"xlddz/third_party/agollo/extension"
-	"xlddz/third_party/agollo/protocol/auth"
+	"mango/third_party/agollo/agcache"
+	"mango/third_party/agollo/cluster"
+	"mango/third_party/agollo/component/log"
+	"mango/third_party/agollo/env/file"
+	"mango/third_party/agollo/extension"
+	"mango/third_party/agollo/protocol/auth"
 )
 
 //SetSignature 设置自定义 http 授权控件

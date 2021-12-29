@@ -2,16 +2,16 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
-	"xlddz/api/gate"
-	tCMD "xlddz/api/table"
-	"xlddz/cmd/table/business/player"
-	"xlddz/cmd/table/business/table"
-	"xlddz/cmd/table/business/table/ddz"
-	"xlddz/pkg/conf"
-	"xlddz/pkg/conf/apollo"
-	g "xlddz/pkg/gate"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
+	"mango/api/gate"
+	tCMD "mango/api/table"
+	"mango/cmd/table/business/player"
+	"mango/cmd/table/business/table"
+	"mango/cmd/table/business/table/ddz"
+	"mango/pkg/conf"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 var (

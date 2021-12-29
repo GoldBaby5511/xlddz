@@ -18,7 +18,7 @@
 package file
 
 import (
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env/config"
 )
 
 //FileHandler 备份文件读写

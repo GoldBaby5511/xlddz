@@ -2,10 +2,10 @@ package ddz
 
 import (
 	"github.com/golang/protobuf/proto"
-	"xlddz/api/gameddz"
-	"xlddz/cmd/table/business/table"
-	"xlddz/pkg/log"
-	n "xlddz/pkg/network"
+	"mango/api/gameddz"
+	"mango/cmd/table/business/table"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 type Sink struct {

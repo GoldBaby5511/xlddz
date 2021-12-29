@@ -22,18 +22,18 @@ import (
 	"testing"
 	"time"
 
-	"xlddz/third_party/agollo/agcache/memory"
-	"xlddz/third_party/agollo/env/config"
-	jsonFile "xlddz/third_party/agollo/env/file/json"
-	"xlddz/third_party/agollo/extension"
+	"mango/third_party/agollo/agcache/memory"
+	"mango/third_party/agollo/env/config"
+	jsonFile "mango/third_party/agollo/env/file/json"
+	"mango/third_party/agollo/extension"
 
 	. "github.com/tevid/gohamcrest"
-	_ "xlddz/third_party/agollo/agcache/memory"
-	"xlddz/third_party/agollo/env"
-	_ "xlddz/third_party/agollo/env/file/json"
+	_ "mango/third_party/agollo/agcache/memory"
+	"mango/third_party/agollo/env"
+	_ "mango/third_party/agollo/env/file/json"
 
-	_ "xlddz/third_party/agollo/utils/parse/normal"
-	_ "xlddz/third_party/agollo/utils/parse/properties"
+	_ "mango/third_party/agollo/utils/parse/normal"
+	_ "mango/third_party/agollo/utils/parse/properties"
 )
 
 //init param

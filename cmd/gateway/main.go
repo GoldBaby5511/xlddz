@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 	"os"
-	_ "xlddz/cmd/gateway/business"
-	"xlddz/pkg/gate"
-	"xlddz/pkg/log"
+	_ "mango/cmd/gateway/business"
+	"mango/pkg/gate"
+	"mango/pkg/log"
 )
 
 func main() {

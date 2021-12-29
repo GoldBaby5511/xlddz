@@ -20,12 +20,12 @@ package serverlist
 import (
 	"testing"
 
-	"xlddz/third_party/agollo/env/server"
-	"xlddz/third_party/agollo/protocol/http"
+	"mango/third_party/agollo/env/server"
+	"mango/third_party/agollo/protocol/http"
 
 	. "github.com/tevid/gohamcrest"
-	"xlddz/third_party/agollo/env"
-	"xlddz/third_party/agollo/env/config"
+	"mango/third_party/agollo/env"
+	"mango/third_party/agollo/env/config"
 )
 
 func TestSyncServerIPList(t *testing.T) {
