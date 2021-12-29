@@ -15,7 +15,7 @@
 * gateway：网关服务
 * center：中心服务
 * logger：日志服
-* config：配置中心，支持协程apollo配置中心 或本地json文本配置文件，配置更新实时通知相应服务
+* config：配置中心，支持携程apollo配置中心 或本地json文本配置文件，配置更新实时通知相应服务
 * login：登录服务
 * room：房间服务
 * table：桌子服务
@@ -33,7 +33,7 @@
 
 ## Docker部署
 
-* 本机部署好Docker环境，命令行下依次执行一下命令，生成镜像
+* 本机部署好Docker环境，命令行执行以下命令，生成镜像
 
 ```bash
 docker build --target center --file ./build/package/Dockerfile.center --tag mango/center .

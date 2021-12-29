@@ -1,7 +1,7 @@
 .idea
 *.exe
-client/
-servers/gateway/log/
-servers/logger/log/
-servers/login/log/
-servers/router/log/
+examples/
+cmd/gateway/log/
+cmd/logger/log/
+cmd/login/log/
+cmd/router/log/
