@@ -12,7 +12,6 @@ var Server struct {
 	ListenOnAddr  string
 	AppID         uint32
 	AppName       string
-	MaxConnNum    int
 	FilePath      string
 	ScreenPrint   bool
 	UseApollo     bool `default:"false" json:"UseApollo"`
@@ -21,12 +20,12 @@ var Server struct {
 }
 
 type ApolloConfig struct {
-	Appid      string `json:"appId"`
+	Appid      string `json:"appID"`
 	Cluster    string `json:"cluster"`
 	Ns         string `json:"namespaceName"`
 	Ip         string `json:"ip"`
-	ServerType uint32 `json:"servertype"`
-	ServerId   uint32 `json:"serverid"`
+	ServerType uint32 `json:"serverType"`
+	ServerId   uint32 `json:"serverID"`
 }
 
 func init() {
