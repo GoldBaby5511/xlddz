@@ -2,13 +2,13 @@ package gate
 
 import (
 	"github.com/golang/protobuf/proto"
-	"reflect"
-	"time"
 	"mango/api/center"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"reflect"
+	"time"
 )
 
 type agentServer struct {
@@ -18,14 +18,14 @@ type agentServer struct {
 }
 
 func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int) {
-	if info.ListenOnAddress == "" {
+	if info.ListenOnAddr == "" {
 		log.Warning("agentServer", "警告,没地址怎么连接?,info=%v,autoReconnect=%v,pendingWriteNum=%v",
 			info, autoReconnect, pendingWriteNum)
 		return
 	}
 
 	tcpClient := new(n.TCPClient)
-	tcpClient.Addr = info.ListenOnAddress
+	tcpClient.Addr = info.ListenOnAddr
 	tcpClient.PendingWriteNum = pendingWriteNum
 	tcpClient.AutoReconnect = autoReconnect
 	tcpClient.NewAgent = func(conn *n.TCPConn) n.AgentServer {
@@ -92,7 +92,7 @@ func (a *agentServer) Run() {
 				mxServers.Unlock()
 				if !(conf.AppInfo.AppType == m.GetAppType() && conf.AppInfo.AppID == m.GetAppId()) && !ok {
 					if m.GetAppAddress() != "" {
-						info := n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId(), ListenOnAddress: m.GetAppAddress()}
+						info := n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId(), ListenOnAddr: m.GetAppAddress()}
 						newServerItem(info, false, 0)
 					} else {
 						log.Warning("agentServer", "没有地址?,%v,%v,%v,%v",

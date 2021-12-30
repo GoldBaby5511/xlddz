@@ -2,6 +2,6 @@
     "AppName": "center",
     "AppType": 6,
     "AppID": 10,
-    "ListenOnAddress": "0.0.0.0:10001",
+    "ListenOnAddr": "0.0.0.0:10001",
     "CenterAddr": ""
 }

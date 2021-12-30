@@ -11,11 +11,11 @@ const (
 )
 
 type BaseAgentInfo struct {
-	AgentType       uint32
-	AppName         string
-	AppID           uint32
-	AppType         uint32
-	ListenOnAddress string
+	AgentType    uint32
+	AppName      string
+	AppID        uint32
+	AppType      uint32
+	ListenOnAddr string
 }
 
 type AgentClient interface {

@@ -1,7 +1,7 @@
 {
     "AppName": "logger",
     "AppType": 8,
-    "AppID": 0,
-    "ListenOnAddress": "0.0.0.0:20001",
+    "AppID": 1,
+    "ListenOnAddr": "0.0.0.0:20001",
     "CenterAddr": ""
 }

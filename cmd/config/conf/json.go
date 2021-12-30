@@ -8,16 +8,16 @@ import (
 )
 
 var Server struct {
-	CenterAddr      string
-	ListenOnAddress string
-	AppID           uint32
-	AppName         string
-	MaxConnNum      int
-	FilePath        string
-	ScreenPrint     bool
-	UseApollo       bool `default:"false" json:"UseApollo"`
-	Config          aConfig.AppConfig
-	CommonServers   []ApolloConfig
+	CenterAddr    string
+	ListenOnAddr  string
+	AppID         uint32
+	AppName       string
+	MaxConnNum    int
+	FilePath      string
+	ScreenPrint   bool
+	UseApollo     bool `default:"false" json:"UseApollo"`
+	Config        aConfig.AppConfig
+	CommonServers []ApolloConfig
 }
 
 type ApolloConfig struct {

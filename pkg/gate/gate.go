@@ -3,12 +3,6 @@ package gate
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"os"
-	"os/signal"
-	"reflect"
-	"strings"
-	"sync"
-	"time"
 	"mango/api/center"
 	"mango/api/config"
 	"mango/api/gate"
@@ -21,6 +15,12 @@ import (
 	n "mango/pkg/network"
 	"mango/pkg/network/protobuf"
 	"mango/pkg/util"
+	"os"
+	"os/signal"
+	"reflect"
+	"strings"
+	"sync"
+	"time"
 )
 
 //事件
@@ -130,7 +130,7 @@ func EventRegister(id interface{}, f interface{}) {
 }
 
 func Run() {
-	log.Debug("", "Run,ListenOnAddress=%v", conf.AppInfo.ListenOnAddress)
+	log.Debug("", "Run,ListenOnAddr=%v", conf.AppInfo.ListenOnAddr)
 
 	var wsServer *n.WSServer
 	if WSAddr != "" {
@@ -152,9 +152,9 @@ func Run() {
 	}
 
 	var tcpServer *n.TCPServer
-	if conf.AppInfo.ListenOnAddress != "" {
+	if conf.AppInfo.ListenOnAddr != "" {
 		tcpServer = new(n.TCPServer)
-		tcpServer.Addr = conf.AppInfo.ListenOnAddress
+		tcpServer.Addr = conf.AppInfo.ListenOnAddr
 		tcpServer.MaxConnNum = MaxConnNum
 		tcpServer.PendingWriteNum = PendingWriteNum
 		tcpServer.LenMsgLen = LenMsgLen
@@ -170,7 +170,7 @@ func Run() {
 	}
 
 	if conf.AppInfo.CenterAddr != "" && conf.AppInfo.AppType != n.AppCenter {
-		newServerItem(n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "center", AppType: n.AppCenter, ListenOnAddress: conf.AppInfo.CenterAddr}, true, PendingWriteNum)
+		newServerItem(n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "center", AppType: n.AppCenter, ListenOnAddr: conf.AppInfo.CenterAddr}, true, PendingWriteNum)
 	}
 
 	if wsServer != nil {
@@ -227,7 +227,7 @@ func ConnectLogServer(logAddr string) {
 		tcpLog.Addr = logAddr
 		tcpLog.AutoReconnect = true
 		tcpLog.NewAgent = func(conn *n.TCPConn) n.AgentServer {
-			a := &agentServer{tcpClient: tcpLog, conn: conn, info: n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "logger", AppType: n.AppLogger, AppID: 0, ListenOnAddress: logAddr}}
+			a := &agentServer{tcpClient: tcpLog, conn: conn, info: n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "logger", AppType: n.AppLogger, AppID: 0, ListenOnAddr: logAddr}}
 			log.Info("gate", "日志服务器连接成功,服务启动完成,阔以开始了... ...")
 
 			log.SetCallback(func(i log.LogInfo) {
@@ -259,9 +259,9 @@ func sendRegAppReq(a *agentServer) {
 	registerReq.AppName = proto.String(conf.AppInfo.AppName)
 	registerReq.AppType = proto.Uint32(conf.AppInfo.AppType)
 	registerReq.AppId = proto.Uint32(conf.AppInfo.AppID)
-	myAddress := conf.AppInfo.ListenOnAddress
+	myAddress := conf.AppInfo.ListenOnAddr
 	if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
-		addr := strings.Split(conf.AppInfo.ListenOnAddress, ":")
+		addr := strings.Split(conf.AppInfo.ListenOnAddr, ":")
 		if len(addr) == 2 {
 			myAddress = conf.AppInfo.AppName + ":" + addr[1]
 		}

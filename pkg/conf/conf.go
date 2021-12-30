@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strings"
 	"mango/pkg/log"
 	"mango/pkg/util"
+	"strings"
 )
 
 const (
-	ArgAppName    string = "/AppName"
-	ArgAppType    string = "/AppType"
-	ArgAppID      string = "/AppID"
-	ArgCenterAddr string = "/CenterAddr"
-	ListenOnAddr  string = "/ListenOnAddr"
-	ArgDockerRun  string = "/DockerRun"
+	ArgAppName      string = "/AppName"
+	ArgAppType      string = "/AppType"
+	ArgAppID        string = "/AppID"
+	ArgCenterAddr   string = "/CenterAddr"
+	ArgListenOnAddr string = "/ListenOnAddr"
+	ArgDockerRun    string = "/DockerRun"
 )
 
 var (
@@ -26,17 +26,15 @@ var (
 	TimerDispatcherLen = 10000
 	AsynCallLen        = 10000
 	ChanRPCLen         = 10000
-
-	//服务基础属性
-	AppInfo BaseInfo
+	AppInfo            BaseInfo
 )
 
 type BaseInfo struct {
-	AppName         string
-	AppID           uint32
-	AppType         uint32
-	ListenOnAddress string
-	CenterAddr      string
+	AppName      string
+	AppID        uint32
+	AppType      uint32
+	ListenOnAddr string
+	CenterAddr   string
 }
 
 func LoadBaseConfig() {
@@ -59,14 +57,18 @@ func LoadBaseConfig() {
 	if v, ok := util.ParseArgsString(ArgCenterAddr); ok {
 		AppInfo.CenterAddr = v
 	}
-	if v, ok := util.ParseArgsString(ListenOnAddr); ok {
-		AppInfo.ListenOnAddress = v
+	if v, ok := util.ParseArgsString(ArgListenOnAddr); ok {
+		AppInfo.ListenOnAddr = v
 	}
 	if v, ok := util.ParseArgsUint32(ArgDockerRun); ok && v == 1 {
 		addr := strings.Split(AppInfo.CenterAddr, ":")
 		if len(addr) == 2 {
 			AppInfo.CenterAddr = "center:" + addr[1]
 		}
+	}
+
+	if AppInfo.AppName == "" || AppInfo.AppType == 0 || AppInfo.AppID == 0 {
+		log.Fatal("初始化", "初始参数异常,请检查,AppInfo=%v", AppInfo)
 	}
 
 	log.Debug("", "参数解析,%v", AppInfo)
