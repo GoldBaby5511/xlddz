@@ -31,8 +31,8 @@ var (
 
 type BaseInfo struct {
 	AppName      string
-	AppID        uint32
 	AppType      uint32
+	AppID        uint32
 	ListenOnAddr string
 	CenterAddr   string
 }

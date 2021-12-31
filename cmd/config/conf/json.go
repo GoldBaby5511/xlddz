@@ -8,13 +8,14 @@ import (
 )
 
 var Server struct {
-	CenterAddr    string
-	ListenOnAddr  string
-	AppID         uint32
-	AppName       string
-	FilePath      string
-	ScreenPrint   bool
+	AppName      string
+	AppType      uint32
+	AppID        uint32
+	ListenOnAddr string
+	CenterAddr   string
+
 	UseApollo     bool `default:"false" json:"UseApollo"`
+	LoggerAddr    string
 	Config        aConfig.AppConfig
 	CommonServers []ApolloConfig
 }

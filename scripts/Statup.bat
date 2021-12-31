@@ -1,53 +1,30 @@
 @echo build and run
-@echo build logger
 @cd ..
-@if not exist .\cmd\logger\configs mkdir .\cmd\logger\configs\logger
-@xcopy .\configs\logger\ .\cmd\logger\configs\logger\ /s /f /h /y
-@cd .\cmd\logger\
-@go build
-@start .\logger.exe
-@cd ../..
 
-@echo build center
-@if not exist .\cmd\center\configs mkdir .\cmd\center\configs\center
-@xcopy .\configs\center\ .\cmd\center\configs\center\ /s /f /h /y
-@cd .\cmd\center\
-@go build
-@start .\center.exe
-@cd ../..
+@echo call buildApp
+@call:buildApp logger
+@call:buildApp center
+@call:buildApp config
+@call:buildApp gateway
+@call:buildApp login
+@call:buildRT room /AppType 15  /AppID 1000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:11000
+@call:buildRT table /AppType 14  /AppID 2000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:12000
+@goto:eof
 
-@echo build config
-@if not exist .\cmd\config\configs mkdir .\cmd\config\configs\config
-@xcopy .\configs\config\ .\cmd\config\configs\config\ /s /f /h /y
-@cd .\cmd\config\
+:buildApp
+@set appName=%~1
+@if not exist .\cmd\%appName%\configs mkdir .\cmd\%appName%\configs\%appName%
+@xcopy .\configs\%appName%\ .\cmd\%appName%\configs\%appName%\ /s /f /h /y
+@cd .\cmd\%appName%\
 @go build
-@start .\config.exe
+@start .\%appName%.exe
 @cd ../..
+@goto:eof
 
-@echo build gateway
-@if not exist .\cmd\gateway\configs mkdir .\cmd\gateway\configs\gateway
-@xcopy .\configs\gateway\ .\cmd\gateway\configs\gateway\ /s /f /h /y
-@cd .\cmd\gateway\
+:buildRT
+@set appName=%~1
+@cd .\cmd\%appName%\
 @go build
-@start .\gateway.exe
+@start .\%appName%.exe %~2 %~3 %~4 %~5 %~6 %~7 %~8 %~9
 @cd ../..
-
-@echo build login
-@if not exist .\cmd\login\configs mkdir .\cmd\login\configs\login
-@xcopy .\configs\login\ .\cmd\login\configs\login\ /s /f /h /y
-@cd .\cmd\login\
-@go build
-@start .\login.exe
-@cd ../..
-
-@echo build room
-@cd .\cmd\room\
-@go build
-@start .\room.exe /AppType 15  /AppID 1000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:11000
-@cd ../..
-
-@echo build table
-@cd .\cmd\table\
-@go build
-@start .\table.exe /AppType 14  /AppID 2000 /CenterAddr 127.0.0.1:10001 /ListenOnAddr 0.0.0.0:12000
-@cd ../..
+@goto:eof

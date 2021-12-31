@@ -102,6 +102,9 @@ func loadConfigs() {
 			return true
 		})
 	} else {
+		if conf.Server.LoggerAddr != "" {
+			g.ConnectLogServer(conf.Server.LoggerAddr)
+		}
 		for _, c := range conf.Server.CommonServers {
 			l := newListener(nil, c)
 			err := l.loadConfigFile()

@@ -4,6 +4,7 @@
     "AppID": 1,
     "CenterAddr": "127.0.0.1:10001",
     "ListenOnAddr": "0.0.0.0:10011",
+    "LoggerAddr": "127.0.0.1:20001",
     "UseApollo": false,
     "Config": {
         "appID": "mango-apollo",
