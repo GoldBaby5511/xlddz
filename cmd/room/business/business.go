@@ -2,15 +2,17 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
-	"time"
 	"mango/api/gate"
 	rCMD "mango/api/room"
 	tCMD "mango/api/table"
+	"mango/api/types"
 	"mango/cmd/room/business/player"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"mango/pkg/timer"
+	"time"
 )
 
 var (
@@ -21,11 +23,13 @@ var (
 func init() {
 	g.MsgRegister(&tCMD.ApplyRsp{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDApplyRsp), handleApplyRsp)
 	g.MsgRegister(&rCMD.JoinReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDJoinReq), handleJoinReq)
+	g.MsgRegister(&rCMD.UserActionReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDUserActionReq), handleUserActionReq)
+	g.MsgRegister(&rCMD.ExitReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDExitReq), handleExitReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 
-	g.Skeleton.AfterFunc(1*time.Second, checkMatchTable)
+	g.Skeleton.LoopFunc(1*time.Second, checkMatchTable, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {
@@ -60,17 +64,75 @@ func handleJoinReq(args []interface{}) {
 	//m := (b.MyMessage).(*rCMD.JoinReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
+	msgRespond := func(errCode int32) {
+		var rsp rCMD.JoinRsp
+		rsp.ErrInfo = new(types.ErrorInfo)
+		rsp.ErrInfo.Code = proto.Int32(errCode)
+		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDJoinRsp)}
+		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+	}
+
 	userID := srcData.GetUserId()
 	if _, ok := players[userID]; ok {
+		msgRespond(1)
 		return
 	}
 
 	players[userID] = player.NewPlayer(userID)
 
-	var rsp rCMD.JoinRsp
-	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDJoinRsp)}
-	g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+	msgRespond(0)
+}
+
+func handleUserActionReq(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*rCMD.UserActionReq)
+	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
+
+	msgRespond := func(errCode int32) {
+		var rsp rCMD.UserActionRsp
+		rsp.Action = (*rCMD.ActionType)(proto.Int32(int32(m.GetAction())))
+		rsp.ErrInfo = new(types.ErrorInfo)
+		rsp.ErrInfo.Code = proto.Int32(errCode)
+		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDUserActionRsp)}
+		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+	}
+
+	userID := srcData.GetUserId()
+	if _, ok := players[userID]; ok {
+		msgRespond(1)
+		return
+	}
+
+	if m.GetAction() == rCMD.ActionType_Ready {
+		players[userID].State = player.HandsUpState
+	}
+
+	msgRespond(0)
+}
+
+func handleExitReq(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	//m := (b.MyMessage).(*rCMD.ExitReq)
+	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
+
+	msgRespond := func(errCode int32) {
+		var rsp rCMD.ExitRsp
+		rsp.ErrInfo = new(types.ErrorInfo)
+		rsp.ErrInfo.Code = proto.Int32(errCode)
+		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDUserActionRsp)}
+		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+	}
+
+	userID := srcData.GetUserId()
+	if _, ok := players[userID]; ok {
+		msgRespond(1)
+		return
+	}
+
+	msgRespond(0)
 }
 
 func checkApplyTable() {
@@ -84,8 +146,6 @@ func checkApplyTable() {
 }
 
 func checkMatchTable() {
-	g.Skeleton.AfterFunc(1*time.Second, checkMatchTable)
-
 	var matchPlayers []*player.Player
 	for _, pl := range players {
 		if pl.State == player.HandsUpState {
@@ -94,15 +154,18 @@ func checkMatchTable() {
 	}
 
 	seatCount := apollo.GetConfigAsInt64("座位数量", 3)
-	if len(matchPlayers) >= int(seatCount) {
+	for len(matchPlayers) >= int(seatCount) {
+		tablePlayers := matchPlayers[:seatCount]
+		matchPlayers = matchPlayers[seatCount:]
+
 		tableID := tables[len(tables)-1]
 		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 2000)
 		var req tCMD.MatchTableReq
 		req.TableId = proto.Uint64(tableID)
 		for i := 0; i < int(seatCount); i++ {
-			req.Players = append(req.Players, matchPlayers[i].UserID)
-			matchPlayers[i].State = player.PlayingState
-			setPlayerToTable(tableID, matchPlayers[i].UserID, uint32(tableAppID))
+			req.Players = append(req.Players, tablePlayers[i].UserID)
+			tablePlayers[i].State = player.PlayingState
+			setPlayerToTable(tableID, tablePlayers[i].UserID, uint32(tableAppID))
 		}
 
 		g.SendData2App(n.AppTable, uint32(tableAppID), n.CMDTable, uint32(tCMD.CMDID_Table_IDMatchTableReq), &req)

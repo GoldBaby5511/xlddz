@@ -1,14 +1,15 @@
 syntax = "proto2";
+import "types.proto";
 package bs.room;
 option go_package ="/room";
 
 enum CMDID_Room {
-	IDJoinReq			=1;			//服务注册
-	IDJoinRsp			=2;			//服务注册
-	IDUserActionReq		=3;			//服务状态
-	IDUserActionRsp		=4;			//服务离线
-	IDExitReq			=5;			//服务注册
-	IDExitRsp			=6;			//服务注册 
+	IDJoinReq			=1;			//进入房间
+	IDJoinRsp			=2;			//进入房间
+	IDUserActionReq		=3;			//用户动作
+	IDUserActionRsp		=4;			//用户动作
+	IDExitReq			=5;			//离开房间
+	IDExitRsp			=6;			//离开房间 
 
 	IDLast				=10;
 };
@@ -17,23 +18,28 @@ message JoinReq{
 }
 
 message JoinRsp{
+	optional types.ErrorInfo	err_info = 99;
 }
 
+enum ActionType {
+	Ready=1;
+	Cancel=2;
+}
+	
 message UserActionReq{
-	enum action {
-		Ready=1;
-		Cancel=2;
-	}
-	optional action auth_key =1;
+	optional ActionType action = 1;
 }
 
 message UserActionRsp{
+	optional ActionType 		action = 1;
+	optional types.ErrorInfo	err_info = 99;
 }
 
 message ExitReq{
 }
 
 message ExitRsp{
+	optional types.ErrorInfo	err_info = 99;
 }
 
 message AppUpdateReq {

@@ -9,9 +9,9 @@ package client
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	types "mango/api/types"
 	reflect "reflect"
 	sync "sync"
-	types "mango/api/types"
 )
 
 const (
