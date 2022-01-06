@@ -31,6 +31,7 @@ const (
 	CenterConnected    string = "CenterConnected"
 	CenterDisconnect   string = "CenterDisconnect"
 	CenterRegResult    string = "CenterRegResult"
+	CommonServerReg    string = "CommonServerReg"
 )
 
 const (

@@ -2,11 +2,13 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
+	"mango/api/client"
 	"mango/api/gate"
-	rCMD "mango/api/room"
+	"mango/api/list"
 	tCMD "mango/api/table"
 	"mango/api/types"
 	"mango/cmd/room/business/player"
+	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
@@ -22,9 +24,10 @@ var (
 
 func init() {
 	g.MsgRegister(&tCMD.ApplyRsp{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDApplyRsp), handleApplyRsp)
-	g.MsgRegister(&rCMD.JoinReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDJoinReq), handleJoinReq)
-	g.MsgRegister(&rCMD.UserActionReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDUserActionReq), handleUserActionReq)
-	g.MsgRegister(&rCMD.ExitReq{}, n.CMDRoom, uint16(rCMD.CMDID_Room_IDExitReq), handleExitReq)
+	g.MsgRegister(&list.RoomRegisterRsp{}, n.CMDList, uint16(list.CMDID_List_IDRoomRegisterRsp), handleRoomRegisterRsp)
+	g.MsgRegister(&client.JoinRoomReq{}, n.CMDClient, uint16(client.CMDID_Client_IDJoinRoomReq), handleJoinReq)
+	g.MsgRegister(&client.RoomActionReq{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomActionReq), handleUserActionReq)
+	g.MsgRegister(&client.ExitRoomReq{}, n.CMDClient, uint16(client.CMDID_Client_IDExitRoomReq), handleExitReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
@@ -57,19 +60,39 @@ func handleApplyRsp(args []interface{}) {
 	tables = append(tables, m.GetTableIds()...)
 	//log.Debug("", "tables=%v", tables)
 	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d", m.GetApplyCount(), srcApp.AppID, len(tables))
+
+	var req list.RoomRegisterReq
+	req.RoomInfo = new(types.RoomInfo)
+	req.RoomInfo.RoomInfo = new(types.BaseAppInfo)
+	req.RoomInfo.RoomInfo.Name = proto.String(conf.AppInfo.AppName)
+	req.RoomInfo.RoomInfo.Type = proto.Uint32(conf.AppInfo.AppType)
+	req.RoomInfo.RoomInfo.Id = proto.Uint32(conf.AppInfo.AppID)
+	g.SendData2App(n.AppList, n.Send2AnyOne, n.CMDList, uint32(list.CMDID_List_IDRoomRegisterReq), &req)
+}
+
+func handleRoomRegisterRsp(args []interface{}) {
+	//b := args[n.DataIndex].(n.BaseMessage)
+	//m := (b.MyMessage).(*list.RoomRegisterRsp)
+	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
+
+	//tables = append(tables, m.GetTableIds()...)
+	//log.Debug("", "tables=%v", tables)
+	log.Debug("", "注册返回,AttAppid=%d,len=%d", srcApp.AppID, len(tables))
 }
 
 func handleJoinReq(args []interface{}) {
 	//b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*rCMD.JoinReq)
+	//m := (b.MyMessage).(*client.JoinRoomReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
+	log.Debug("", "进入房间,userId = %v", srcData.GetUserId())
+
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.JoinRsp
+		var rsp client.JoinRoomRsp
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDJoinRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDClient), SubCmdID: uint16(client.CMDID_Client_IDJoinRoomRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -86,16 +109,16 @@ func handleJoinReq(args []interface{}) {
 
 func handleUserActionReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*rCMD.UserActionReq)
+	m := (b.MyMessage).(*client.RoomActionReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.UserActionRsp
-		rsp.Action = (*rCMD.ActionType)(proto.Int32(int32(m.GetAction())))
+		var rsp client.RoomActionRsp
+		rsp.Action = (*client.ActionType)(proto.Int32(int32(m.GetAction())))
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
-		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDUserActionRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDClient), SubCmdID: uint16(client.CMDID_Client_IDRoomActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -105,7 +128,7 @@ func handleUserActionReq(args []interface{}) {
 		return
 	}
 
-	if m.GetAction() == rCMD.ActionType_Ready {
+	if m.GetAction() == client.ActionType_Ready {
 		players[userID].State = player.HandsUpState
 	}
 
@@ -114,15 +137,15 @@ func handleUserActionReq(args []interface{}) {
 
 func handleExitReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*rCMD.ExitReq)
+	//m := (b.MyMessage).(*client.ExitRoomReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.ExitRsp
+		var rsp client.ExitRoomRsp
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
-		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDUserActionRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDClient), SubCmdID: uint16(client.CMDID_Client_IDRoomActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 

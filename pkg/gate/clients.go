@@ -2,13 +2,13 @@ package gate
 
 import (
 	"github.com/golang/protobuf/proto"
-	"net"
-	"reflect"
 	"mango/api/center"
 	"mango/api/gate"
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"net"
+	"reflect"
 )
 
 //代理
@@ -34,6 +34,9 @@ func (a *agentClient) Run() {
 				var m center.RegisterAppReq
 				_ = proto.Unmarshal(msgData, &m)
 				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId()}
+				if agentChanRPC != nil {
+					agentChanRPC.Call0(CommonServerReg, a, a.info)
+				}
 				log.Debug("", "相互注册,%v", a.info)
 			} else if bm.Cmd.SubCmdID == uint16(center.CMDID_Center_IDPulseNotify) {
 

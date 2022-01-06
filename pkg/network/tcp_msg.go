@@ -8,34 +8,33 @@ import (
 	"math"
 )
 
-//appid类型
 const (
-	Send2All    uint32 = 1 //发送到所有
-	Send2AnyOne uint32 = 2 //发送到随意任意一个
+	Send2All    uint32 = 1
+	Send2AnyOne uint32 = 2
 )
 
-//消息类型
 const (
-	NullType          uint32 = 0 //空类型
+	NullType          uint32 = 0
 	CMDCenter         uint32 = 10
-	CMDConfig         uint32 = 2 //配置中心
-	CMDServiceManager uint32 = 3 //服务管理
-	CMDLogger         uint32 = 8 //日志
-	CMDAppFrame       uint32 = 11
-	CMDGate           uint32 = 12 //gate
+	CMDConfig         uint32 = 2
+	CMDServiceManager uint32 = 3
+	CMDLogger         uint32 = 8
+	CMDList           uint32 = 11
+	CMDGate           uint32 = 12
 	CMDClient         uint32 = 13
 	CMDTable          uint32 = 14
 	CMDRoom           uint32 = 15
+	CMDProperty       uint32 = 16
 )
 
-//apptype类型
 const (
 	AppCenter          uint32 = 6
 	AppConfig          uint32 = 2
 	AppLogger          uint32 = 3
 	AppGate            uint32 = 5
 	AppLogin           uint32 = 7
-	AppOnline          uint32 = 8
+	AppList            uint32 = 11
+	AppProperty        uint32 = 12
 	AppTable           uint32 = 14
 	AppRoom            uint32 = 15
 	AppApollo          uint32 = 56

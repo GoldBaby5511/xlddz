@@ -1,0 +1,7 @@
+{
+    "AppName": "list",
+    "AppType": 11,
+    "AppID": 11,
+    "CenterAddr": "127.0.0.1:10001",
+    "ListenOnAddr": "0.0.0.0:10012"
+}

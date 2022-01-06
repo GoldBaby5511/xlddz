@@ -31,6 +31,20 @@
         },
         {
             "appID":"",
+            "cluster":"",
+            "namespaceName":"configs/config/common-server-list.json",
+            "serverType":11,
+            "serverID":0
+        },
+        {
+            "appID":"",
+            "cluster":"",
+            "namespaceName":"configs/config/common-server-property.json",
+            "serverType":12,
+            "serverID":0
+        },
+        {
+            "appID":"",
             "cluster":"10100",
             "namespaceName":"configs/config/mango-gateway-ddz.gateway-100.json",
             "serverType":5,

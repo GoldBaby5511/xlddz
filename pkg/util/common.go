@@ -34,3 +34,7 @@ func ParseArgsString(name string) (string, bool) {
 	}
 	return "", false
 }
+
+func MakeUint64FromUint32(high, low uint32) uint64 {
+	return uint64(high)<<32 | uint64(low)
+}
