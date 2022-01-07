@@ -47,7 +47,7 @@ func handleRoomListReq(args []interface{}) {
 
 	//tables = append(tables, m.GetTableIds()...)
 	//log.Debug("", "GetListId=%v", m.GetListId())
-	log.Debug("", "收到列表请求,userID=%d,listID=%d", srcData.GetUserId(), m.GetListId())
+	log.Debug("", "收到列表请求,listID=%d", m.GetListId())
 
 	var rsp client.RoomListRsp
 	for _, r := range roomList {

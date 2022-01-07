@@ -13,6 +13,7 @@ import (
 	g "mango/pkg/gate"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"mango/pkg/util"
 	"mango/third_party/agollo"
 	aConfig "mango/third_party/agollo/env/config"
 	"mango/third_party/agollo/storage"
@@ -237,8 +238,8 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string) {
 				break
 			}
 		}
-		appType := uint32(k >> 32)
-		appId := uint32(k & 0xFFFFFFFF)
+		appType := util.GetHUint32FromUint64(k) // uint32(k >> 32)
+		appId := util.GetLUint32FromUint64(k)   // uint32(k & 0xFFFFFFFF)
 
 		log.Debug("通知", "下发通知,appType=%v, appId=%v,SubAppType=%v, SubAppId=%v,changeKey=%v",
 			appType, appId, v.AppType, v.AppId, changeKey)

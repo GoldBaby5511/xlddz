@@ -93,7 +93,13 @@ func handleReleaseReq(args []interface{}) {
 func handleSetPlayerToTableReq(args []interface{}) {
 	m := args[n.DataIndex].(n.BaseMessage).MyMessage.(*tCMD.SetPlayerToTableReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
-	if m.GetTableId() != uint64(conf.AppInfo.AppID) {
+	if _, ok := usedTables[m.GetTableId()]; !ok {
+		log.Warning("", "没找到桌子啊,tableId=%v", m.GetTableId())
+		return
+	}
+	t := getTable(srcApp.AppID, m.GetTableId())
+	if t == nil {
+		log.Warning("", "这桌子不是你的啊,tableId=%v,host=%v,srcId=%v", m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
 		return
 	}
 
@@ -101,10 +107,7 @@ func handleSetPlayerToTableReq(args []interface{}) {
 	if pl != nil {
 		return
 	}
-	t := getTable(srcApp.AppID, m.GetTableId())
-	if t == nil {
-		return
-	}
+
 	pl = player.NewPlayer()
 	pl.UserID = m.GetUserId()
 	pl.TableID = t.GeTableID()
@@ -114,7 +117,7 @@ func handleSetPlayerToTableReq(args []interface{}) {
 	pl.State = player.SitdownState
 	t.SetPlayer(pl)
 
-	log.Debug("", "收到释放,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到入座,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
 }
 
 func handleMatchTableReq(args []interface{}) {
@@ -129,9 +132,8 @@ func handleMatchTableReq(args []interface{}) {
 		return
 	}
 
+	log.Debug("", "收到配桌,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
 	t.Start()
-
-	log.Debug("", "收到释放,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
 }
 
 func handleGameMessage(args []interface{}) {

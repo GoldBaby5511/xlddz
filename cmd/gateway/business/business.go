@@ -3,7 +3,6 @@ package business
 import (
 	"errors"
 	"github.com/golang/protobuf/proto"
-	"time"
 	"mango/api/client"
 	gcmd "mango/api/gate"
 	"mango/pkg/conf"
@@ -12,16 +11,18 @@ import (
 	"mango/pkg/log"
 	n "mango/pkg/network"
 	"mango/pkg/timer"
+	"mango/pkg/util"
+	"time"
 )
 
 var (
-	userConnData map[uint64]*connectionData = make(map[uint64]*connectionData)
+	userConnData map[uint32]*connectionData = make(map[uint32]*connectionData)
 )
 
 type connectionData struct {
 	a           n.AgentClient
 	userId      uint64
-	connId      uint64
+	connId      uint32
 	hasHello    bool
 	lastPulseTk int64
 }
@@ -42,7 +43,7 @@ func connectSuccess(args []interface{}) {
 	if len(args) != 2 {
 		return
 	}
-	connId := args[g.IdIndex].(uint64)
+	connId := args[g.IdIndex].(uint32)
 	userConnData[connId] = &connectionData{
 		a:           args[g.AgentIndex].(n.AgentClient),
 		connId:      connId,
@@ -50,14 +51,14 @@ func connectSuccess(args []interface{}) {
 		lastPulseTk: time.Now().Unix(),
 	}
 
-	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d", connId, len(userConnData))
+	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v", connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.AppID))
 }
 
 func disconnect(args []interface{}) {
 	if len(args) != 2 {
 		return
 	}
-	connId := args[g.IdIndex].(uint64)
+	connId := args[g.IdIndex].(uint32)
 	if v, ok := userConnData[connId]; ok {
 		log.Debug("agent1", "走了老弟,userId=%v,connId=%v,当前连接数=%d", v.userId, v.connId, len(userConnData))
 
@@ -108,13 +109,13 @@ func handleTransferDataReq(args []interface{}) {
 			log.Error("消息转发", "根本没找到用户连接,"+
 				"AttGateconnid=%v,connId=%v",
 				m.GetGateconnid(),
-				m.GetGateconnid()&0xFFFFFFFF)
+				util.GetHUint32FromUint64(m.GetGateconnid()))
 			return
 		}
 		a.SendData(n.CMDGate, uint32(gcmd.CMDID_Gate_IDTransferDataReq), m)
 	} else {
 		m.Gateid = proto.Uint32(conf.AppInfo.AppID)
-		m.Gateconnid = proto.Uint64(makeGateConnID(connData.connId))
+		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.AppID))
 		m.UserId = proto.Uint64(connData.userId)
 		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.CMDGate, uint32(gcmd.CMDID_Gate_IDTransferDataReq), m)
 	}
@@ -127,7 +128,7 @@ func handleAuthInfo(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppID, m.GetUserId())
-	connData, ok := userConnData[m.GetGateconnid()&0xFFFFFFFF]
+	connData, ok := userConnData[util.GetHUint32FromUint64(m.GetGateconnid())]
 	if !ok {
 		return
 	}
@@ -159,10 +160,6 @@ func handleHelloReq(args []interface{}) {
 	a.SendData(n.CMDGate, uint32(gcmd.CMDID_Gate_IDHelloRsp), &rsp)
 }
 
-func makeGateConnID(connId uint64) uint64 {
-	return uint64(conf.AppInfo.AppID)<<32 + connId
-}
-
 func getUserConnData(a n.AgentClient) (*connectionData, error) {
 	for _, v := range userConnData {
 		if v.a == a {
@@ -174,7 +171,7 @@ func getUserConnData(a n.AgentClient) (*connectionData, error) {
 }
 
 func getUserAgent(gateConnId uint64) (n.AgentClient, error) {
-	connData, ok := userConnData[gateConnId&0xFFFFFFFF]
+	connData, ok := userConnData[util.GetHUint32FromUint64(gateConnId)]
 	if !ok {
 		return nil, errors.New("真没找到啊")
 	}

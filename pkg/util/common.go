@@ -38,3 +38,15 @@ func ParseArgsString(name string) (string, bool) {
 func MakeUint64FromUint32(high, low uint32) uint64 {
 	return uint64(high)<<32 | uint64(low)
 }
+
+func Get2Uint32FromUint64(v uint64) (uint32, uint32) {
+	return GetHUint32FromUint64(v), GetLUint32FromUint64(v)
+}
+
+func GetHUint32FromUint64(v uint64) uint32 {
+	return uint32(v >> 32)
+}
+
+func GetLUint32FromUint64(v uint64) uint32 {
+	return uint32(v & 0xFFFFFFFF)
+}

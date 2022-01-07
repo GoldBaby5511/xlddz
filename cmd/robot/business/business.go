@@ -31,6 +31,7 @@ func init() {
 	g.Skeleton.LoopFunc(10*time.Second, checkRoomList, timer.LoopForever)
 	g.Skeleton.LoopFunc(1*time.Second, playerLogin, timer.LoopForever)
 	g.Skeleton.LoopFunc(1*time.Second, randJoinRoom, timer.LoopForever)
+	g.Skeleton.LoopFunc(1*time.Second, actionInRoom, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {
@@ -108,6 +109,23 @@ func randJoinRoom() {
 		}
 
 		pl.JoinRoom()
+	}
+
+}
+
+func actionInRoom() {
+
+	loginCount := 0
+	for _, pl := range pls {
+		if pl.State != player.StandingInRoom {
+			continue
+		}
+		loginCount++
+		if loginCount >= 50 {
+			break
+		}
+
+		pl.ActionRoom()
 	}
 
 }

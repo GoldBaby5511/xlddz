@@ -7,13 +7,14 @@ import (
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"mango/pkg/util"
 	"net"
 	"reflect"
 )
 
 //代理
 type agentClient struct {
-	id   uint64
+	id   uint32
 	conn n.Conn
 	info n.BaseAgentInfo
 }
@@ -52,7 +53,9 @@ func (a *agentClient) Run() {
 			unmarshalCmd = n.TCPCommand{MainCmdID: uint16(m.GetDataCmdKind()), SubCmdID: uint16(m.GetDataCmdSubid())}
 			msgData = m.GetData()
 			dataReq = &m
+			bm.AgentInfo = n.BaseAgentInfo{AgentType: n.NormalUser, AppType: util.GetHUint32FromUint64(m.GetGateconnid()), AppID: util.GetLUint32FromUint64(m.GetGateconnid())}
 		} else {
+			bm.AgentInfo = a.info
 			dataReq = a.info
 		}
 
@@ -61,7 +64,7 @@ func (a *agentClient) Run() {
 			log.Error("agentClient", "unmarshal message,headCmd=%v,error: %v", bm.Cmd, err)
 			continue
 		}
-		err = processor.Route(n.BaseMessage{MyMessage: msg, TraceId: bm.TraceId}, a, cmd, dataReq)
+		err = processor.Route(n.BaseMessage{MyMessage: msg, AgentInfo: bm.AgentInfo, TraceId: bm.TraceId}, a, cmd, dataReq)
 		if err != nil {
 			log.Error("agentClient", "client agentClient route message error: %v,cmd=%v", err, cmd)
 			continue

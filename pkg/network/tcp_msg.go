@@ -76,8 +76,9 @@ type PackageHeader struct {
 // BaseMessage 基础消息结构
 type BaseMessage struct {
 	MyMessage interface{} //消息体
-	Cmd       TCPCommand  //命令
-	TraceId   string      //traceId
+	AgentInfo BaseAgentInfo
+	Cmd       TCPCommand //命令
+	TraceId   string     //traceId
 }
 
 // MsgParser --------------

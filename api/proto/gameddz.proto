@@ -13,11 +13,7 @@ enum CMDID_Gameddz {
 	IDGameDataReq		=8;			//
 	IDGameDataRsp		=9;			//
 	IDGameOver			=10;		//
-
-	IDLast				=1000;
-};
-
-
+}
 
 message GameStart{
 	optional uint32 current_seat = 1;

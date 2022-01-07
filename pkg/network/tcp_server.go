@@ -1,19 +1,19 @@
 package network
 
 import (
+	"mango/pkg/log"
+	"mango/pkg/util"
 	"net"
 	"runtime"
 	"sync"
 	"time"
-	"mango/pkg/log"
-	"mango/pkg/util"
 )
 
 type TCPServer struct {
 	Addr            string
 	MaxConnNum      int
 	PendingWriteNum int
-	NewAgent        func(*TCPConn, uint64) AgentClient
+	NewAgent        func(*TCPConn, uint32) AgentClient
 	GetConfig       func(key string, defaultValue int64) int64
 	ln              net.Listener
 	conns           ConnSet
@@ -22,7 +22,7 @@ type TCPServer struct {
 	wgConns         sync.WaitGroup
 	memOverLimit    bool
 	rwMemLimit      sync.RWMutex
-	agentId         uint64
+	agentId         uint32
 
 	// msg parser
 	LenMsgLen int
@@ -105,7 +105,7 @@ func (server *TCPServer) run() {
 
 		tcpConn := newTCPConn(conn, server.PendingWriteNum, server.msgParser)
 		agent := server.NewAgent(tcpConn, server.agentId)
-		go func(id uint64) {
+		go func(id uint32) {
 			agent.Run()
 			// cleanup
 			tcpConn.Close()

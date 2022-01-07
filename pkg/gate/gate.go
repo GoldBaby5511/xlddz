@@ -161,7 +161,7 @@ func Run() {
 		tcpServer.LenMsgLen = LenMsgLen
 		tcpServer.MaxMsgLen = MaxMsgLen
 		tcpServer.GetConfig = apollo.GetConfigAsInt64
-		tcpServer.NewAgent = func(conn *n.TCPConn, agentId uint64) n.AgentClient {
+		tcpServer.NewAgent = func(conn *n.TCPConn, agentId uint32) n.AgentClient {
 			a := &agentClient{id: agentId, conn: conn, info: n.BaseAgentInfo{AgentType: n.NormalUser}}
 			if agentChanRPC != nil {
 				agentChanRPC.Go(ConnectSuccess, a, agentId)
@@ -271,6 +271,13 @@ func sendRegAppReq(a *agentServer) {
 	a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppRegReq), &registerReq)
 }
 
+func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
+	if dataSrc.AgentType == n.CommonServer {
+		return sendData(bm, dataSrc.AppType, dataSrc.AppID)
+	}
+	return SendMessage2Client(bm, util.MakeUint64FromUint32(dataSrc.AppType, dataSrc.AppID), 0)
+}
+
 func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) error {
 	cmd := n.TCPCommand{MainCmdID: uint16(mainCmdID), SubCmdID: uint16(subCmdID)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
@@ -280,7 +287,7 @@ func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Me
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	var dataReq gate.TransferDataReq
 	dataReq.AttApptype = proto.Uint32(n.AppGate)
-	dataReq.AttAppid = proto.Uint32(uint32(gateConnID >> 32))
+	dataReq.AttAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
 	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
 	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
@@ -288,7 +295,7 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	dataReq.AttSessionid = proto.Uint64(sessionID)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
-	return sendData(transBM, n.AppGate, uint32(gateConnID>>32))
+	return sendData(transBM, n.AppGate, util.GetLUint32FromUint64(gateConnID))
 }
 
 func sendData(bm n.BaseMessage, destAppType, destAppid uint32) error {

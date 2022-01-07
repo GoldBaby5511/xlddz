@@ -14,6 +14,7 @@ import (
 	"mango/pkg/log"
 	n "mango/pkg/network"
 	"mango/pkg/timer"
+	"mango/pkg/util"
 	"time"
 )
 
@@ -85,10 +86,12 @@ func handleJoinReq(args []interface{}) {
 	//m := (b.MyMessage).(*client.JoinRoomReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
-	log.Debug("", "进入房间,userId = %v", srcData.GetUserId())
+	log.Debug("", "进入房间,userId = %v,Gateconnid=%v,appID =%v",
+		srcData.GetUserId(), srcData.GetGateconnid(), util.GetLUint32FromUint64(srcData.GetGateconnid()))
 
 	msgRespond := func(errCode int32) {
 		var rsp client.JoinRoomRsp
+		rsp.AppId = proto.Uint32(conf.AppInfo.AppID)
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
@@ -123,7 +126,7 @@ func handleUserActionReq(args []interface{}) {
 	}
 
 	userID := srcData.GetUserId()
-	if _, ok := players[userID]; ok {
+	if _, ok := players[userID]; !ok {
 		msgRespond(1)
 		return
 	}
@@ -150,7 +153,7 @@ func handleExitReq(args []interface{}) {
 	}
 
 	userID := srcData.GetUserId()
-	if _, ok := players[userID]; ok {
+	if _, ok := players[userID]; !ok {
 		msgRespond(1)
 		return
 	}
@@ -181,11 +184,14 @@ func checkMatchTable() {
 		tablePlayers := matchPlayers[:seatCount]
 		matchPlayers = matchPlayers[seatCount:]
 
+		log.Debug("", "len=%v", len(matchPlayers))
+
 		tableID := tables[len(tables)-1]
 		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 2000)
 		var req tCMD.MatchTableReq
 		req.TableId = proto.Uint64(tableID)
 		for i := 0; i < int(seatCount); i++ {
+			log.Debug("", "设置用户,userId=%v", tablePlayers[i].UserID)
 			req.Players = append(req.Players, tablePlayers[i].UserID)
 			tablePlayers[i].State = player.PlayingState
 			setPlayerToTable(tableID, tablePlayers[i].UserID, uint32(tableAppID))

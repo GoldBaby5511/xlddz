@@ -20,7 +20,7 @@ const (
 	LoggedIn       uint32 = 2
 	JoinRoom       uint32 = 3
 	StandingInRoom uint32 = 4
-	HandsUpState   uint32 = 5
+	HandsUp        uint32 = 5
 	PlayingState   uint32 = 6
 )
 
@@ -33,6 +33,7 @@ type Player struct {
 	PassWord  string
 	UserID    uint64
 	State     uint32
+	RoomID    uint32
 }
 
 func NewPlayer() *Player {
@@ -50,6 +51,7 @@ func NewPlayer() *Player {
 	p.MsgRegister(&client.LoginRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDLoginRsp), p.handleLoginRsp)
 	p.MsgRegister(&client.RoomListRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomListRsp), p.handleRoomListRsp)
 	p.MsgRegister(&client.JoinRoomRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDJoinRoomRsp), p.handleJoinRoomRsp)
+	p.MsgRegister(&client.RoomActionRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomActionRsp), p.handleRoomActionRsp)
 	return p
 }
 
@@ -105,6 +107,20 @@ func (p *Player) JoinRoom() {
 	p.SendMessage2Gate(r.RoomInfo.GetType(), r.RoomInfo.GetId(), bm)
 }
 
+func (p *Player) ActionRoom() {
+	if p.State != StandingInRoom {
+		return
+	}
+
+	log.Debug("", "房间动作,a=%v,p=%v", p.Account, p.PassWord)
+
+	var req client.RoomActionReq
+	req.Action = (*client.ActionType)(proto.Int32(int32(client.ActionType_Ready)))
+	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDClient), SubCmdID: uint16(client.CMDID_Client_IDRoomActionReq)}
+	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
+	p.SendMessage2Gate(n.AppRoom, p.RoomID, bm)
+}
+
 func (p *Player) handleHelloRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*gate.HelloRsp)
@@ -151,6 +167,18 @@ func (p *Player) handleJoinRoomRsp(args []interface{}) {
 	log.Debug("hello", "收到加入消息,Code=%v", m.GetErrInfo().GetCode())
 	if m.GetErrInfo().GetCode() == 0 {
 		p.State = StandingInRoom
+		p.RoomID = m.GetAppId()
+	}
+}
+
+func (p *Player) handleRoomActionRsp(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*client.RoomActionRsp)
+	//a := args[n.AgentIndex].(n.AgentClient)
+
+	log.Debug("hello", "收到动作消息消息,Code=%v", m.GetErrInfo().GetCode())
+	if m.GetErrInfo().GetCode() == 0 {
+		p.State = HandsUp
 	}
 }
 
@@ -179,6 +207,7 @@ func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessag
 	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
 	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
+	dataReq.Gateconnid = proto.Uint64(0)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	p.a.SendMessage(transBM)

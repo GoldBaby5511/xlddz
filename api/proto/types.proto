@@ -8,9 +8,13 @@ message ErrorInfo{
 	optional string info = 2;
 }
 
+enum PropType{
+	Score = 1;
+}
+
 message PropItem{
-	optional int64	prop_id = 1;
-	optional int64	prop_count = 2;
+	optional PropType	prop_id = 1;
+	optional int64		prop_count = 2;
 }
 
 message BaseAppInfo{
@@ -40,6 +44,7 @@ message BaseUserInfo {
 	optional uint32		reg_market_id = 12;		//注册主渠道
 	optional uint32		reg_site_id = 13;		//注册子渠道
 	optional string		register_data = 14;   	//注册时间
+	optional uint64 	gate_connid = 15; 		//关联的gate连接id
 }
 
 message UserRoomInfo{
