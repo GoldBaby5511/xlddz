@@ -28,10 +28,10 @@ func init() {
 
 	loadRobotAccounts()
 
-	g.Skeleton.LoopFunc(10*time.Second, checkRoomList, timer.LoopForever)
-	g.Skeleton.LoopFunc(1*time.Second, playerLogin, timer.LoopForever)
-	g.Skeleton.LoopFunc(1*time.Second, randJoinRoom, timer.LoopForever)
-	g.Skeleton.LoopFunc(1*time.Second, actionInRoom, timer.LoopForever)
+	//g.Skeleton.LoopFunc(10*time.Second, checkRoomList, timer.LoopForever)
+	//g.Skeleton.LoopFunc(1*time.Second, playerLogin, timer.LoopForever)
+	//g.Skeleton.LoopFunc(1*time.Second, randJoinRoom, timer.LoopForever)
+	//g.Skeleton.LoopFunc(1*time.Second, actionInRoom, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {
@@ -146,10 +146,8 @@ func loadRobotAccounts() {
 		}
 
 		a := strings.Split(line[:len(line)-1], ",")
-		if len(a) == 2 {
-			pl := player.NewPlayer()
-			pl.Account = a[0]
-			pl.PassWord = a[1]
+		pl := player.NewPlayer(a)
+		if pl != nil {
 			pls = append(pls, pl)
 		}
 	}

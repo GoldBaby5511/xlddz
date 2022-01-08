@@ -3,7 +3,9 @@ package player
 import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/client"
+	"mango/api/gameddz"
 	"mango/api/gate"
+	"mango/api/room"
 	"mango/api/types"
 	"mango/pkg/conf"
 	"mango/pkg/log"
@@ -11,7 +13,9 @@ import (
 	n "mango/pkg/network"
 	"mango/pkg/network/protobuf"
 	"mango/pkg/util"
+	"math/rand"
 	"reflect"
+	"time"
 )
 
 const (
@@ -25,19 +29,27 @@ const (
 )
 
 type Player struct {
-	a         *agentPlayer
-	processor *protobuf.Processor
-	Skeleton  *module.Skeleton
-	roomList  map[uint64]*types.RoomInfo
-	Account   string
-	PassWord  string
-	UserID    uint64
-	State     uint32
-	RoomID    uint32
+	a              *agentPlayer
+	processor      *protobuf.Processor
+	Skeleton       *module.Skeleton
+	roomList       map[uint64]*types.RoomInfo
+	Account        string
+	PassWord       string
+	UserID         uint64
+	State          uint32
+	RoomID         uint32
+	TableServiceId uint32
+	TableId        uint64
+	SeatId         uint32
 }
 
-func NewPlayer() *Player {
+func NewPlayer(a []string) *Player {
+	if len(a) != 2 {
+		return nil
+	}
 	p := new(Player)
+	p.Account = a[0]
+	p.PassWord = a[1]
 	p.UserID = 0
 	p.State = NilState
 	p.roomList = make(map[uint64]*types.RoomInfo)
@@ -52,6 +64,15 @@ func NewPlayer() *Player {
 	p.MsgRegister(&client.RoomListRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomListRsp), p.handleRoomListRsp)
 	p.MsgRegister(&client.JoinRoomRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDJoinRoomRsp), p.handleJoinRoomRsp)
 	p.MsgRegister(&client.RoomActionRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomActionRsp), p.handleRoomActionRsp)
+	p.MsgRegister(&room.UserStateChange{}, n.CMDRoom, uint16(room.CMDID_Room_IDUserStateChange), p.handleUserStateChange)
+
+	p.MsgRegister(&gameddz.GameStart{}, n.CMDTable, uint16(gameddz.CMDID_Gameddz_IDGameStart), p.handleGameStart)
+	p.MsgRegister(&gameddz.OutCardRsp{}, n.CMDTable, uint16(gameddz.CMDID_Gameddz_IDOutCardRsp), p.handleOutCardRsp)
+	p.MsgRegister(&gameddz.GameOver{}, n.CMDTable, uint16(gameddz.CMDID_Gameddz_IDGameOver), p.handleGameOver)
+
+	s := rand.Intn(9) + 1
+	p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.Connect)
+	log.Debug("", "%v,%v秒后开始连接", p.Account, s)
 	return p
 }
 
@@ -144,6 +165,10 @@ func (p *Player) handleLoginRsp(args []interface{}) {
 	log.Debug("hello", "收到登录回复消息,Result=%v", m.GetLoginResult())
 	if m.GetLoginResult() == client.LoginRsp_SUCCESS {
 		p.State = LoggedIn
+
+		s := rand.Intn(3) + 1
+		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.CheckRoomList)
+		log.Debug("", "%v,%v秒后开始获取列表", p.Account, s)
 	}
 }
 
@@ -156,6 +181,10 @@ func (p *Player) handleRoomListRsp(args []interface{}) {
 	for _, r := range m.GetRooms() {
 		regKey := util.MakeUint64FromUint32(r.GetRoomInfo().GetType(), r.GetRoomInfo().GetId())
 		p.roomList[regKey] = r
+
+		s := rand.Intn(3) + 1
+		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.JoinRoom)
+		log.Debug("", "%v,%v秒后开始加入房间", p.Account, s)
 	}
 }
 
@@ -168,6 +197,10 @@ func (p *Player) handleJoinRoomRsp(args []interface{}) {
 	if m.GetErrInfo().GetCode() == 0 {
 		p.State = StandingInRoom
 		p.RoomID = m.GetAppId()
+
+		s := rand.Intn(3) + 1
+		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.ActionRoom)
+		log.Debug("", "%v,%v秒后开始房间动作", p.Account, s)
 	}
 }
 
@@ -182,22 +215,67 @@ func (p *Player) handleRoomActionRsp(args []interface{}) {
 	}
 }
 
+func (p *Player) handleUserStateChange(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*room.UserStateChange)
+	//a := args[n.AgentIndex].(n.AgentClient)
+
+	log.Debug("hello", "状态变化,State=%v,tableId =%v, seatId =%v", m.GetUserState(), m.GetTableId(), m.GetSeatId())
+
+	p.TableServiceId = m.GetTableServiceId()
+	p.TableId = m.GetTableId()
+	p.SeatId = m.GetSeatId()
+}
+
+func (p *Player) handleGameStart(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*gameddz.GameStart)
+	//a := args[n.AgentIndex].(n.AgentClient)
+
+	log.Debug("hello", "收到游戏开始了消息,CurrentSeat=%v,p.SeatId=%v", m.GetCurrentSeat(), p.SeatId)
+
+	if p.SeatId == m.GetCurrentSeat() {
+		log.Debug("", "准备出牌,%v", p.Account)
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.outCards)
+	}
+}
+
+func (p *Player) handleOutCardRsp(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*gameddz.OutCardRsp)
+	//a := args[n.AgentIndex].(n.AgentClient)
+
+	log.Debug("hello", "收到出牌消息,CurrentSeat=%v", m.GetCurrentSeat())
+
+	if p.SeatId == m.GetCurrentSeat() {
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.outCards)
+	}
+}
+
+func (p *Player) handleGameOver(args []interface{}) {
+	//b := args[n.DataIndex].(n.BaseMessage)
+	//m := (b.MyMessage).(*gameddz.GameOver)
+	//a := args[n.AgentIndex].(n.AgentClient)
+
+	log.Debug("hello", "收到游戏结束消息")
+}
+
+func (p *Player) outCards() {
+	log.Debug("hello", " 出牌,Account=%v,SeatId = %v", p.Account, p.SeatId)
+	var req gameddz.OutCardReq
+	for i := 0; i < rand.Intn(3)+1; i++ {
+		req.OutCard = append(req.OutCard, byte(rand.Intn(3)+1))
+	}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDClient), SubCmdID: uint16(client.CMDID_Client_IDRoomListReq)}
+	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
+	p.SendMessage2Gate(n.AppTable, p.TableServiceId, bm)
+}
+
 func (p *Player) connectSuccess(a *agentPlayer) {
 	p.a = a
 
 	var req gate.HelloReq
 	p.a.SendData(n.CMDGate, uint32(gate.CMDID_Gate_IDHelloReq), &req)
-
-	//var dataReq gate.TransferDataReq
-	//dataReq.AttApptype = proto.Uint32(n.AppGate)
-	//dataReq.AttAppid = proto.Uint32(uint32(gateConnID >> 32))
-	//dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
-	//dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
-	//dataReq.Data, _ = proto.Marshal(&req)
-	//dataReq.Gateconnid = proto.Uint64(gateConnID)
-	//dataReq.AttSessionid = proto.Uint64(sessionID)
-	//cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
-	//transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 }
 
 func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessage) {
@@ -211,7 +289,6 @@ func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessag
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	p.a.SendMessage(transBM)
-	//g.SendData2App(n.AppGate, n.Send2AnyOne, n.CMDGate, uint32(gate.CMDID_Gate_IDTransferDataReq), &dataReq)
 }
 
 type agentPlayer struct {

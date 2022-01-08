@@ -7,7 +7,6 @@ import (
 	"mango/cmd/table/business/player"
 	"mango/cmd/table/business/table"
 	"mango/cmd/table/business/table/ddz"
-	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
@@ -123,9 +122,6 @@ func handleSetPlayerToTableReq(args []interface{}) {
 func handleMatchTableReq(args []interface{}) {
 	m := args[n.DataIndex].(n.BaseMessage).MyMessage.(*tCMD.MatchTableReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
-	if m.GetTableId() != uint64(conf.AppInfo.AppID) {
-		return
-	}
 
 	t := getTable(srcApp.AppID, m.GetTableId())
 	if t == nil {

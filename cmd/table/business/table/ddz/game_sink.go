@@ -20,17 +20,10 @@ type Sink struct {
 	bottomCards   []uint8
 }
 
-var cards = []uint8{
-	0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, //方块 A - K
-	0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, //梅花 A - K
-	0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, //红桃 A - K
-	0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, //黑桃 A - K
-	0x4E, 0x4F}
-
 func (s *Sink) StartGame(f table.Frame) {
 	s.frame = f
 
-	c := cards
+	c := cardData
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(c), func(i, j int) {
 		c[i], c[j] = c[j], c[i]
@@ -46,6 +39,7 @@ func (s *Sink) StartGame(f table.Frame) {
 	var start gameddz.GameStart
 	start.CurrentSeat = proto.Uint32(0)
 	for i := 0; i < playerCount; i++ {
+		start.HandCard = make([][]byte, playerCount)
 		start.HandCard[i] = s.userHandCards[0]
 		bm := n.BaseMessage{MyMessage: &start, TraceId: ""}
 		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDGameStart)}
@@ -86,12 +80,30 @@ func (s *Sink) OutCardReq(seatID uint32, data []byte) {
 	var m gameddz.OutCardReq
 	_ = proto.Unmarshal(data, &m)
 
+	if len(m.GetOutCard()) >= len(s.userHandCards[seatID]) {
+		s.userHandCards[seatID] = append([]uint8{})
+	} else {
+		s.userHandCards[seatID] = s.userHandCards[seatID][:len(s.userHandCards[seatID])-len(m.GetOutCard())]
+	}
+
 	var rsp gameddz.OutCardRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDOutCardRsp)}
 	s.frame.SendTableData(seatID, bm)
 
-	log.Debug("", "出牌消息,seatID=%d", seatID)
+	log.Debug("", "出牌消息,seatID=%d,len=%v", seatID, len(s.userHandCards[seatID]))
+
+	if len(s.userHandCards[seatID]) == 0 {
+		log.Debug("", "本局结束")
+
+		var over gameddz.GameOver
+		bm := n.BaseMessage{MyMessage: &over, TraceId: ""}
+		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDGameOver)}
+		s.frame.SendTableData(table.InvalidSeadID, bm)
+
+		s.frame.WriteGameScore()
+		s.frame.GameOver()
+	}
 }
 
 func (s *Sink) GameDataReq(seatID uint32, data []byte) {

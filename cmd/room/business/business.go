@@ -5,6 +5,8 @@ import (
 	"mango/api/client"
 	"mango/api/gate"
 	"mango/api/list"
+	"mango/api/property"
+	rCMD "mango/api/room"
 	tCMD "mango/api/table"
 	"mango/api/types"
 	"mango/cmd/room/business/player"
@@ -25,10 +27,13 @@ var (
 
 func init() {
 	g.MsgRegister(&tCMD.ApplyRsp{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDApplyRsp), handleApplyRsp)
+	g.MsgRegister(&tCMD.WriteGameScore{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDWriteGameScore), handleWriteGameScore)
+	g.MsgRegister(&tCMD.GameOver{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDGameOver), handleGameOver)
 	g.MsgRegister(&list.RoomRegisterRsp{}, n.CMDList, uint16(list.CMDID_List_IDRoomRegisterRsp), handleRoomRegisterRsp)
 	g.MsgRegister(&client.JoinRoomReq{}, n.CMDClient, uint16(client.CMDID_Client_IDJoinRoomReq), handleJoinReq)
 	g.MsgRegister(&client.RoomActionReq{}, n.CMDClient, uint16(client.CMDID_Client_IDRoomActionReq), handleUserActionReq)
 	g.MsgRegister(&client.ExitRoomReq{}, n.CMDClient, uint16(client.CMDID_Client_IDExitRoomReq), handleExitReq)
+	g.MsgRegister(&property.ModifyPropertyRsp{}, n.CMDProperty, uint16(property.CMDID_Property_IDModifyPropertyRsp), handleModifyPropertyRsp)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
@@ -59,7 +64,6 @@ func handleApplyRsp(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	tables = append(tables, m.GetTableIds()...)
-	//log.Debug("", "tables=%v", tables)
 	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d", m.GetApplyCount(), srcApp.AppID, len(tables))
 
 	var req list.RoomRegisterReq
@@ -71,18 +75,48 @@ func handleApplyRsp(args []interface{}) {
 	g.SendData2App(n.AppList, n.Send2AnyOne, n.CMDList, uint32(list.CMDID_List_IDRoomRegisterReq), &req)
 }
 
-func handleRoomRegisterRsp(args []interface{}) {
-	//b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*list.RoomRegisterRsp)
+func handleWriteGameScore(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*tCMD.WriteGameScore)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
+
+	log.Debug("", "收到写分,tableId=%d,AttAppid=%d,len=%d", m.GetTableId(), srcApp.AppID, len(tables))
+
+	var req property.ModifyPropertyReq
+	p := new(types.PropItem)
+	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
+	p.PropCount = proto.Int64(100)
+	req.UserProps = append(req.UserProps, p)
+	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.CMDProperty, uint32(property.CMDID_Property_IDModifyPropertyReq), &req)
+}
+
+func handleGameOver(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*tCMD.GameOver)
+	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
+
+	log.Debug("", "收到结束,table=%d,AttAppid=%d,len=%d", m.GetTableId(), srcApp.AppID, len(tables))
+
+	for _, pl := range players {
+		if pl.TableId != m.GetTableId() {
+			continue
+		}
+		pl.State = player.StandingInRoom
+	}
+}
+
+func handleRoomRegisterRsp(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	//m := (b.MyMessage).(*list.RoomRegisterRsp)
+	//srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	//tables = append(tables, m.GetTableIds()...)
 	//log.Debug("", "tables=%v", tables)
-	log.Debug("", "注册返回,AttAppid=%d,len=%d", srcApp.AppID, len(tables))
+	log.Debug("", "注册返回,AttAppid=%d,len=%d", b.AgentInfo.AppID, len(tables))
 }
 
 func handleJoinReq(args []interface{}) {
-	//b := args[n.DataIndex].(n.BaseMessage)
+	b := args[n.DataIndex].(n.BaseMessage)
 	//m := (b.MyMessage).(*client.JoinRoomReq)
 	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
 
@@ -105,7 +139,9 @@ func handleJoinReq(args []interface{}) {
 		return
 	}
 
-	players[userID] = player.NewPlayer(userID)
+	pl := player.NewPlayer(userID)
+	pl.GateConnId = util.MakeUint64FromUint32(b.AgentInfo.AppType, b.AgentInfo.AppID)
+	players[userID] = pl
 
 	msgRespond(0)
 }
@@ -161,6 +197,13 @@ func handleExitReq(args []interface{}) {
 	msgRespond(0)
 }
 
+func handleModifyPropertyRsp(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*property.ModifyPropertyRsp)
+
+	log.Debug("", "修改财富返回,userId=%v, opType=%v", m.GetUserId(), m.GetOpType())
+}
+
 func checkApplyTable() {
 	if len(tables) == 0 {
 		var req tCMD.ApplyReq
@@ -194,16 +237,32 @@ func checkMatchTable() {
 			log.Debug("", "设置用户,userId=%v", tablePlayers[i].UserID)
 			req.Players = append(req.Players, tablePlayers[i].UserID)
 			tablePlayers[i].State = player.PlayingState
-			setPlayerToTable(tableID, tablePlayers[i].UserID, uint32(tableAppID))
+			tablePlayers[i].TableId = tableID
+			tablePlayers[i].SeatId = uint32(i)
+			setPlayerToTable(tablePlayers[i], uint32(tableAppID))
 		}
 
-		g.SendData2App(n.AppTable, uint32(tableAppID), n.CMDTable, uint32(tCMD.CMDID_Table_IDMatchTableReq), &req)
+		go func() {
+			time.Sleep(500)
+			g.SendData2App(n.AppTable, uint32(tableAppID), n.CMDTable, uint32(tCMD.CMDID_Table_IDMatchTableReq), &req)
+		}()
 	}
 }
 
-func setPlayerToTable(tableID, userID uint64, tableAppID uint32) {
+func setPlayerToTable(pl *player.Player, tableAppID uint32) {
 	var req tCMD.SetPlayerToTableReq
-	req.UserId = proto.Uint64(userID)
-	req.TableId = proto.Uint64(tableID)
+	req.UserId = proto.Uint64(pl.UserID)
+	req.TableId = proto.Uint64(pl.TableId)
+	req.SeatId = proto.Uint32(pl.SeatId)
+	req.Gateconnid = proto.Uint64(pl.GateConnId)
 	g.SendData2App(n.AppTable, tableAppID, n.CMDTable, uint32(tCMD.CMDID_Table_IDSetPlayerToTableReq), &req)
+
+	var state rCMD.UserStateChange
+	state.UserId = proto.Uint64(pl.UserID)
+	state.TableServiceId = proto.Uint32(tableAppID)
+	state.TableId = proto.Uint64(pl.TableId)
+	state.SeatId = proto.Uint32(pl.SeatId)
+	rspBm := n.BaseMessage{MyMessage: &state, TraceId: ""}
+	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDID_Room_IDUserStateChange)}
+	g.SendMessage2Client(rspBm, pl.GateConnId, 0)
 }

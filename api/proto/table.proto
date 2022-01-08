@@ -3,18 +3,18 @@ package bs.table;
 option go_package ="/table";
 
 enum CMDID_Table {
-	IDApplyReq			=1;			//
-	IDApplyRsp			=2;			//
-	IDReleaseReq		=3;			//
-	IDReleaseRsp		=4;			//
-	IDSetPlayerToTableReq		=5;			//
-	IDSetPlayerToTableRsp		=6;			//
-	IDMatchTableReq		=7;			//
-	IDMatchTableRsp		=8;			//
-	IDGameMessage		=9;			//
-
-	IDLast				=1000;
-};
+	IDApplyReq					= 1;			//
+	IDApplyRsp					= 2;			//
+	IDReleaseReq				= 3;			//
+	IDReleaseRsp				= 4;			//
+	IDSetPlayerToTableReq		= 5;			//
+	IDSetPlayerToTableRsp		= 6;			//
+	IDMatchTableReq				= 7;			//
+	IDMatchTableRsp				= 8;			//
+	IDGameMessage				= 9;			//
+	IDWriteGameScore			= 10;			//
+	IDGameOver					= 11;			//
+}
 
 message ApplyReq{
 	optional uint32 apply_count = 1;
@@ -56,4 +56,12 @@ message MatchTableRsp{
 message GameMessage{
 	optional uint32 sub_cmdid =1;
 	optional bytes 	data = 2;
+}
+
+message WriteGameScore{
+	optional uint64 table_id = 1;
+}
+
+message GameOver{
+	optional uint64 table_id = 1;
 }

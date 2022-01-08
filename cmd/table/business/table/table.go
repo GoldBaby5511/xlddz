@@ -1,8 +1,10 @@
 package table
 
 import (
+	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
 	g "mango/pkg/gate"
+	"mango/pkg/log"
 	n "mango/pkg/network"
 )
 
@@ -15,6 +17,8 @@ type GameSink interface {
 
 type Frame interface {
 	SendTableData(seatID uint32, bm n.BaseMessage)
+	WriteGameScore()
+	GameOver()
 }
 
 type Table struct {
@@ -41,10 +45,22 @@ func (t *Table) SendTableData(seatID uint32, bm n.BaseMessage) {
 	} else {
 		pl, ok := t.Players[seatID]
 		if !ok {
+			log.Debug("", "没找打，seatID=%d", seatID)
 			return
 		}
+		log.Debug("", "发送，seatID=%d,GateConnID=%v", seatID, pl.GateConnID)
 		g.SendMessage2Client(bm, pl.GateConnID, 0)
 	}
+}
+
+func (t *Table) WriteGameScore() {
+	var writeScore tCMD.WriteGameScore
+	g.SendData2App(n.AppRoom, t.HostAppID, n.CMDTable, uint32(tCMD.CMDID_Table_IDWriteGameScore), &writeScore)
+}
+
+func (t *Table) GameOver() {
+	var over tCMD.GameOver
+	g.SendData2App(n.AppRoom, t.HostAppID, n.CMDTable, uint32(tCMD.CMDID_Table_IDGameOver), &over)
 }
 
 func (t *Table) Reset() {

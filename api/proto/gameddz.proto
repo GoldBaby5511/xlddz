@@ -40,18 +40,18 @@ message CallLandRsp{
 message ConfirmLand{
 	optional uint32 current_seat = 1;
 	optional uint32 land_seat = 2;
-	repeated bytes 	bottom_card = 3;
+	optional bytes 	bottom_card = 3;
 	repeated uint32 cur_times = 4;
 }
 
 message OutCardReq{
-	repeated bytes 	out_card = 1;
+	optional bytes 	out_card = 1;
 }
 
 message OutCardRsp{
 	optional uint32 current_seat = 1;
 	optional uint32 outcard_seat = 2;
-	repeated bytes 	out_card = 3;
+	optional bytes 	out_card = 3;
 }
 
 message UserState{
