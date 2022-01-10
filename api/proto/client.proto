@@ -10,12 +10,6 @@ enum CMDID_Client {
 	IDLogoutRsp 		= 4;		//注销登录
 	IDRoomListReq 		= 5;		//房间列表
 	IDRoomListRsp 		= 6;		//房间列表
-	IDJoinRoomReq		= 7;			//进入房间
-	IDJoinRoomRsp		= 8;			//进入房间
-	IDRoomActionReq		= 9;			//用户动作
-	IDRoomActionRsp		= 10;			//用户动作
-	IDExitRoomReq		= 11;			//离开房间
-	IDExitRoomRsp		= 12;			//离开房间
 }
 
 //登录请求
@@ -123,33 +117,4 @@ message RoomListReq{
 //房间列表
 message RoomListRsp{
 	repeated types.RoomInfo				rooms = 1;
-}
-
-message JoinRoomReq{
-}
-
-message JoinRoomRsp{
-	optional uint32						app_id = 1;
-	optional types.ErrorInfo			err_info = 99;
-}
-
-enum ActionType {
-	Ready=1;
-	Cancel=2;
-}
-	
-message RoomActionReq{
-	optional ActionType action = 1;
-}
-
-message RoomActionRsp{
-	optional ActionType 		action = 1;
-	optional types.ErrorInfo	err_info = 99;
-}
-
-message ExitRoomReq{
-}
-
-message ExitRoomRsp{
-	optional types.ErrorInfo	err_info = 99;
 }

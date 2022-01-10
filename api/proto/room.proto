@@ -17,7 +17,8 @@ message JoinReq{
 }
 
 message JoinRsp{
-	optional types.ErrorInfo	err_info = 99;
+	optional uint32						app_id = 1;
+	optional types.ErrorInfo			err_info = 99;
 }
 
 enum ActionType {

@@ -8,11 +8,12 @@ const (
 )
 
 type Player struct {
-	UserID     uint64
-	State      uint32
-	TableId    uint64
-	SeatId     uint32
-	GateConnId uint64
+	UserID         uint64
+	State          uint32
+	TableServiceId uint32
+	TableId        uint64
+	SeatId         uint32
+	GateConnId     uint64
 }
 
 func NewPlayer(userID uint64) *Player {

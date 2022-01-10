@@ -27,11 +27,6 @@ func init() {
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 
 	loadRobotAccounts()
-
-	//g.Skeleton.LoopFunc(10*time.Second, checkRoomList, timer.LoopForever)
-	//g.Skeleton.LoopFunc(1*time.Second, playerLogin, timer.LoopForever)
-	//g.Skeleton.LoopFunc(1*time.Second, randJoinRoom, timer.LoopForever)
-	//g.Skeleton.LoopFunc(1*time.Second, actionInRoom, timer.LoopForever)
 }
 
 func connectSuccess(args []interface{}) {
@@ -60,42 +55,6 @@ func handleLoginRsp(args []interface{}) {
 	//sendLoginRsp(srcData.GetGateconnid(), "成功", uint32(client.LoginRsp_SUCCESS))
 }
 
-func checkRoomList() {
-	loginCount := 0
-	for _, pl := range pls {
-		if pl.State < player.LoggedIn {
-			continue
-		}
-		loginCount++
-		if loginCount >= 50 {
-			break
-		}
-
-		log.Debug("", "获取列表,a=%v,p=%v", pl.Account, pl.PassWord)
-		pl.CheckRoomList()
-	}
-}
-
-func playerLogin() {
-	if len(pls) == 0 {
-		return
-	}
-	loginCount := 0
-	for _, pl := range pls {
-		if pl.State != player.NilState {
-			continue
-		}
-		loginCount++
-		if loginCount >= 50 {
-			break
-		}
-		pl.State = player.Logging
-
-		log.Debug("", "登录,a=%v,p=%v", pl.Account, pl.PassWord)
-		pl.Connect()
-	}
-}
-
 func randJoinRoom() {
 
 	loginCount := 0
@@ -109,23 +68,6 @@ func randJoinRoom() {
 		}
 
 		pl.JoinRoom()
-	}
-
-}
-
-func actionInRoom() {
-
-	loginCount := 0
-	for _, pl := range pls {
-		if pl.State != player.StandingInRoom {
-			continue
-		}
-		loginCount++
-		if loginCount >= 50 {
-			break
-		}
-
-		pl.ActionRoom()
 	}
 
 }

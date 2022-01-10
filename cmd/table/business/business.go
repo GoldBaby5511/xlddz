@@ -116,7 +116,7 @@ func handleSetPlayerToTableReq(args []interface{}) {
 	pl.State = player.SitdownState
 	t.SetPlayer(pl)
 
-	log.Debug("", "收到入座,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到入座,UserID=%v,TableId=%d,len=%d,srcID=%d", pl.UserID, m.GetTableId(), len(freeTables), srcApp.AppID)
 }
 
 func handleMatchTableReq(args []interface{}) {
@@ -139,11 +139,13 @@ func handleGameMessage(args []interface{}) {
 	userID := srcData.GetUserId()
 	pl := getPlayer(userID)
 	if pl == nil {
+		log.Warning("", "游戏消息,没找到用户啊,userID=%v", userID)
 		return
 	}
 
 	t := getTable(pl.SrcAppID, pl.TableID)
 	if t == nil {
+		log.Warning("", "游戏消息,没找到桌子啊,userID=%v,SrcAppID=%v,TableID=%v", userID, pl.SrcAppID, pl.TableID)
 		return
 	}
 	t.GameMessage(pl.SeatID, m.GetSubCmdid(), m.GetData())

@@ -24,49 +24,31 @@ const (
 type CMDID_Client int32
 
 const (
-	CMDID_Client_IDLoginReq      CMDID_Client = 1  //登录请求
-	CMDID_Client_IDLoginRsp      CMDID_Client = 2  //登录回复
-	CMDID_Client_IDLogoutReq     CMDID_Client = 3  //注销登录
-	CMDID_Client_IDLogoutRsp     CMDID_Client = 4  //注销登录
-	CMDID_Client_IDRoomListReq   CMDID_Client = 5  //房间列表
-	CMDID_Client_IDRoomListRsp   CMDID_Client = 6  //房间列表
-	CMDID_Client_IDJoinRoomReq   CMDID_Client = 7  //进入房间
-	CMDID_Client_IDJoinRoomRsp   CMDID_Client = 8  //进入房间
-	CMDID_Client_IDRoomActionReq CMDID_Client = 9  //用户动作
-	CMDID_Client_IDRoomActionRsp CMDID_Client = 10 //用户动作
-	CMDID_Client_IDExitRoomReq   CMDID_Client = 11 //离开房间
-	CMDID_Client_IDExitRoomRsp   CMDID_Client = 12 //离开房间
+	CMDID_Client_IDLoginReq    CMDID_Client = 1 //登录请求
+	CMDID_Client_IDLoginRsp    CMDID_Client = 2 //登录回复
+	CMDID_Client_IDLogoutReq   CMDID_Client = 3 //注销登录
+	CMDID_Client_IDLogoutRsp   CMDID_Client = 4 //注销登录
+	CMDID_Client_IDRoomListReq CMDID_Client = 5 //房间列表
+	CMDID_Client_IDRoomListRsp CMDID_Client = 6 //房间列表
 )
 
 // Enum value maps for CMDID_Client.
 var (
 	CMDID_Client_name = map[int32]string{
-		1:  "IDLoginReq",
-		2:  "IDLoginRsp",
-		3:  "IDLogoutReq",
-		4:  "IDLogoutRsp",
-		5:  "IDRoomListReq",
-		6:  "IDRoomListRsp",
-		7:  "IDJoinRoomReq",
-		8:  "IDJoinRoomRsp",
-		9:  "IDRoomActionReq",
-		10: "IDRoomActionRsp",
-		11: "IDExitRoomReq",
-		12: "IDExitRoomRsp",
+		1: "IDLoginReq",
+		2: "IDLoginRsp",
+		3: "IDLogoutReq",
+		4: "IDLogoutRsp",
+		5: "IDRoomListReq",
+		6: "IDRoomListRsp",
 	}
 	CMDID_Client_value = map[string]int32{
-		"IDLoginReq":      1,
-		"IDLoginRsp":      2,
-		"IDLogoutReq":     3,
-		"IDLogoutRsp":     4,
-		"IDRoomListReq":   5,
-		"IDRoomListRsp":   6,
-		"IDJoinRoomReq":   7,
-		"IDJoinRoomRsp":   8,
-		"IDRoomActionReq": 9,
-		"IDRoomActionRsp": 10,
-		"IDExitRoomReq":   11,
-		"IDExitRoomRsp":   12,
+		"IDLoginReq":    1,
+		"IDLoginRsp":    2,
+		"IDLogoutReq":   3,
+		"IDLogoutRsp":   4,
+		"IDRoomListReq": 5,
+		"IDRoomListRsp": 6,
 	}
 )
 
@@ -105,62 +87,6 @@ func (x *CMDID_Client) UnmarshalJSON(b []byte) error {
 // Deprecated: Use CMDID_Client.Descriptor instead.
 func (CMDID_Client) EnumDescriptor() ([]byte, []int) {
 	return file_client_proto_rawDescGZIP(), []int{0}
-}
-
-type ActionType int32
-
-const (
-	ActionType_Ready  ActionType = 1
-	ActionType_Cancel ActionType = 2
-)
-
-// Enum value maps for ActionType.
-var (
-	ActionType_name = map[int32]string{
-		1: "Ready",
-		2: "Cancel",
-	}
-	ActionType_value = map[string]int32{
-		"Ready":  1,
-		"Cancel": 2,
-	}
-)
-
-func (x ActionType) Enum() *ActionType {
-	p := new(ActionType)
-	*p = x
-	return p
-}
-
-func (x ActionType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ActionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_proto_enumTypes[1].Descriptor()
-}
-
-func (ActionType) Type() protoreflect.EnumType {
-	return &file_client_proto_enumTypes[1]
-}
-
-func (x ActionType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Do not use.
-func (x *ActionType) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = ActionType(num)
-	return nil
-}
-
-// Deprecated: Use ActionType.Descriptor instead.
-func (ActionType) EnumDescriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{1}
 }
 
 type LoginReq_LoginAction int32
@@ -205,11 +131,11 @@ func (x LoginReq_LoginAction) String() string {
 }
 
 func (LoginReq_LoginAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_proto_enumTypes[2].Descriptor()
+	return file_client_proto_enumTypes[1].Descriptor()
 }
 
 func (LoginReq_LoginAction) Type() protoreflect.EnumType {
-	return &file_client_proto_enumTypes[2]
+	return &file_client_proto_enumTypes[1]
 }
 
 func (x LoginReq_LoginAction) Number() protoreflect.EnumNumber {
@@ -271,11 +197,11 @@ func (x LoginReq_NetworkType) String() string {
 }
 
 func (LoginReq_NetworkType) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_proto_enumTypes[3].Descriptor()
+	return file_client_proto_enumTypes[2].Descriptor()
 }
 
 func (LoginReq_NetworkType) Type() protoreflect.EnumType {
-	return &file_client_proto_enumTypes[3]
+	return &file_client_proto_enumTypes[2]
 }
 
 func (x LoginReq_NetworkType) Number() protoreflect.EnumNumber {
@@ -373,11 +299,11 @@ func (x LoginRsp_Result) String() string {
 }
 
 func (LoginRsp_Result) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_proto_enumTypes[4].Descriptor()
+	return file_client_proto_enumTypes[3].Descriptor()
 }
 
 func (LoginRsp_Result) Type() protoreflect.EnumType {
-	return &file_client_proto_enumTypes[4]
+	return &file_client_proto_enumTypes[3]
 }
 
 func (x LoginRsp_Result) Number() protoreflect.EnumNumber {
@@ -429,11 +355,11 @@ func (x LogoutRsp_LogoutReason) String() string {
 }
 
 func (LogoutRsp_LogoutReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_proto_enumTypes[5].Descriptor()
+	return file_client_proto_enumTypes[4].Descriptor()
 }
 
 func (LogoutRsp_LogoutReason) Type() protoreflect.EnumType {
-	return &file_client_proto_enumTypes[5]
+	return &file_client_proto_enumTypes[4]
 }
 
 func (x LogoutRsp_LogoutReason) Number() protoreflect.EnumNumber {
@@ -999,286 +925,6 @@ func (x *RoomListRsp) GetRooms() []*types.RoomInfo {
 	return nil
 }
 
-type JoinRoomReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *JoinRoomReq) Reset() {
-	*x = JoinRoomReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *JoinRoomReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*JoinRoomReq) ProtoMessage() {}
-
-func (x *JoinRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use JoinRoomReq.ProtoReflect.Descriptor instead.
-func (*JoinRoomReq) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{6}
-}
-
-type JoinRoomRsp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	AppId   *uint32          `protobuf:"varint,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
-}
-
-func (x *JoinRoomRsp) Reset() {
-	*x = JoinRoomRsp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *JoinRoomRsp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*JoinRoomRsp) ProtoMessage() {}
-
-func (x *JoinRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use JoinRoomRsp.ProtoReflect.Descriptor instead.
-func (*JoinRoomRsp) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *JoinRoomRsp) GetAppId() uint32 {
-	if x != nil && x.AppId != nil {
-		return *x.AppId
-	}
-	return 0
-}
-
-func (x *JoinRoomRsp) GetErrInfo() *types.ErrorInfo {
-	if x != nil {
-		return x.ErrInfo
-	}
-	return nil
-}
-
-type RoomActionReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Action *ActionType `protobuf:"varint,1,opt,name=action,enum=bs.client.ActionType" json:"action,omitempty"`
-}
-
-func (x *RoomActionReq) Reset() {
-	*x = RoomActionReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RoomActionReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RoomActionReq) ProtoMessage() {}
-
-func (x *RoomActionReq) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RoomActionReq.ProtoReflect.Descriptor instead.
-func (*RoomActionReq) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *RoomActionReq) GetAction() ActionType {
-	if x != nil && x.Action != nil {
-		return *x.Action
-	}
-	return ActionType_Ready
-}
-
-type RoomActionRsp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Action  *ActionType      `protobuf:"varint,1,opt,name=action,enum=bs.client.ActionType" json:"action,omitempty"`
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
-}
-
-func (x *RoomActionRsp) Reset() {
-	*x = RoomActionRsp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[9]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *RoomActionRsp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RoomActionRsp) ProtoMessage() {}
-
-func (x *RoomActionRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[9]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RoomActionRsp.ProtoReflect.Descriptor instead.
-func (*RoomActionRsp) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *RoomActionRsp) GetAction() ActionType {
-	if x != nil && x.Action != nil {
-		return *x.Action
-	}
-	return ActionType_Ready
-}
-
-func (x *RoomActionRsp) GetErrInfo() *types.ErrorInfo {
-	if x != nil {
-		return x.ErrInfo
-	}
-	return nil
-}
-
-type ExitRoomReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *ExitRoomReq) Reset() {
-	*x = ExitRoomReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[10]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ExitRoomReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ExitRoomReq) ProtoMessage() {}
-
-func (x *ExitRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[10]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ExitRoomReq.ProtoReflect.Descriptor instead.
-func (*ExitRoomReq) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{10}
-}
-
-type ExitRoomRsp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
-}
-
-func (x *ExitRoomRsp) Reset() {
-	*x = ExitRoomRsp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_client_proto_msgTypes[11]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ExitRoomRsp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ExitRoomRsp) ProtoMessage() {}
-
-func (x *ExitRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_client_proto_msgTypes[11]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ExitRoomRsp.ProtoReflect.Descriptor instead.
-func (*ExitRoomRsp) Descriptor() ([]byte, []int) {
-	return file_client_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ExitRoomRsp) GetErrInfo() *types.ErrorInfo {
-	if x != nil {
-		return x.ErrInfo
-	}
-	return nil
-}
-
 var File_client_proto protoreflect.FileDescriptor
 
 var file_client_proto_rawDesc = []byte{
@@ -1406,47 +1052,15 @@ var file_client_proto_rawDesc = []byte{
 	0x69, 0x73, 0x74, 0x52, 0x73, 0x70, 0x12, 0x28, 0x0a, 0x05, 0x72, 0x6f, 0x6f, 0x6d, 0x73, 0x18,
 	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x62, 0x73, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73,
 	0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x05, 0x72, 0x6f, 0x6f, 0x6d, 0x73,
-	0x22, 0x0d, 0x0a, 0x0b, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x22,
-	0x54, 0x0a, 0x0b, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70, 0x12, 0x15,
-	0x0a, 0x06, 0x61, 0x70, 0x70, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x05,
-	0x61, 0x70, 0x70, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x08, 0x65, 0x72, 0x72, 0x5f, 0x69, 0x6e, 0x66,
-	0x6f, 0x18, 0x63, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x62, 0x73, 0x2e, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x65, 0x72,
-	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x3e, 0x0a, 0x0d, 0x52, 0x6f, 0x6f, 0x6d, 0x41, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x2d, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x62, 0x73, 0x2e, 0x63, 0x6c, 0x69, 0x65,
-	0x6e, 0x74, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x61,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x6e, 0x0a, 0x0d, 0x52, 0x6f, 0x6f, 0x6d, 0x41, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x12, 0x2d, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x15, 0x2e, 0x62, 0x73, 0x2e, 0x63, 0x6c, 0x69, 0x65,
-	0x6e, 0x74, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x61,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2e, 0x0a, 0x08, 0x65, 0x72, 0x72, 0x5f, 0x69, 0x6e, 0x66,
-	0x6f, 0x18, 0x63, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x62, 0x73, 0x2e, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x65, 0x72,
-	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x0d, 0x0a, 0x0b, 0x45, 0x78, 0x69, 0x74, 0x52, 0x6f, 0x6f,
-	0x6d, 0x52, 0x65, 0x71, 0x22, 0x3d, 0x0a, 0x0b, 0x45, 0x78, 0x69, 0x74, 0x52, 0x6f, 0x6f, 0x6d,
-	0x52, 0x73, 0x70, 0x12, 0x2e, 0x0a, 0x08, 0x65, 0x72, 0x72, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18,
-	0x63, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x62, 0x73, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73,
-	0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x65, 0x72, 0x72, 0x49,
-	0x6e, 0x66, 0x6f, 0x2a, 0xec, 0x01, 0x0a, 0x0c, 0x43, 0x4d, 0x44, 0x49, 0x44, 0x5f, 0x43, 0x6c,
-	0x69, 0x65, 0x6e, 0x74, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52,
-	0x65, 0x71, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52,
-	0x73, 0x70, 0x10, 0x02, 0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74,
-	0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x6f, 0x75,
-	0x74, 0x52, 0x73, 0x70, 0x10, 0x04, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x52, 0x6f, 0x6f, 0x6d,
-	0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x10, 0x05, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x52,
-	0x6f, 0x6f, 0x6d, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x73, 0x70, 0x10, 0x06, 0x12, 0x11, 0x0a, 0x0d,
-	0x49, 0x44, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x10, 0x07, 0x12,
-	0x11, 0x0a, 0x0d, 0x49, 0x44, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70,
-	0x10, 0x08, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x52, 0x6f, 0x6f, 0x6d, 0x41, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x10, 0x09, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x52, 0x6f, 0x6f,
-	0x6d, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x10, 0x0a, 0x12, 0x11, 0x0a, 0x0d,
-	0x49, 0x44, 0x45, 0x78, 0x69, 0x74, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x10, 0x0b, 0x12,
-	0x11, 0x0a, 0x0d, 0x49, 0x44, 0x45, 0x78, 0x69, 0x74, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70,
-	0x10, 0x0c, 0x2a, 0x23, 0x0a, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x12, 0x09, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x43,
-	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x10, 0x02, 0x42, 0x09, 0x5a, 0x07, 0x2f, 0x63, 0x6c, 0x69, 0x65,
-	0x6e, 0x74,
+	0x2a, 0x76, 0x0a, 0x0c, 0x43, 0x4d, 0x44, 0x49, 0x44, 0x5f, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74,
+	0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x10, 0x01,
+	0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x73, 0x70, 0x10, 0x02,
+	0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x52, 0x65, 0x71, 0x10,
+	0x03, 0x12, 0x0f, 0x0a, 0x0b, 0x49, 0x44, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x52, 0x73, 0x70,
+	0x10, 0x04, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x52, 0x6f, 0x6f, 0x6d, 0x4c, 0x69, 0x73, 0x74,
+	0x52, 0x65, 0x71, 0x10, 0x05, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x52, 0x6f, 0x6f, 0x6d, 0x4c,
+	0x69, 0x73, 0x74, 0x52, 0x73, 0x70, 0x10, 0x06, 0x42, 0x09, 0x5a, 0x07, 0x2f, 0x63, 0x6c, 0x69,
+	0x65, 0x6e, 0x74,
 }
 
 var (
@@ -1461,48 +1075,35 @@ func file_client_proto_rawDescGZIP() []byte {
 	return file_client_proto_rawDescData
 }
 
-var file_client_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_client_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_client_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_client_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_client_proto_goTypes = []interface{}{
 	(CMDID_Client)(0),           // 0: bs.client.CMDID_Client
-	(ActionType)(0),             // 1: bs.client.ActionType
-	(LoginReq_LoginAction)(0),   // 2: bs.client.LoginReq.LoginAction
-	(LoginReq_NetworkType)(0),   // 3: bs.client.LoginReq.NetworkType
-	(LoginRsp_Result)(0),        // 4: bs.client.LoginRsp.Result
-	(LogoutRsp_LogoutReason)(0), // 5: bs.client.LogoutRsp.LogoutReason
-	(*LoginReq)(nil),            // 6: bs.client.LoginReq
-	(*LoginRsp)(nil),            // 7: bs.client.LoginRsp
-	(*LogoutReq)(nil),           // 8: bs.client.LogoutReq
-	(*LogoutRsp)(nil),           // 9: bs.client.LogoutRsp
-	(*RoomListReq)(nil),         // 10: bs.client.RoomListReq
-	(*RoomListRsp)(nil),         // 11: bs.client.RoomListRsp
-	(*JoinRoomReq)(nil),         // 12: bs.client.JoinRoomReq
-	(*JoinRoomRsp)(nil),         // 13: bs.client.JoinRoomRsp
-	(*RoomActionReq)(nil),       // 14: bs.client.RoomActionReq
-	(*RoomActionRsp)(nil),       // 15: bs.client.RoomActionRsp
-	(*ExitRoomReq)(nil),         // 16: bs.client.ExitRoomReq
-	(*ExitRoomRsp)(nil),         // 17: bs.client.ExitRoomRsp
-	(*types.BaseUserInfo)(nil),  // 18: bs.types.BaseUserInfo
-	(*types.RoomInfo)(nil),      // 19: bs.types.RoomInfo
-	(*types.ErrorInfo)(nil),     // 20: bs.types.ErrorInfo
+	(LoginReq_LoginAction)(0),   // 1: bs.client.LoginReq.LoginAction
+	(LoginReq_NetworkType)(0),   // 2: bs.client.LoginReq.NetworkType
+	(LoginRsp_Result)(0),        // 3: bs.client.LoginRsp.Result
+	(LogoutRsp_LogoutReason)(0), // 4: bs.client.LogoutRsp.LogoutReason
+	(*LoginReq)(nil),            // 5: bs.client.LoginReq
+	(*LoginRsp)(nil),            // 6: bs.client.LoginRsp
+	(*LogoutReq)(nil),           // 7: bs.client.LogoutReq
+	(*LogoutRsp)(nil),           // 8: bs.client.LogoutRsp
+	(*RoomListReq)(nil),         // 9: bs.client.RoomListReq
+	(*RoomListRsp)(nil),         // 10: bs.client.RoomListRsp
+	(*types.BaseUserInfo)(nil),  // 11: bs.types.BaseUserInfo
+	(*types.RoomInfo)(nil),      // 12: bs.types.RoomInfo
 }
 var file_client_proto_depIdxs = []int32{
-	2,  // 0: bs.client.LoginReq.action_type:type_name -> bs.client.LoginReq.LoginAction
-	3,  // 1: bs.client.LoginReq.sp_id:type_name -> bs.client.LoginReq.NetworkType
-	4,  // 2: bs.client.LoginRsp.login_result:type_name -> bs.client.LoginRsp.Result
-	18, // 3: bs.client.LoginRsp.base_info:type_name -> bs.types.BaseUserInfo
-	5,  // 4: bs.client.LogoutRsp.logout_reason:type_name -> bs.client.LogoutRsp.LogoutReason
-	19, // 5: bs.client.RoomListRsp.rooms:type_name -> bs.types.RoomInfo
-	20, // 6: bs.client.JoinRoomRsp.err_info:type_name -> bs.types.ErrorInfo
-	1,  // 7: bs.client.RoomActionReq.action:type_name -> bs.client.ActionType
-	1,  // 8: bs.client.RoomActionRsp.action:type_name -> bs.client.ActionType
-	20, // 9: bs.client.RoomActionRsp.err_info:type_name -> bs.types.ErrorInfo
-	20, // 10: bs.client.ExitRoomRsp.err_info:type_name -> bs.types.ErrorInfo
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	1,  // 0: bs.client.LoginReq.action_type:type_name -> bs.client.LoginReq.LoginAction
+	2,  // 1: bs.client.LoginReq.sp_id:type_name -> bs.client.LoginReq.NetworkType
+	3,  // 2: bs.client.LoginRsp.login_result:type_name -> bs.client.LoginRsp.Result
+	11, // 3: bs.client.LoginRsp.base_info:type_name -> bs.types.BaseUserInfo
+	4,  // 4: bs.client.LogoutRsp.logout_reason:type_name -> bs.client.LogoutRsp.LogoutReason
+	12, // 5: bs.client.RoomListRsp.rooms:type_name -> bs.types.RoomInfo
+	6,  // [6:6] is the sub-list for method output_type
+	6,  // [6:6] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_client_proto_init() }
@@ -1583,86 +1184,14 @@ func file_client_proto_init() {
 				return nil
 			}
 		}
-		file_client_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_client_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomRsp); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_client_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomActionReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_client_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomActionRsp); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_client_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExitRoomReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_client_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ExitRoomRsp); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_client_proto_rawDesc,
-			NumEnums:      6,
-			NumMessages:   12,
+			NumEnums:      5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -52,6 +52,7 @@ func (s *Sink) EndGame() {
 }
 
 func (s *Sink) GameMessage(seatID, subCmdID uint32, data []byte) {
+	log.Debug("", "游戏消息,%v,%v", seatID, subCmdID)
 	switch subCmdID {
 	case uint32(gameddz.CMDID_Gameddz_IDCallLandReq):
 		s.CallLandReq(seatID, data)
