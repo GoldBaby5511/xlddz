@@ -21,7 +21,7 @@ const (
 	CMDLogger         uint32 = 8
 	CMDList           uint32 = 11
 	CMDGate           uint32 = 12
-	CMDClient         uint32 = 13
+	CMDLogin          uint32 = 13
 	CMDTable          uint32 = 14
 	CMDRoom           uint32 = 15
 	CMDProperty       uint32 = 16

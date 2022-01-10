@@ -58,7 +58,7 @@ message UserRoomInfo{
 }
 
 message RoomInfo{
-	optional BaseAppInfo			room_info = 1;
+	optional BaseAppInfo			app_info = 1;
 	optional uint32					level = 2;
 	optional string					name = 3;
 	optional int64					base_score = 4;
