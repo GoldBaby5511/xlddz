@@ -2,13 +2,13 @@ package apollo
 
 import (
 	"github.com/golang/protobuf/proto"
-	"strconv"
-	"sync"
-	"time"
 	"mango/api/config"
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	"mango/pkg/network"
+	"strconv"
+	"sync"
+	"time"
 )
 
 var (
@@ -96,7 +96,7 @@ func ProcessConfigRsp(m *config.ApolloCfgRsp) {
 }
 
 func GetConfig(key, defaultValue string) string {
-	nsKey := ConfKey{Key: key, AppType: conf.AppInfo.AppType, AppId: conf.AppInfo.AppID}
+	nsKey := ConfKey{Key: key, AppType: conf.AppInfo.Type, AppId: conf.AppInfo.Id}
 	mutexConfig.Lock()
 	defer mutexConfig.Unlock()
 	if item, ok := configValues[nsKey]; ok {
@@ -136,8 +136,8 @@ func SendSubscribeReq(k ConfKey, cancel bool) {
 	}
 
 	var req config.ApolloCfgReq
-	req.AppType = proto.Uint32(conf.AppInfo.AppType)
-	req.AppId = proto.Uint32(conf.AppInfo.AppID)
+	req.AppType = proto.Uint32(conf.AppInfo.Type)
+	req.AppId = proto.Uint32(conf.AppInfo.Id)
 	req.SubAppType = proto.Uint32(k.AppType)
 	req.SubAppId = proto.Uint32(k.AppId)
 	req.KeyName = proto.String(k.Key)
@@ -150,7 +150,7 @@ func SendSubscribeReq(k ConfKey, cancel bool) {
 	}
 	req.Subscribe = proto.Uint32(uint32(subscribe))
 
-	cmd := network.TCPCommand{MainCmdID: uint16(network.AppConfig), SubCmdID: uint16(config.CMDID_Config_IDApolloCfgReq)}
+	cmd := network.TCPCommand{MainCmdID: uint16(network.AppConfig), SubCmdID: uint16(config.CMDConfig_IDApolloCfgReq)}
 	bm := network.BaseMessage{MyMessage: &req, Cmd: cmd}
 	netAgent.SendMessage(bm)
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
 	"mango/api/config"
-	"mango/api/gate"
+	"mango/api/gateway"
 	"mango/api/logger"
 	"mango/pkg/chanrpc"
 	"mango/pkg/conf"
@@ -69,13 +69,13 @@ func init() {
 	Skeleton = module.NewSkeleton(conf.GoLen, conf.TimerDispatcherLen, conf.AsynCallLen, conf.ChanRPCLen)
 	agentChanRPC = Skeleton.ChanRPCServer
 	closeSig = make(chan bool, 0)
-	MsgRegister(&config.ApolloCfgRsp{}, n.CMDConfig, uint16(config.CMDID_Config_IDApolloCfgRsp), handleApolloCfgRsp)
+	MsgRegister(&config.ApolloCfgRsp{}, n.CMDConfig, uint16(config.CMDConfig_IDApolloCfgRsp), handleApolloCfgRsp)
 }
 
 func Start(appName string) {
-	conf.AppInfo.AppName = appName
+	conf.AppInfo.Name = appName
 	// logger
-	l, err := log.New(conf.AppInfo.AppName)
+	l, err := log.New(conf.AppInfo.Name)
 	if err != nil {
 		panic(err)
 	}
@@ -85,8 +85,8 @@ func Start(appName string) {
 	//baseConfig
 	conf.LoadBaseConfig()
 
-	if conf.AppInfo.AppType == n.AppCenter {
-		apollo.RegisterConfig("", conf.AppInfo.AppType, conf.AppInfo.AppID, nil)
+	if conf.AppInfo.Type == n.AppCenter {
+		apollo.RegisterConfig("", conf.AppInfo.Type, conf.AppInfo.Id, nil)
 	}
 
 	wg.Add(2)
@@ -109,7 +109,7 @@ func Start(appName string) {
 }
 
 func Stop() {
-	defer util.TryE(conf.AppInfo.AppName)
+	defer util.TryE(conf.AppInfo.Name)
 	for k, v := range servers {
 		v.Close()
 		delete(servers, k)
@@ -170,7 +170,7 @@ func Run() {
 		}
 	}
 
-	if conf.AppInfo.CenterAddr != "" && conf.AppInfo.AppType != n.AppCenter {
+	if conf.AppInfo.CenterAddr != "" && conf.AppInfo.Type != n.AppCenter && conf.AppInfo.Type != n.AppLogger {
 		newServerItem(n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "center", AppType: n.AppCenter, ListenOnAddr: conf.AppInfo.CenterAddr}, true, PendingWriteNum)
 	}
 
@@ -210,7 +210,7 @@ func handleApolloCfgRsp(args []interface{}) {
 
 func ConnectLogServer(logAddr string) {
 	log.Info("gate", "开始日志服务器,Addr=%v", logAddr)
-	if conf.AppInfo.AppType != n.AppLogger && logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
+	if conf.AppInfo.Type != n.AppLogger && logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
 		if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
 			addr := strings.Split(logAddr, "|")
 			logAddr = ""
@@ -235,14 +235,14 @@ func ConnectLogServer(logAddr string) {
 				var logReq logger.LogReq
 				logReq.FileName = proto.String(i.File)
 				logReq.LineNo = proto.Uint32(uint32(i.Line))
-				logReq.SrcApptype = proto.Uint32(conf.AppInfo.AppType)
-				logReq.SrcAppid = proto.Uint32(conf.AppInfo.AppID)
+				logReq.SrcApptype = proto.Uint32(conf.AppInfo.Type)
+				logReq.SrcAppid = proto.Uint32(conf.AppInfo.Id)
 				logReq.Content = []byte(i.LogStr)
 				logReq.ClassName = []byte(i.Classname)
 				logReq.LogLevel = proto.Uint32(uint32(i.Level))
 				logReq.TimeMs = proto.Uint64(i.TimeMs)
-				logReq.SrcAppname = proto.String(conf.AppInfo.AppName)
-				cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogger), SubCmdID: uint16(logger.CMDID_Logger_IDLogReq)}
+				logReq.SrcAppname = proto.String(conf.AppInfo.Name)
+				cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogger), SubCmdID: uint16(logger.CMDLogger_IDLogReq)}
 				bm := n.BaseMessage{MyMessage: &logReq, Cmd: cmd}
 				a.SendMessage(bm)
 			})
@@ -257,18 +257,18 @@ func ConnectLogServer(logAddr string) {
 func sendRegAppReq(a *agentServer) {
 	var registerReq center.RegisterAppReq
 	registerReq.AuthKey = proto.String("GoldBaby")
-	registerReq.AppName = proto.String(conf.AppInfo.AppName)
-	registerReq.AppType = proto.Uint32(conf.AppInfo.AppType)
-	registerReq.AppId = proto.Uint32(conf.AppInfo.AppID)
+	registerReq.AppName = proto.String(conf.AppInfo.Name)
+	registerReq.AppType = proto.Uint32(conf.AppInfo.Type)
+	registerReq.AppId = proto.Uint32(conf.AppInfo.Id)
 	myAddress := conf.AppInfo.ListenOnAddr
 	if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
 		addr := strings.Split(conf.AppInfo.ListenOnAddr, ":")
 		if len(addr) == 2 {
-			myAddress = conf.AppInfo.AppName + ":" + addr[1]
+			myAddress = conf.AppInfo.Name + ":" + addr[1]
 		}
 	}
 	registerReq.MyAddress = proto.String(myAddress)
-	a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppRegReq), &registerReq)
+	a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
 }
 
 func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
@@ -285,7 +285,7 @@ func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Me
 }
 
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
-	var dataReq gate.TransferDataReq
+	var dataReq gateway.TransferDataReq
 	dataReq.AttApptype = proto.Uint32(n.AppGate)
 	dataReq.AttAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
 	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
@@ -293,7 +293,7 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(gateConnID)
 	dataReq.AttSessionid = proto.Uint64(sessionID)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gate.CMDID_Gate_IDTransferDataReq)}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	return sendData(transBM, n.AppGate, util.GetLUint32FromUint64(gateConnID))
 }
@@ -352,7 +352,7 @@ func getDestAppInfo(destAppType, destAppid uint32) []*agentServer {
 	}
 
 	if !sendResult {
-		log.Error("转发", "异常,消息转发失败,%v,destAppType=%v,destAppid=%v",
+		log.Error("转发", "异常,消息转发失败,appCount=%v,destAppType=%v,destAppid=%v",
 			destTypeAppCount(), destAppType, destAppid)
 	}
 

@@ -14,32 +14,30 @@ const (
 )
 
 const (
-	NullType          uint32 = 0
-	CMDCenter         uint32 = 10
-	CMDConfig         uint32 = 2
-	CMDServiceManager uint32 = 3
-	CMDLogger         uint32 = 8
-	CMDList           uint32 = 11
-	CMDGate           uint32 = 12
-	CMDLogin          uint32 = 13
-	CMDTable          uint32 = 14
-	CMDRoom           uint32 = 15
-	CMDProperty       uint32 = 16
+	NullType    uint32 = 0
+	CMDLogger   uint32 = 1
+	CMDCenter   uint32 = 2
+	CMDConfig   uint32 = 3
+	CMDGate     uint32 = 4
+	CMDLogin    uint32 = 5
+	CMDList     uint32 = 6
+	CMDProperty uint32 = 7
+	CMDTable    uint32 = 8
+	CMDRoom     uint32 = 9
+	CMDRobot    uint32 = 10
 )
 
 const (
-	AppCenter          uint32 = 6
-	AppConfig          uint32 = 2
-	AppLogger          uint32 = 3
-	AppGate            uint32 = 5
-	AppLogin           uint32 = 7
-	AppList            uint32 = 11
-	AppProperty        uint32 = 12
-	AppTable           uint32 = 14
-	AppRoom            uint32 = 15
-	AppApollo          uint32 = 56
-	AppMatchSVCManager uint32 = 58
-	AppActionData      uint32 = 73
+	AppLogger   uint32 = 1
+	AppCenter   uint32 = 2
+	AppConfig   uint32 = 3
+	AppGate     uint32 = 4
+	AppLogin    uint32 = 5
+	AppList     uint32 = 6
+	AppProperty uint32 = 7
+	AppTable    uint32 = 8
+	AppRoom     uint32 = 9
+	AppRobot    uint32 = 10
 )
 
 const (

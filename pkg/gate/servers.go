@@ -40,7 +40,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 				var pulse center.AppPulseNotify
 				pulse.Action = (*center.AppPulseNotify_PulseAction)(proto.Int32(int32(center.AppPulseNotify_HeartBeatReq)))
 				pulse.PulseData = proto.Uint64(uint64(time.Now().Unix()))
-				a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDPulseNotify), &pulse)
+				a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDPulseNotify), &pulse)
 
 				t.Reset(timeInterval)
 			}
@@ -48,7 +48,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 
 		if n.AppConfig == info.AppType {
 			apollo.SetNetAgent(a)
-			apollo.RegisterConfig("", conf.AppInfo.AppType, conf.AppInfo.AppID, nil)
+			apollo.RegisterConfig("", conf.AppInfo.Type, conf.AppInfo.Id, nil)
 		}
 
 		mxServers.Lock()
@@ -78,7 +78,7 @@ func (a *agentServer) Run() {
 		}
 
 		switch bm.Cmd.SubCmdID {
-		case uint16(center.CMDID_Center_IDAppRegRsp):
+		case uint16(center.CMDCenter_IDAppRegRsp):
 			var m center.RegisterAppRsp
 			_ = proto.Unmarshal(msgData, &m)
 
@@ -90,7 +90,7 @@ func (a *agentServer) Run() {
 				mxServers.Lock()
 				_, ok := servers[uint64(m.GetAppType())<<32|uint64(m.GetAppId())]
 				mxServers.Unlock()
-				if !(conf.AppInfo.AppType == m.GetAppType() && conf.AppInfo.AppID == m.GetAppId()) && !ok {
+				if !(conf.AppInfo.Type == m.GetAppType() && conf.AppInfo.Id == m.GetAppId()) && !ok {
 					if m.GetAppAddress() != "" {
 						info := n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId(), ListenOnAddr: m.GetAppAddress()}
 						newServerItem(info, false, 0)
@@ -100,7 +100,7 @@ func (a *agentServer) Run() {
 					}
 				}
 
-				if conf.AppInfo.AppType == n.AppConfig {
+				if conf.AppInfo.Type == n.AppConfig {
 					mxServers.Lock()
 					if _, ok := servers[uint64(n.AppCenter)<<32|uint64(0)]; ok {
 						servers[uint64(n.AppCenter)<<32|uint64(0)].info.AppID = m.GetCenterId()
@@ -113,7 +113,7 @@ func (a *agentServer) Run() {
 			if agentChanRPC != nil {
 				agentChanRPC.Call0(CenterRegResult, m.GetRegResult(), m.GetCenterId())
 			}
-		case uint16(center.CMDID_Center_IDAppState): //app状态改变
+		case uint16(center.CMDCenter_IDAppState): //app状态改变
 			var m center.AppStateNotify
 			_ = proto.Unmarshal(msgData, &m)
 			log.Debug("agentServer", "app状态改变 AppState=%v,RouterId=%v,AppType=%v,AppId=%v",
@@ -125,7 +125,7 @@ func (a *agentServer) Run() {
 			}
 			mxServers.Unlock()
 
-		case uint16(center.CMDID_Center_IDPulseNotify):
+		case uint16(center.CMDCenter_IDPulseNotify):
 		default:
 			log.Error("agentServer", "n.CMDCenter,异常,还未处理消息,%v", bm.Cmd)
 		}

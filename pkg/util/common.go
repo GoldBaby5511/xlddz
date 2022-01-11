@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 func CurMemory() int64 {
@@ -15,8 +16,12 @@ func CurMemory() int64 {
 func ParseArgsUint32(name string) (uint32, bool) {
 	args := os.Args
 	for i := 0; i < len(args); i++ {
-		if args[i] == name && i+1 < len(args) {
-			v, err := strconv.Atoi(args[i+1])
+		a := strings.Split(args[i], "=")
+		if len(a) != 2 {
+			continue
+		}
+		if a[0] == name {
+			v, err := strconv.Atoi(a[1])
 			if err == nil {
 				return uint32(v), true
 			}
@@ -28,8 +33,12 @@ func ParseArgsUint32(name string) (uint32, bool) {
 func ParseArgsString(name string) (string, bool) {
 	args := os.Args
 	for i := 0; i < len(args); i++ {
-		if args[i] == name && i+1 < len(args) {
-			return args[i+1], true
+		a := strings.Split(args[i], "=")
+		if len(a) != 2 {
+			continue
+		}
+		if a[0] == name {
+			return a[1], true
 		}
 	}
 	return "", false

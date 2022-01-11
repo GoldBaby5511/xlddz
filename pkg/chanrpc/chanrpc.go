@@ -3,9 +3,9 @@ package chanrpc
 import (
 	"errors"
 	"fmt"
-	"runtime"
 	"mango/pkg/conf"
 	"mango/pkg/log"
+	"runtime"
 )
 
 // one server per goroutine (goroutine not safe)
@@ -138,7 +138,6 @@ func (s *Server) Exec(ci *CallInfo) {
 func (s *Server) Go(id interface{}, args ...interface{}) {
 	f := s.functions[id]
 	if f == nil {
-		log.Error("chanrpc", "chanrpc GO 时未找到处理参数 id=%v, len(args)=%v", id, len(args))
 		return
 	}
 

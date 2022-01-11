@@ -3,7 +3,7 @@ package gate
 import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
-	"mango/api/gate"
+	"mango/api/gateway"
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	n "mango/pkg/network"
@@ -30,8 +30,8 @@ func (a *agentClient) Run() {
 			log.Error("agentClient", "异常,解析器为nil断开连接,cmd=%v", &bm.Cmd)
 			break
 		}
-		if conf.AppInfo.AppType != n.AppCenter && bm.Cmd.MainCmdID == uint16(n.CMDCenter) {
-			if bm.Cmd.SubCmdID == uint16(center.CMDID_Center_IDAppRegReq) {
+		if conf.AppInfo.Type != n.AppCenter && bm.Cmd.MainCmdID == uint16(n.CMDCenter) {
+			if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDAppRegReq) {
 				var m center.RegisterAppReq
 				_ = proto.Unmarshal(msgData, &m)
 				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId()}
@@ -39,7 +39,7 @@ func (a *agentClient) Run() {
 					agentChanRPC.Call0(CommonServerReg, a, a.info)
 				}
 				log.Debug("", "相互注册,%v", a.info)
-			} else if bm.Cmd.SubCmdID == uint16(center.CMDID_Center_IDPulseNotify) {
+			} else if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDPulseNotify) {
 
 			}
 			continue
@@ -47,8 +47,8 @@ func (a *agentClient) Run() {
 
 		unmarshalCmd := bm.Cmd
 		var cmd, msg, dataReq interface{}
-		if bm.Cmd.MainCmdID == uint16(n.CMDGate) && bm.Cmd.SubCmdID == uint16(gate.CMDID_Gate_IDTransferDataReq) && conf.AppInfo.AppType != n.AppGate {
-			var m gate.TransferDataReq
+		if bm.Cmd.MainCmdID == uint16(n.CMDGate) && bm.Cmd.SubCmdID == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
+			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
 			unmarshalCmd = n.TCPCommand{MainCmdID: uint16(m.GetDataCmdKind()), SubCmdID: uint16(m.GetDataCmdSubid())}
 			msgData = m.GetData()
