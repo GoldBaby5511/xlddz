@@ -3,12 +3,12 @@ import "types.proto";
 package bs.list;
 option go_package ="/list";
 
-enum CMDID_List {
+enum CMDList {
 	IDRoomRegisterReq	= 1;			//房间注册
 	IDRoomRegisterRsp	= 2;			//房间注册
 	IDRoomListReq		= 3;			//列表请求
 	IDRoomListRsp		= 4;			//列表请求
-};
+}
 
 message RoomRegisterReq{
 	optional types.RoomInfo					info = 1;

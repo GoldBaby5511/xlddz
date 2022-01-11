@@ -2,17 +2,17 @@ syntax = "proto2";
 package bs.gameddz;
 option go_package ="/gameddz";
 
-enum CMDID_Gameddz {
-	IDGameStart			=1;			//
-	IDReSendCard		=2;			//
-	IDCallLandReq		=3;			//
-	IDCallLandRsp		=4;			//
-	IDConfirmLand		=5;			//
-	IDOutCardReq		=6;			//
-	IDOutCardRsp		=7;			//
-	IDGameDataReq		=8;			//
-	IDGameDataRsp		=9;			//
-	IDGameOver			=10;		//
+enum CMDGameddz {
+	IDGameStart			= 1;			//
+	IDReSendCard		= 2;			//
+	IDCallLandReq		= 3;			//
+	IDCallLandRsp		= 4;			//
+	IDConfirmLand		= 5;			//
+	IDOutCardReq		= 6;			//
+	IDOutCardRsp		= 7;			//
+	IDGameDataReq		= 8;			//
+	IDGameDataRsp		= 9;			//
+	IDGameOver			= 10;			//
 }
 
 message GameStart{

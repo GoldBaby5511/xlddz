@@ -42,7 +42,7 @@ func (s *Sink) StartGame(f table.Frame) {
 		start.HandCard = make([][]byte, playerCount)
 		start.HandCard[i] = s.userHandCards[0]
 		bm := n.BaseMessage{MyMessage: &start, TraceId: ""}
-		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDGameStart)}
+		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameStart)}
 		s.frame.SendTableData(uint32(i), bm)
 	}
 }
@@ -54,11 +54,11 @@ func (s *Sink) EndGame() {
 func (s *Sink) GameMessage(seatID, subCmdID uint32, data []byte) {
 	log.Debug("", "游戏消息,%v,%v", seatID, subCmdID)
 	switch subCmdID {
-	case uint32(gameddz.CMDID_Gameddz_IDCallLandReq):
+	case uint32(gameddz.CMDGameddz_IDCallLandReq):
 		s.CallLandReq(seatID, data)
-	case uint32(gameddz.CMDID_Gameddz_IDOutCardReq):
+	case uint32(gameddz.CMDGameddz_IDOutCardReq):
 		s.OutCardReq(seatID, data)
-	case uint32(gameddz.CMDID_Gameddz_IDGameDataReq):
+	case uint32(gameddz.CMDGameddz_IDGameDataReq):
 		s.GameDataReq(seatID, data)
 	default:
 		log.Warning("", "未定义消息,seatID=%d,subCmdID=%d", seatID, subCmdID)
@@ -71,7 +71,7 @@ func (s *Sink) CallLandReq(seatID uint32, data []byte) {
 
 	var rsp gameddz.CallLandRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDCallLandRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDGameddz_IDCallLandRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
 	log.Debug("", "叫地主消息,seatID=%d", seatID)
@@ -89,7 +89,7 @@ func (s *Sink) OutCardReq(seatID uint32, data []byte) {
 
 	var rsp gameddz.OutCardRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDOutCardRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDGameddz_IDOutCardRsp)}
 	s.frame.SendTableData(seatID, bm)
 
 	log.Debug("", "出牌消息,seatID=%d,len=%v", seatID, len(s.userHandCards[seatID]))
@@ -99,7 +99,7 @@ func (s *Sink) OutCardReq(seatID uint32, data []byte) {
 
 		var over gameddz.GameOver
 		bm := n.BaseMessage{MyMessage: &over, TraceId: ""}
-		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDGameOver)}
+		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameOver)}
 		s.frame.SendTableData(table.InvalidSeadID, bm)
 
 		s.frame.WriteGameScore()
@@ -113,7 +113,7 @@ func (s *Sink) GameDataReq(seatID uint32, data []byte) {
 
 	var rsp gameddz.GameDataRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDID_Gameddz_IDGameDataRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameDataRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
 	log.Debug("", "数据消息,seatID=%d", seatID)

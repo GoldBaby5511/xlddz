@@ -2,7 +2,7 @@ syntax = "proto2";
 package bs.table;
 option go_package ="/table";
 
-enum CMDID_Table {
+enum CMDTable {
 	IDApplyReq					= 1;			//
 	IDApplyRsp					= 2;			//
 	IDReleaseReq				= 3;			//

@@ -1,18 +1,11 @@
 package business
 
 import (
-	"bufio"
-	"io"
-	"mango/api/client"
+	"fmt"
 	"mango/cmd/robot/business/player"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/timer"
-	"os"
-	"strings"
-	"time"
 )
 
 var (
@@ -21,78 +14,20 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&client.LoginRsp{}, n.CMDClient, uint16(client.CMDID_Client_IDLoginRsp), handleLoginRsp)
-	g.EventRegister(g.ConnectSuccess, connectSuccess)
-	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
-
-	loadRobotAccounts()
-}
-
-func connectSuccess(args []interface{}) {
-}
-
-func disconnect(args []interface{}) {
 }
 
 func configChangeNotify(args []interface{}) {
 	mode := apollo.GetConfigAsInt64("工作模式", 0)
 	if mode != 0 && curWorkMode == 0 {
 		curWorkMode = mode
-		g.Skeleton.LoopFunc(1*time.Second, randJoinRoom, timer.LoopForever)
-	}
-
-}
-
-func handleLoginRsp(args []interface{}) {
-	//a := args[n.AgentIndex].(n.AgentClient)
-	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*client.LoginRsp)
-	//srcData := args[n.OtherIndex].(*gate.TransferDataReq)
-
-	log.Debug("登录", "收到登录,主渠道=%d,UserId=%d", m.GetLoginResult(), m.GetBaseInfo().Account, m.GetBaseInfo().UserId)
-
-	//sendLoginRsp(srcData.GetGateconnid(), "成功", uint32(client.LoginRsp_SUCCESS))
-}
-
-func randJoinRoom() {
-
-	loginCount := 0
-	for _, pl := range pls {
-		if pl.State != player.LoggedIn {
-			continue
-		}
-		loginCount++
-		if loginCount >= 50 {
-			break
-		}
-
-		pl.JoinRoom()
-	}
-
-}
-
-func loadRobotAccounts() {
-	f, err := os.Open("account.csv")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	rd := bufio.NewReader(f)
-	for {
-		line, err := rd.ReadString('\n')
-
-		if err != nil || io.EOF == err {
-			break
-		}
-
-		a := strings.Split(line[:len(line)-1], ",")
-		pl := player.NewPlayer(a)
-		if pl != nil {
-			pls = append(pls, pl)
+		robotCount := apollo.GetConfigAsInt64("机器人数量", 1000)
+		log.Debug("", "开始创建,robotCount=%v", robotCount)
+		for i := 0; i < int(robotCount); i++ {
+			pl := player.NewPlayer(fmt.Sprintf("robot%05d", i), "")
+			if pl != nil {
+				pls = append(pls, pl)
+			}
 		}
 	}
-
-	log.Debug("", "pl=%d", len(pls))
 }

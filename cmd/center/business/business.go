@@ -3,13 +3,13 @@ package business
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"math/rand"
-	"time"
 	"mango/api/center"
 	lconf "mango/pkg/conf"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"math/rand"
+	"time"
 )
 
 var (
@@ -40,11 +40,11 @@ type connectionData struct {
 }
 
 func init() {
-	g.MsgRegister(&center.RegisterAppReq{}, n.CMDCenter, uint16(center.CMDID_Center_IDAppRegReq), handleRegisterAppReq)
-	g.MsgRegister(&center.AppStateNotify{}, n.CMDCenter, uint16(center.CMDID_Center_IDAppState), handleAppStateNotify)
-	g.MsgRegister(&center.AppPulseNotify{}, n.CMDCenter, uint16(center.CMDID_Center_IDPulseNotify), handleAppPulseNotify)
-	g.MsgRegister(&center.AppOfflineReq{}, n.CMDCenter, uint16(center.CMDID_Center_IDAppOfflineReq), handleAppOfflineReq)
-	g.MsgRegister(&center.AppUpdateReq{}, n.CMDCenter, uint16(center.CMDID_Center_IDAppUpdateReq), handleAppUpdateReq)
+	g.MsgRegister(&center.RegisterAppReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppRegReq), handleRegisterAppReq)
+	g.MsgRegister(&center.AppStateNotify{}, n.CMDCenter, uint16(center.CMDCenter_IDAppState), handleAppStateNotify)
+	g.MsgRegister(&center.AppPulseNotify{}, n.CMDCenter, uint16(center.CMDCenter_IDPulseNotify), handleAppPulseNotify)
+	g.MsgRegister(&center.AppOfflineReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppOfflineReq), handleAppOfflineReq)
+	g.MsgRegister(&center.AppUpdateReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppUpdateReq), handleAppUpdateReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
@@ -79,7 +79,7 @@ func disconnect(args []interface{}) {
 
 func configChangeNotify(args []interface{}) {
 	log.Info("配置", "真的收到了配置消息=%d", len(args))
-	//key := apollo.ConfKey{AppType: lconf.AppInfo.AppType, AppId: lconf.AppInfo.AppID, Key: "服务维护"}
+	//key := apollo.ConfKey{AppType: lconf.AppInfo.Type, AppId: lconf.AppInfo.Id, Key: "服务维护"}
 	//if k == key {
 	//	type appInfo struct {
 	//		AppType uint32
@@ -131,8 +131,8 @@ func handleRegisterAppReq(args []interface{}) {
 			var rsp center.RegisterAppRsp
 			rsp.RegResult = proto.Uint32(1)
 			rsp.ReregToken = proto.String(resultMsg)
-			rsp.CenterId = proto.Uint32(lconf.AppInfo.AppID)
-			a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppRegRsp), &rsp)
+			rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
+			a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 
 			a.Close()
 			return
@@ -154,12 +154,12 @@ func handleRegisterAppReq(args []interface{}) {
 		var rsp center.RegisterAppRsp
 		rsp.RegResult = proto.Uint32(0)
 		rsp.ReregToken = proto.String(token)
-		rsp.CenterId = proto.Uint32(lconf.AppInfo.AppID)
+		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
 		rsp.AppName = proto.String(i.appName)
 		rsp.AppType = proto.Uint32(i.appType)
 		rsp.AppId = proto.Uint32(i.appId)
 		rsp.AppAddress = proto.String(i.address)
-		a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppRegRsp), &rsp)
+		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 	}
 
 	//广播已注册
@@ -192,7 +192,7 @@ func handleAppPulseNotify(args []interface{}) {
 	case center.AppPulseNotify_HeartBeatReq:
 		var rsp center.AppPulseNotify
 		rsp.Action = (*center.AppPulseNotify_PulseAction)(proto.Int32(int32(center.AppPulseNotify_HeartBeatRsp)))
-		a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDPulseNotify), &rsp)
+		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDPulseNotify), &rsp)
 		appConnData[a].lastHeartbeat = time.Now().UnixNano()
 	}
 
@@ -217,9 +217,9 @@ func broadcastAppState(appType, appId uint32) {
 		}
 		var rsp center.AppStateNotify
 		rsp.AppState = proto.Uint32(uint32(center.AppStateNotify_OffLine))
-		rsp.CenterId = proto.Uint32(lconf.AppInfo.AppID)
+		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
 		rsp.AppType = proto.Uint32(appType)
 		rsp.AppId = proto.Uint32(appId)
-		a.SendData(n.CMDCenter, uint32(center.CMDID_Center_IDAppState), &rsp)
+		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppState), &rsp)
 	}
 }

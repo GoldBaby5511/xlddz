@@ -2,15 +2,13 @@ syntax = "proto2";
 package bs.center;
 option go_package ="/center";
 
-enum CMDID_Center {
+enum CMDCenter {
 	IDAppRegReq			=1;			//服务注册
 	IDAppRegRsp			=2;			//服务注册
 	IDAppState			=3;			//服务状态
 	IDAppOfflineReq		=4;			//服务离线
 	IDPulseNotify		=5;			//服务心跳
-	IDAppUpdateReq		=6;			//更新请求  
-
-	IDLast				=10;
+	IDAppUpdateReq		=6;			//更新请求
 };
 
 message AppUpdateReq {
@@ -70,13 +68,6 @@ message AppPulseNotify{
 		AnotherLogin=5;//顶掉了。
 	}
 	required PulseAction action=1;
-
-  //发送的心跳数据
-  optional uint64  pulse_data=2;
-
-  //10万-(最近10万条报文，花了多少ms,ms>10万，则ms=10万)
-  //load_data 越小表示负载越低
-  //如果当前报文数，不到10万，则load_data为1000
-  //每报文数量超过10万，则自动更新load_data,累计最近10次的load_data发回去。
-  optional uint32  load_data=3;
+	optional uint64  pulse_data=2;
+	optional uint32  load_data=3;
 };

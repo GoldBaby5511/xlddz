@@ -2,7 +2,7 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
-	"mango/api/gate"
+	"mango/api/gateway"
 	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
 	"mango/cmd/table/business/table"
@@ -19,11 +19,11 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&tCMD.ApplyReq{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDApplyReq), handleApplyReq)
-	g.MsgRegister(&tCMD.ReleaseReq{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDReleaseReq), handleReleaseReq)
-	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
-	g.MsgRegister(&tCMD.MatchTableReq{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDMatchTableReq), handleMatchTableReq)
-	g.MsgRegister(&tCMD.GameMessage{}, n.CMDTable, uint16(tCMD.CMDID_Table_IDGameMessage), handleGameMessage)
+	g.MsgRegister(&tCMD.ApplyReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDApplyReq), handleApplyReq)
+	g.MsgRegister(&tCMD.ReleaseReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDReleaseReq), handleReleaseReq)
+	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
+	g.MsgRegister(&tCMD.MatchTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
+	g.MsgRegister(&tCMD.GameMessage{}, n.CMDTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
@@ -70,7 +70,7 @@ func handleApplyReq(args []interface{}) {
 		}
 	}
 
-	g.SendData2App(srcApp.AppType, srcApp.AppID, n.CMDTable, uint32(tCMD.CMDID_Table_IDApplyRsp), &rsp)
+	g.SendData2App(srcApp.AppType, srcApp.AppID, n.CMDTable, uint32(tCMD.CMDTable_IDApplyRsp), &rsp)
 }
 
 func handleReleaseReq(args []interface{}) {
@@ -134,7 +134,7 @@ func handleMatchTableReq(args []interface{}) {
 
 func handleGameMessage(args []interface{}) {
 	m := args[n.DataIndex].(n.BaseMessage).MyMessage.(*tCMD.GameMessage)
-	srcData := args[n.OtherIndex].(*gate.TransferDataReq)
+	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	userID := srcData.GetUserId()
 	pl := getPlayer(userID)

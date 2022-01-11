@@ -2,15 +2,15 @@ package business
 
 import (
 	"fmt"
-	"math/rand"
-	"os"
-	"path"
-	"time"
 	"mango/api/logger"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
 	n "mango/pkg/network"
 	"mango/pkg/util"
+	"math/rand"
+	"os"
+	"path"
+	"time"
 )
 
 var (
@@ -40,8 +40,8 @@ type connectionData struct {
 }
 
 func init() {
-	g.MsgRegister(&logger.LogReq{}, n.CMDLogger, uint16(logger.CMDID_Logger_IDLogReq), handleLogReq)
-	g.MsgRegister(&logger.LogFlush{}, n.CMDLogger, uint16(logger.CMDID_Logger_IDLogFlush), handleLogFlush)
+	g.MsgRegister(&logger.LogReq{}, n.CMDLogger, uint16(logger.CMDLogger_IDLogReq), handleLogReq)
+	g.MsgRegister(&logger.LogFlush{}, n.CMDLogger, uint16(logger.CMDLogger_IDLogFlush), handleLogFlush)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 }

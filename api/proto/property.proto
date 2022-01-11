@@ -3,7 +3,7 @@ import "types.proto";
 package bs.property;
 option go_package ="/property";
 
-enum CMDID_Property {
+enum CMDProperty {
 	IDQueryPropertyReq			= 1;			//查询财富
 	IDQueryPropertyRsp			= 2;			//查询财富
 	IDModifyPropertyReq			= 3;			//修改财富

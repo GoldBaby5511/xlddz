@@ -3,7 +3,7 @@ import "types.proto";
 package bs.room;
 option go_package ="/room";
 
-enum CMDID_Room {
+enum CMDRoom {
 	IDJoinReq			= 1;			//进入房间
 	IDJoinRsp			= 2;			//进入房间
 	IDUserActionReq		= 3;			//用户动作

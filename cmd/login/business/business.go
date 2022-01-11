@@ -2,7 +2,7 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
-	"mango/api/gate"
+	"mango/api/gateway"
 	"mango/api/login"
 	"mango/api/property"
 	"mango/api/types"
@@ -17,9 +17,9 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&login.LoginReq{}, n.CMDLogin, uint16(login.Login_IDLoginReq), handleLoginReq)
-	g.MsgRegister(&login.LogoutReq{}, n.CMDLogin, uint16(login.Login_IDLogoutReq), handleLogoutReq)
-	g.MsgRegister(&property.QueryPropertyRsp{}, n.CMDProperty, uint16(property.CMDID_Property_IDQueryPropertyRsp), handleQueryPropertyRsp)
+	g.MsgRegister(&login.LoginReq{}, n.CMDLogin, uint16(login.CMDLogin_IDLoginReq), handleLoginReq)
+	g.MsgRegister(&login.LogoutReq{}, n.CMDLogin, uint16(login.CMDLogin_IDLogoutReq), handleLogoutReq)
+	g.MsgRegister(&property.QueryPropertyRsp{}, n.CMDProperty, uint16(property.CMDProperty_IDQueryPropertyRsp), handleQueryPropertyRsp)
 }
 
 func handleLoginReq(args []interface{}) {
@@ -48,7 +48,7 @@ func handleLoginReq(args []interface{}) {
 	}
 	var req property.QueryPropertyReq
 	req.UserId = proto.Uint64(userId)
-	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.CMDProperty, uint32(property.CMDID_Property_IDQueryPropertyReq), &req)
+	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.CMDProperty, uint32(property.CMDProperty_IDQueryPropertyReq), &req)
 }
 
 func handleLogoutReq(args []interface{}) {
@@ -68,11 +68,11 @@ func handleQueryPropertyRsp(args []interface{}) {
 
 	log.Debug("", "财富查询,userId=%v,len=%v,GateConnid=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnid())
 
-	var authRsp gate.AuthInfo
+	var authRsp gateway.AuthInfo
 	authRsp.UserId = proto.Uint64(m.GetUserId())
 	authRsp.Gateconnid = proto.Uint64(userList[m.GetUserId()].GetGateConnid())
 	authRsp.Result = proto.Uint32(uint32(login.LoginRsp_SUCCESS))
-	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.CMDGate, uint32(gate.CMDID_Gate_IDAuthInfo), &authRsp)
+	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.CMDGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
 
 	var rsp login.LoginRsp
 	rsp.ErrInfo = new(types.ErrorInfo)
@@ -81,6 +81,6 @@ func handleQueryPropertyRsp(args []interface{}) {
 	rsp.BaseInfo = new(types.BaseUserInfo)
 	rsp.BaseInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDLogin), SubCmdID: uint16(login.Login_IDLoginRsp)}
+	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDLogin), SubCmdID: uint16(login.CMDLogin_IDLoginRsp)}
 	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid(), 0)
 }

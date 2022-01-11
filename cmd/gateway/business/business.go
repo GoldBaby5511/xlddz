@@ -3,8 +3,8 @@ package business
 import (
 	"errors"
 	"github.com/golang/protobuf/proto"
-	"mango/api/client"
-	gcmd "mango/api/gate"
+	gateway "mango/api/gateway"
+	"mango/api/login"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
@@ -28,10 +28,10 @@ type connectionData struct {
 }
 
 func init() {
-	g.MsgRegister(&gcmd.PulseReq{}, n.CMDGate, uint16(gcmd.CMDID_Gate_IDPulseReq), handlePulseReq)
-	g.MsgRegister(&gcmd.TransferDataReq{}, n.CMDGate, uint16(gcmd.CMDID_Gate_IDTransferDataReq), handleTransferDataReq)
-	g.MsgRegister(&gcmd.AuthInfo{}, n.CMDGate, uint16(gcmd.CMDID_Gate_IDAuthInfo), handleAuthInfo)
-	g.MsgRegister(&gcmd.HelloReq{}, n.CMDGate, uint16(gcmd.CMDID_Gate_IDHelloReq), handleHelloReq)
+	g.MsgRegister(&gateway.PulseReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDPulseReq), handlePulseReq)
+	g.MsgRegister(&gateway.TransferDataReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDTransferDataReq), handleTransferDataReq)
+	g.MsgRegister(&gateway.AuthInfo{}, n.CMDGate, uint16(gateway.CMDGateway_IDAuthInfo), handleAuthInfo)
+	g.MsgRegister(&gateway.HelloReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDHelloReq), handleHelloReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.CenterConnected, centerConnected)
@@ -51,7 +51,7 @@ func connectSuccess(args []interface{}) {
 		lastPulseTk: time.Now().Unix(),
 	}
 
-	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v", connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.AppID))
+	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v", connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id))
 }
 
 func disconnect(args []interface{}) {
@@ -62,9 +62,9 @@ func disconnect(args []interface{}) {
 	if v, ok := userConnData[connId]; ok {
 		log.Debug("agent1", "走了老弟,userId=%v,connId=%v,当前连接数=%d", v.userId, v.connId, len(userConnData))
 
-		var logout client.LogoutReq
+		var logout login.LogoutReq
 		logout.UserId = proto.Uint64(v.userId)
-		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.CMDClient, uint32(client.CMDID_Client_IDLogoutReq), &logout)
+		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.CMDLogin, uint32(login.CMDLogin_IDLogoutReq), &logout)
 
 		delete(userConnData, connId)
 	} else {
@@ -91,7 +91,7 @@ func handlePulseReq(args []interface{}) {
 
 func handleTransferDataReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*gcmd.TransferDataReq)
+	m := (b.MyMessage).(*gateway.TransferDataReq)
 	a := args[n.AgentIndex].(n.AgentClient)
 
 	connData, err := getUserConnData(a)
@@ -112,19 +112,19 @@ func handleTransferDataReq(args []interface{}) {
 				util.GetHUint32FromUint64(m.GetGateconnid()))
 			return
 		}
-		a.SendData(n.CMDGate, uint32(gcmd.CMDID_Gate_IDTransferDataReq), m)
+		a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	} else {
-		m.Gateid = proto.Uint32(conf.AppInfo.AppID)
-		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.AppID))
+		m.Gateid = proto.Uint32(conf.AppInfo.Id)
+		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
 		m.UserId = proto.Uint64(connData.userId)
-		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.CMDGate, uint32(gcmd.CMDID_Gate_IDTransferDataReq), m)
+		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.CMDGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	}
 
 }
 
 func handleAuthInfo(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*gcmd.AuthInfo)
+	m := (b.MyMessage).(*gateway.AuthInfo)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppID, m.GetUserId())
@@ -137,7 +137,7 @@ func handleAuthInfo(args []interface{}) {
 
 func handleHelloReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*gcmd.HelloReq)
+	m := (b.MyMessage).(*gateway.HelloReq)
 	a := args[n.AgentIndex].(n.AgentClient)
 
 	connData, err := getUserConnData(a)
@@ -151,13 +151,13 @@ func handleHelloReq(args []interface{}) {
 	log.Debug("hello", "收到hello消息,connId=%d", connData.connId)
 
 	//加密方式暂不考虑
-	var rsp gcmd.HelloRsp
-	flag := gcmd.HelloRsp_LoginToken
+	var rsp gateway.HelloRsp
+	flag := gateway.HelloRsp_LoginToken
 	rsp.RspFlag = proto.Uint32(uint32(flag))
 	if m.GetGuid() != "" {
 		rsp.Guid = proto.String(m.GetGuid())
 	}
-	a.SendData(n.CMDGate, uint32(gcmd.CMDID_Gate_IDHelloRsp), &rsp)
+	a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDHelloRsp), &rsp)
 }
 
 func getUserConnData(a n.AgentClient) (*connectionData, error) {

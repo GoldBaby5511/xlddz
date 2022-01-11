@@ -2,7 +2,7 @@ syntax = "proto2";
 package bs.config;
 option go_package ="/config";
 
-enum CMDID_Config {
+enum CMDConfig {
 	IDApolloCfgReq               = 1;       // 请求配置
     IDApolloCfgRsp               = 2;       // 配置响应
     IDApolloCfgRspFin            = 3;       // 配置响应结束

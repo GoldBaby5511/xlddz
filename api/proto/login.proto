@@ -3,7 +3,7 @@ import "types.proto";
 package bs.login;
 option go_package ="/login";
 
-enum Login {
+enum CMDLogin {
 	IDLoginReq 			= 1;		//登录请求
 	IDLoginRsp 			= 2;		//登录回复
 	IDLogoutReq 		= 3;		//注销登录

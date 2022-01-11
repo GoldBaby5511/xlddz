@@ -1,5 +1,5 @@
 echo "go proto"
-@.\protoc.exe --go_out=.. gate.proto
+@.\protoc.exe --go_out=.. gateway.proto
 @.\protoc.exe --go_out=.. center.proto
 @.\protoc.exe --go_out=.. login.proto
 @.\protoc.exe --go_out=.. types.proto

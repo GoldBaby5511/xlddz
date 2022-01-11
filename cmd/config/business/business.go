@@ -24,7 +24,7 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&config.ApolloCfgReq{}, n.CMDConfig, uint16(config.CMDID_Config_IDApolloCfgReq), handleApolloCfgReq)
+	g.MsgRegister(&config.ApolloCfgReq{}, n.CMDConfig, uint16(config.CMDConfig_IDApolloCfgReq), handleApolloCfgReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.CenterConnected, centerConnected)
@@ -45,7 +45,7 @@ func loadConfigs() {
 	//是否使用Apollo
 	if conf.Server.UseApollo {
 		c := &conf.Server.Config
-		listenerConf := conf.ApolloConfig{ServerType: lconf.AppInfo.AppType, ServerId: conf.Server.AppID}
+		listenerConf := conf.ApolloConfig{ServerType: lconf.AppInfo.Type, ServerId: conf.Server.AppID}
 		listener := newListener(c, listenerConf)
 		agollo.SetLogger(&DefaultLogger{})
 		client, _ := agollo.StartWithConfig(func() (*aConfig.AppConfig, error) {
@@ -244,7 +244,7 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string) {
 		log.Debug("通知", "下发通知,appType=%v, appId=%v,SubAppType=%v, SubAppId=%v,changeKey=%v",
 			appType, appId, v.AppType, v.AppId, changeKey)
 
-		g.SendData2App(appType, appId, n.CMDConfig, uint32(config.CMDID_Config_IDApolloCfgRsp), &rsp)
+		g.SendData2App(appType, appId, n.CMDConfig, uint32(config.CMDConfig_IDApolloCfgRsp), &rsp)
 	}
 }
 
