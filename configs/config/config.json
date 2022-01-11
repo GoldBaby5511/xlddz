@@ -1,7 +1,7 @@
 {
-    "AppName": "config",
-    "AppType": 3,
-    "AppID": 60,
+    "Name": "config",
+    "Type": 3,
+    "Id": 60,
     "CenterAddr": "127.0.0.1:10050",
     "ListenOnAddr": "",
     "LoggerAddr": "127.0.0.1:10001",
@@ -19,35 +19,35 @@
             "appID":"",
             "cluster":"",
             "namespaceName":"configs/config/center.json",
-            "serverType":6,
+            "serverType":2,
             "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
             "namespaceName":"configs/config/gateway-100.json",
-            "serverType":5,
+            "serverType":4,
             "serverID":100
         },
         {
             "appID":"",
             "cluster":"",
             "namespaceName":"configs/config/login.json",
-            "serverType":7,
+            "serverType":5,
             "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
             "namespaceName":"configs/config/list.json",
-            "serverType":11,
+            "serverType":6,
             "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
             "namespaceName":"configs/config/property.json",
-            "serverType":12,
+            "serverType":7,
             "serverID":0
         },
         {
