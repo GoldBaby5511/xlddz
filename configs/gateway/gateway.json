@@ -1,7 +1,0 @@
-{
-  "AppName": "gateway",
-  "AppType": 5,
-  "AppID": 102,
-  "ListenOnAddr": "0.0.0.0:10102",
-  "CenterAddr": "127.0.0.1:10001"
-}

@@ -1,10 +1,10 @@
 {
     "AppName": "config",
-    "AppType": 2,
-    "AppID": 1,
-    "CenterAddr": "127.0.0.1:10001",
-    "ListenOnAddr": "0.0.0.0:10011",
-    "LoggerAddr": "127.0.0.1:20001",
+    "AppType": 3,
+    "AppID": 60,
+    "CenterAddr": "127.0.0.1:10050",
+    "ListenOnAddr": "",
+    "LoggerAddr": "127.0.0.1:10001",
     "UseApollo": false,
     "Config": {
         "appID": "mango-apollo",
@@ -15,68 +15,61 @@
         "secret": ""
     },
     "CommonServers": [
-        {
-            "appID":"",
-            "cluster":"",
-            "namespaceName":"configs/config/common-server-login.json",
-            "serverType":7,
-            "serverID":0
-        },
 		{
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/common-server-center.json",
+            "namespaceName":"configs/config/center.json",
             "serverType":6,
             "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/common-server-list.json",
-            "serverType":11,
-            "serverID":0
-        },
-        {
-            "appID":"",
-            "cluster":"",
-            "namespaceName":"configs/config/common-server-property.json",
-            "serverType":12,
-            "serverID":0
-        },
-        {
-            "appID":"",
-            "cluster":"10100",
-            "namespaceName":"configs/config/mango-gateway-ddz.gateway-100.json",
+            "namespaceName":"configs/config/gateway-100.json",
             "serverType":5,
             "serverID":100
         },
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/mango-gateway-ddz.gateway-101.json",
-            "serverType":5,
-            "serverID":101
+            "namespaceName":"configs/config/login.json",
+            "serverType":7,
+            "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/mango-gateway-ddz.gateway-102.json",
-            "serverType":5,
-            "serverID":102
+            "namespaceName":"configs/config/list.json",
+            "serverType":11,
+            "serverID":0
         },
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/mango-table-ddz.table.json",
-            "serverType":14,
+            "namespaceName":"configs/config/property.json",
+            "serverType":12,
+            "serverID":0
+        },
+        {
+            "appID":"",
+            "cluster":"",
+            "namespaceName":"configs/config/table-1000.json",
+            "serverType":8,
+            "serverID":1000
+        },
+        {
+            "appID":"",
+            "cluster":"",
+            "namespaceName":"configs/config/room-2000.json",
+            "serverType":9,
             "serverID":2000
         },
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/mango-room-ddz.room.json",
-            "serverType":15,
-            "serverID":1000
+            "namespaceName":"configs/config/robot-3000.json",
+            "serverType":10,
+            "serverID":3000
         }
     ]
 }

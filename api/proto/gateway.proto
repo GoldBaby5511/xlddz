@@ -1,32 +1,29 @@
 syntax = "proto2";
-package bs.gate;
-option go_package ="/gate";
+package bs.gateway;
+option go_package ="/gateway";
 
-enum CMDID_Gate{
-	IDPulseReq=1;        	//测速请求
-	IDPulseRsp=2;        	//测速回复
-	IDTransferDataReq=3; 	//数据转发请求
-	IDTransferDataRsp=4; 	//数据转发回复
-	IDAuthInfo=5;        	//连接认证信息
-	IDLoginToken=6;			//Gate向client发送登录token
-	IDHelloReq=7;        	//握手请求
-	IDHelloRsp=8;        	//握手回复
-
-	IDLast=10;
-};
+enum CMDGateway{
+	IDPulseReq					= 1;        	//测速请求
+	IDPulseRsp					= 2;        	//测速回复
+	IDTransferDataReq			= 3; 			//数据转发请求
+	IDTransferDataRsp			= 4; 			//数据转发回复
+	IDAuthInfo					= 5;        	//认证信息
+	IDHelloReq					= 6;        	//握手请求
+	IDHelloRsp					= 7;        	//握手回复
+}
 
 //测速请求
 message	PulseReq{
 	optional uint32 my_speed=1;
 	optional uint32 speed_data=2;
 	optional bytes  attached_data=3;
-};
+}
 
 //测速请求
 message	PulseRsp{
 	optional uint32 speed_data=2;
 	optional bytes 	attachd_data=3;
-};
+}
 
 //数据转发请求
 message TransferDataReq{
@@ -62,19 +59,11 @@ message HelloReq{
    optional uint32  ad_id=2;
    optional string  others=3;
    optional uint32  builder_no =4;      
-   optional uint32  game_kind = 5;      // 1 表示大厅
+   optional uint32  game_kind = 5;      
    optional string  client_version=6;
-
-   //=1 表示pc 
-   //=2 表示ios
-   //=3 表示android
-   //=4 表示win10+
-   //其他待定
    optional uint32  client_type = 7;
-
-   //发送本机保存的guid
    optional string  guid = 8;
-};
+}
 
 //握手回复
 message HelloRsp{
