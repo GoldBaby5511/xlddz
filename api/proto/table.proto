@@ -1,4 +1,5 @@
 syntax = "proto2";
+//import "types.proto";
 package bs.table;
 option go_package ="/table";
 
@@ -45,8 +46,8 @@ message SetPlayerToTableRsp{
 }
 
 message MatchTableReq{
-	optional uint64 table_id = 1;
-	repeated uint64 players = 2;
+	optional uint64 				table_id = 1;
+	repeated uint64 	players = 2;
 }
 
 message MatchTableRsp{

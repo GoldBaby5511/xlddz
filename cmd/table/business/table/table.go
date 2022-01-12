@@ -1,6 +1,7 @@
 package table
 
 import (
+	"github.com/golang/protobuf/proto"
 	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
 	g "mango/pkg/gate"
@@ -45,10 +46,9 @@ func (t *Table) SendTableData(seatID uint32, bm n.BaseMessage) {
 	} else {
 		pl, ok := t.Players[seatID]
 		if !ok {
-			log.Debug("", "没找打，seatID=%d", seatID)
+			log.Warning("", "没找到,seatID=%d,id=%v,hostId=%v", seatID, t.id, t.HostAppID)
 			return
 		}
-		log.Debug("", "发送，seatID=%d,GateConnID=%v", seatID, pl.GateConnID)
 		g.SendMessage2Client(bm, pl.GateConnID, 0)
 	}
 }
@@ -59,12 +59,15 @@ func (t *Table) WriteGameScore() {
 }
 
 func (t *Table) GameOver() {
+	t.Players = make(map[uint32]*player.Player)
 	var over tCMD.GameOver
+	over.TableId = proto.Uint64(t.id)
 	g.SendData2App(n.AppRoom, t.HostAppID, n.CMDTable, uint32(tCMD.CMDTable_IDGameOver), &over)
 }
 
 func (t *Table) Reset() {
 	t.HostAppID = 0
+	t.Players = make(map[uint32]*player.Player)
 }
 
 func (t *Table) SetHostID(hostID uint32) {
@@ -80,6 +83,10 @@ func (t *Table) GeTableID() uint64 {
 }
 
 func (t *Table) SetPlayer(pl *player.Player) {
+	if _, ok := t.Players[pl.SeatID]; ok {
+		log.Warning("", "有人了,id=%v,userId=%v,seatId=%v", t.id, pl.UserID, pl.SeatID)
+		return
+	}
 	t.Players[pl.SeatID] = pl
 }
 

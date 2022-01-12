@@ -4,6 +4,8 @@
 // 	protoc        v3.19.1
 // source: table.proto
 
+//import "types.proto";
+
 package table
 
 import (

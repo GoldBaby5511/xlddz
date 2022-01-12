@@ -24,28 +24,17 @@ func init() {
 	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
 	g.MsgRegister(&tCMD.MatchTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
 	g.MsgRegister(&tCMD.GameMessage{}, n.CMDTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
-	g.EventRegister(g.ConnectSuccess, connectSuccess)
-	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 }
 
-func connectSuccess(args []interface{}) {
-	log.Info("连接", "来了老弟,参数数量=%d", len(args))
-}
-
-func disconnect(args []interface{}) {
-	log.Info("连接", "告辞中,参数数量=%d", len(args))
-}
-
 func configChangeNotify(args []interface{}) {
-	tableCount := apollo.GetConfigAsInt64("桌子数量", 2000)
+	tableCount := apollo.GetConfigAsInt64("桌子数量", 5000)
 	if len(freeTables) == 0 && len(usedTables) == 0 && tableCount != 0 {
+		log.Info("配置", "初始化桌子,tableCount=%d", tableCount)
 		for i := 0; i < int(tableCount); i++ {
 			freeTables[uint64(i)] = table.NewTable(uint64(i), new(ddz.Sink))
 		}
 	}
-
-	log.Info("配置", "真的收到了配置消息=%d,%d", len(args), tableCount)
 }
 
 func handleApplyReq(args []interface{}) {
@@ -53,10 +42,11 @@ func handleApplyReq(args []interface{}) {
 	m := (b.MyMessage).(*tCMD.ApplyReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	log.Debug("", "收到申请,ApplyCount=%d,len=%d", m.GetApplyCount(), len(freeTables))
 	if len(freeTables) < int(m.GetApplyCount()) {
+		log.Warning("", "空闲桌子不够了,ApplyCount=%d,len=%d", m.GetApplyCount(), len(freeTables))
 		return
 	}
+	log.Debug("", "收到申请,ApplyCount=%d,len=%d", m.GetApplyCount(), len(freeTables))
 
 	var rsp tCMD.ApplyRsp
 	rsp.ApplyCount = proto.Uint32(m.GetApplyCount())
@@ -104,8 +94,11 @@ func handleSetPlayerToTableReq(args []interface{}) {
 
 	pl := getPlayer(m.GetUserId())
 	if pl != nil {
+		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserID, m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
 		return
 	}
+
+	log.Debug("", "收到入座,UserID=%v,SeatId=%v,TableId=%d,len=%d,srcID=%d", m.GetUserId(), m.GetSeatId(), m.GetTableId(), len(freeTables), srcApp.AppID)
 
 	pl = player.NewPlayer()
 	pl.UserID = m.GetUserId()
@@ -115,8 +108,6 @@ func handleSetPlayerToTableReq(args []interface{}) {
 	pl.GateConnID = m.GetGateconnid()
 	pl.State = player.SitdownState
 	t.SetPlayer(pl)
-
-	log.Debug("", "收到入座,UserID=%v,TableId=%d,len=%d,srcID=%d", pl.UserID, m.GetTableId(), len(freeTables), srcApp.AppID)
 }
 
 func handleMatchTableReq(args []interface{}) {

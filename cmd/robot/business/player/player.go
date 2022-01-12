@@ -10,10 +10,12 @@ import (
 	tCMD "mango/api/table"
 	"mango/api/types"
 	"mango/pkg/conf"
+	"mango/pkg/conf/apollo"
 	"mango/pkg/log"
 	"mango/pkg/module"
 	n "mango/pkg/network"
 	"mango/pkg/network/protobuf"
+	"mango/pkg/timer"
 	"mango/pkg/util"
 	"math/rand"
 	"reflect"
@@ -42,7 +44,7 @@ type Player struct {
 	roomList       map[uint64]*types.RoomInfo
 	Account        string
 	PassWord       string
-	UserID         uint64
+	UserId         uint64
 	State          uint32
 	RoomID         uint32
 	TableServiceId uint32
@@ -55,7 +57,7 @@ func NewPlayer(account, passWord string) *Player {
 	p := new(Player)
 	p.Account = account
 	p.PassWord = passWord
-	p.UserID = 0
+	p.UserId = 0
 	p.State = NilState
 	p.roomList = make(map[uint64]*types.RoomInfo)
 	p.processor = protobuf.NewProcessor()
@@ -75,9 +77,8 @@ func NewPlayer(account, passWord string) *Player {
 	p.MsgRegister(&gameddz.OutCardRsp{}, n.CMDTable, uint16(gameddz.CMDGameddz_IDOutCardRsp), p.handleOutCardRsp)
 	p.MsgRegister(&gameddz.GameOver{}, n.CMDTable, uint16(gameddz.CMDGameddz_IDGameOver), p.handleGameOver)
 
-	s := rand.Intn(9) + 1
-	p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.Connect)
-	log.Debug("", "%v,%v秒后开始连接", p.Account, s)
+	p.Skeleton.AfterFunc(time.Duration(rand.Intn(9)+1)*time.Second, p.connect)
+
 	return p
 }
 
@@ -87,26 +88,33 @@ func (p *Player) MsgRegister(m proto.Message, mainCmdId uint32, subCmdId uint16,
 	chanRPC.Register(reflect.TypeOf(m), f)
 }
 
-func (p *Player) Connect() {
+func (p *Player) heartbeat() {
+	var req gateway.PulseReq
+	p.a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDPulseReq), &req)
+}
+
+func (p *Player) connect() {
 	tcpClient := new(n.TCPClient)
-	tcpClient.Addr = "127.0.0.1:10100"
+	tcpClient.Addr = apollo.GetConfig("网关地址", "127.0.0.1:10100")
 	tcpClient.PendingWriteNum = 0
 	tcpClient.AutoReconnect = false
 	tcpClient.NewAgent = func(conn *n.TCPConn) n.AgentServer {
 		a := &agentPlayer{tcpClient: tcpClient, conn: conn, p: p}
-		log.Debug("agentServer", "连接成功,%v", a.info)
-		p.connectSuccess(a)
+		p.a = a
+
+		var req gateway.HelloReq
+		a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDHelloReq), &req)
 		return a
 	}
 
-	log.Debug("agentServer", "开始连接")
+	log.Debug("", "开始连接,UserId=%v,a=%v", p.UserId, p.Account)
 
 	if tcpClient != nil {
 		tcpClient.Start()
 	}
 }
 
-func (p *Player) CheckRoomList() {
+func (p *Player) checkRoomList() {
 	var req list.RoomListReq
 	req.ListId = proto.Uint32(0)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDList), SubCmdID: uint16(list.CMDList_IDRoomListReq)}
@@ -114,7 +122,7 @@ func (p *Player) CheckRoomList() {
 	p.SendMessage2Gate(n.AppList, n.Send2AnyOne, bm)
 }
 
-func (p *Player) JoinRoom() {
+func (p *Player) joinRoom() {
 	if len(p.roomList) == 0 {
 		return
 	}
@@ -124,13 +132,13 @@ func (p *Player) JoinRoom() {
 		break
 	}
 
-	log.Debug("", "进入房间,a=%v,p=%v", p.Account, p.PassWord)
+	log.Debug("", "进入房间,UserId=%v,a=%v,p=%v", p.UserId, p.Account, p.PassWord)
 
 	p.State = JoinRoom
 	var req room.JoinReq
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(room.CMDRoom_IDJoinReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
-	p.SendMessage2Gate(r.RoomInfo.GetType(), r.RoomInfo.GetId(), bm)
+	p.SendMessage2Gate(r.AppInfo.GetType(), r.AppInfo.GetId(), bm)
 }
 
 func (p *Player) ActionRoom() {
@@ -138,7 +146,7 @@ func (p *Player) ActionRoom() {
 		return
 	}
 
-	log.Debug("", "房间动作,a=%v,p=%v", p.Account, p.PassWord)
+	log.Debug("", "房间动作,UserId=%v,a=%v,p=%v", p.UserId, p.Account, p.PassWord)
 
 	var req room.UserActionReq
 	req.Action = (*room.ActionType)(proto.Int32(int32(room.ActionType_Ready)))
@@ -150,9 +158,8 @@ func (p *Player) ActionRoom() {
 func (p *Player) handleHelloRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*gateway.HelloRsp)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
-	log.Debug("hello", "收到hello消息,RspFlag=%v", m.GetRspFlag())
+	log.Debug("", "收到hello消息,UserId=%v,a=%v,RspFlag=%v", p.UserId, p.Account, m.GetRspFlag())
 
 	var req login.LoginReq
 	req.Account = proto.String(p.Account)
@@ -160,20 +167,20 @@ func (p *Player) handleHelloRsp(args []interface{}) {
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogin), SubCmdID: uint16(login.CMDLogin_IDLoginReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd, TraceId: b.TraceId}
 	p.SendMessage2Gate(n.AppLogin, n.Send2AnyOne, bm)
+
+	p.Skeleton.LoopFunc(30*time.Second, p.heartbeat, timer.LoopForever)
 }
 
 func (p *Player) handleLoginRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*login.LoginRsp)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
-	log.Debug("hello", "收到登录回复消息,Result=%v", m.GetResult())
+	p.UserId = m.GetBaseInfo().GetUserId()
+
+	log.Debug("", "收到登录回复,UserId=%v,a=%v,Result=%v", p.UserId, p.Account, m.GetResult())
 	if m.GetResult() == login.LoginRsp_SUCCESS {
 		p.State = LoggedIn
-
-		s := rand.Intn(3) + 1
-		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.CheckRoomList)
-		log.Debug("", "%v,%v秒后开始获取列表", p.Account, s)
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.checkRoomList)
 	}
 }
 
@@ -181,14 +188,11 @@ func (p *Player) handleRoomListRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*list.RoomListRsp)
 
-	log.Debug("hello", "收到列表消息,len=%v", len(m.GetRooms()))
+	log.Debug("", "收到列表,UserId=%v,a=%v,len=%v", p.UserId, p.Account, len(m.GetRooms()))
 	for _, r := range m.GetRooms() {
-		regKey := util.MakeUint64FromUint32(r.GetRoomInfo().GetType(), r.GetRoomInfo().GetId())
+		regKey := util.MakeUint64FromUint32(r.AppInfo.GetType(), r.AppInfo.GetId())
 		p.roomList[regKey] = r
-
-		s := rand.Intn(3) + 1
-		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.JoinRoom)
-		log.Debug("", "%v,%v秒后开始加入房间", p.Account, s)
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.joinRoom)
 	}
 }
 
@@ -196,23 +200,19 @@ func (p *Player) handleJoinRoomRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*room.JoinRsp)
 
-	log.Debug("hello", "收到加入消息,Code=%v", m.GetErrInfo().GetCode())
+	log.Debug("", "收到加入,UserId=%v,a=%v,Code=%v", p.UserId, p.Account, m.GetErrInfo().GetCode())
 	if m.GetErrInfo().GetCode() == 0 {
 		p.State = StandingInRoom
 		p.RoomID = m.GetAppId()
-
-		s := rand.Intn(3) + 1
-		p.Skeleton.AfterFunc(time.Duration(s)*time.Second, p.ActionRoom)
-		log.Debug("", "%v,%v秒后开始房间动作", p.Account, s)
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.ActionRoom)
 	}
 }
 
 func (p *Player) handleRoomActionRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*room.UserActionRsp)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
-	log.Debug("hello", "收到动作消息消息,Code=%v", m.GetErrInfo().GetCode())
+	log.Debug("hello", "收到动作,UserId=%v,a=%v,Code=%v", p.UserId, p.Account, m.GetErrInfo().GetCode())
 	if m.GetErrInfo().GetCode() == 0 {
 		p.State = HandsUp
 	}
@@ -221,9 +221,9 @@ func (p *Player) handleRoomActionRsp(args []interface{}) {
 func (p *Player) handleUserStateChange(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*room.UserStateChange)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
-	log.Debug("hello", "状态变化,State=%v,tableId =%v, seatId =%v", m.GetUserState(), m.GetTableId(), m.GetSeatId())
+	log.Debug("hello", "状态变化,UserId=%v,a=%v,State=%v,tableId=%v,seatId=%v",
+		p.UserId, p.Account, m.GetUserState(), m.GetTableId(), m.GetSeatId())
 
 	p.TableServiceId = m.GetTableServiceId()
 	p.TableId = m.GetTableId()
@@ -233,13 +233,11 @@ func (p *Player) handleUserStateChange(args []interface{}) {
 func (p *Player) handleGameStart(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*gameddz.GameStart)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
 	p.Scene = GameBegin
-	log.Debug("hello", "收到游戏开始了消息,CurrentSeat=%v,p.SeatId=%v", m.GetCurrentSeat(), p.SeatId)
+	log.Debug("", "游戏开始,UserId=%v,a=%v,TableId=%v,CurrentSeat=%v,p.SeatId=%v", p.UserId, p.Account, p.TableId, m.GetCurrentSeat(), p.SeatId)
 
 	if p.SeatId == m.GetCurrentSeat() {
-		log.Debug("", "准备出牌,%v", p.Account)
 		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.outCards)
 	}
 }
@@ -247,9 +245,8 @@ func (p *Player) handleGameStart(args []interface{}) {
 func (p *Player) handleOutCardRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*gameddz.OutCardRsp)
-	//a := args[n.AgentIndex].(n.AgentClient)
 
-	log.Debug("hello", "收到出牌消息,CurrentSeat=%v,SeatId=%v", m.GetCurrentSeat(), p.SeatId)
+	log.Debug("", "收到出牌消息,UserId=%v,a=%v,CurrentSeat=%v,SeatId=%v", p.UserId, p.Account, m.GetCurrentSeat(), p.SeatId)
 
 	if p.SeatId == m.GetCurrentSeat() {
 		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.outCards)
@@ -261,7 +258,7 @@ func (p *Player) handleGameOver(args []interface{}) {
 	//m := (b.MyMessage).(*gameddz.GameOver)
 	//a := args[n.AgentIndex].(n.AgentClient)
 	p.Scene = GameOver
-	log.Debug("hello", "收到游戏结束消息")
+	log.Debug("", "游戏结束消息,UserId=%v,a=%v", p.UserId, p.Account)
 
 	p.State = StandingInRoom
 	p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+3)*time.Second, p.ActionRoom)
@@ -273,7 +270,7 @@ func (p *Player) outCards() {
 		return
 	}
 
-	log.Debug("hello", " 出牌,Account=%v,SeatId = %v,Scene=%v", p.Account, p.SeatId, p.Scene)
+	log.Debug("", "出牌,UserId=%v,a=%v,SeatId=%v,Scene=%v", p.UserId, p.Account, p.SeatId, p.Scene)
 
 	var gameMessage tCMD.GameMessage
 	gameMessage.SubCmdid = proto.Uint32(uint32(gameddz.CMDGameddz_IDOutCardReq))
@@ -285,13 +282,6 @@ func (p *Player) outCards() {
 	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(tCMD.CMDTable_IDGameMessage)}
 	bm := n.BaseMessage{MyMessage: &gameMessage, Cmd: cmd}
 	p.SendMessage2Gate(n.AppTable, p.TableServiceId, bm)
-}
-
-func (p *Player) connectSuccess(a *agentPlayer) {
-	p.a = a
-
-	var req gateway.HelloReq
-	p.a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDHelloReq), &req)
 }
 
 func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessage) {
@@ -326,8 +316,6 @@ func (a *agentPlayer) Run() {
 			log.Warning("", "processor==nil,cmd=%v", bm.Cmd)
 			break
 		}
-
-		log.Debug("", "收到消息,bm=%v,len=%v", bm, len(msgData))
 
 		unmarshalCmd := bm.Cmd
 		var cmd, msg, dataReq interface{}

@@ -9,6 +9,7 @@ import (
 	tCMD "mango/api/table"
 	"mango/api/types"
 	"mango/cmd/room/business/player"
+	"mango/cmd/room/business/table"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
@@ -20,7 +21,6 @@ import (
 )
 
 var (
-	tables   []uint64
 	userList map[uint64]*player.Player = make(map[uint64]*player.Player)
 )
 
@@ -41,7 +41,7 @@ func init() {
 func configChangeNotify(args []interface{}) {
 	tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 0)
 	if tableAppID != 0 {
-		g.Skeleton.AfterFunc(3*time.Second, checkApplyTable)
+		g.Skeleton.LoopFunc(3*time.Second, table.CheckApplyTable, timer.LoopForever)
 	}
 
 	log.Info("配置", "真的收到了配置消息=%d,%d", len(args), tableAppID)
@@ -52,15 +52,18 @@ func handleApplyRsp(args []interface{}) {
 	m := (b.MyMessage).(*tCMD.ApplyRsp)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	tables = append(tables, m.GetTableIds()...)
-	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d", m.GetApplyCount(), srcApp.AppID, len(tables))
+	for _, v := range m.GetTableIds() {
+		table.NewTable(v)
+	}
+	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d",
+		m.GetApplyCount(), srcApp.AppID, table.GetTableCount(table.All))
 
 	var req list.RoomRegisterReq
 	req.Info = new(types.RoomInfo)
-	req.Info.RoomInfo = new(types.BaseAppInfo)
-	req.Info.RoomInfo.Name = proto.String(conf.AppInfo.Name)
-	req.Info.RoomInfo.Type = proto.Uint32(conf.AppInfo.Type)
-	req.Info.RoomInfo.Id = proto.Uint32(conf.AppInfo.Id)
+	req.Info.AppInfo = new(types.BaseAppInfo)
+	req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
+	req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
+	req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
 	g.SendData2App(n.AppList, n.Send2AnyOne, n.CMDList, uint32(list.CMDList_IDRoomRegisterReq), &req)
 }
 
@@ -69,10 +72,10 @@ func handleWriteGameScore(args []interface{}) {
 	m := (b.MyMessage).(*tCMD.WriteGameScore)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	log.Debug("", "收到写分,tableId=%d,AttAppid=%d,len=%d", m.GetTableId(), srcApp.AppID, len(tables))
+	log.Debug("", "收到写分,tableId=%d,AttAppid=%d,len=%d",
+		m.GetTableId(), srcApp.AppID, table.GetTableCount(table.Free))
 
 	var req property.ModifyPropertyReq
-	//for _,p:= range m.
 	p := new(types.PropItem)
 	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
 	p.PropCount = proto.Int64(100)
@@ -85,7 +88,8 @@ func handleGameOver(args []interface{}) {
 	m := (b.MyMessage).(*tCMD.GameOver)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	log.Debug("", "收到结束,table=%d,AttAppid=%d,len=%d", m.GetTableId(), srcApp.AppID, len(tables))
+	log.Debug("", "收到结束,table=%d,AttAppid=%d",
+		m.GetTableId(), srcApp.AppID)
 
 	for _, p := range userList {
 		if p.TableId != m.GetTableId() {
@@ -93,21 +97,16 @@ func handleGameOver(args []interface{}) {
 		}
 		setUserState(p, player.StandingInRoom)
 	}
+	table.GameOver(m.GetTableId())
 }
 
 func handleRoomRegisterRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*list.RoomRegisterRsp)
-	//srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
-
-	//tables = append(tables, m.GetTableIds()...)
-	//log.Debug("", "tables=%v", tables)
-	log.Debug("", "注册返回,AttAppid=%d,len=%d", b.AgentInfo.AppID, len(tables))
+	log.Debug("", "注册返回,AttAppid=%d", b.AgentInfo.AppID)
 }
 
 func handleJoinReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*client.JoinRoomReq)
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	log.Debug("", "进入房间,userId = %v,Gateconnid=%v,appID =%v",
@@ -166,7 +165,6 @@ func handleUserActionReq(args []interface{}) {
 
 func handleExitReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	//m := (b.MyMessage).(*client.ExitRoomReq)
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
@@ -195,16 +193,6 @@ func handleModifyPropertyRsp(args []interface{}) {
 	log.Debug("", "修改财富返回,userId=%v, opType=%v", m.GetUserId(), m.GetOpType())
 }
 
-func checkApplyTable() {
-	if len(tables) == 0 {
-		var req tCMD.ApplyReq
-		req.ApplyCount = proto.Uint32(100)
-		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 1000)
-		g.SendData2App(n.AppTable, uint32(tableAppID), n.CMDTable, uint32(tCMD.CMDTable_IDApplyReq), &req)
-		g.Skeleton.AfterFunc(3*time.Second, checkApplyTable)
-	}
-}
-
 func checkMatchTable() {
 	var matchPlayers []*player.Player
 	for _, pl := range userList {
@@ -218,18 +206,23 @@ func checkMatchTable() {
 		tablePlayers := matchPlayers[:seatCount]
 		matchPlayers = matchPlayers[seatCount:]
 
-		log.Debug("", "len=%v", len(matchPlayers))
-
-		tableID := tables[len(tables)-1]
+		log.Debug("", "allCount=%v,len=%v", len(userList), len(matchPlayers))
+		t := table.GetAFreeTable()
+		if t == nil {
+			log.Warning("", "木有空闲桌子了,allCount=%v,len=%v", len(userList), len(matchPlayers))
+			break
+		}
+		tableID := t.Id
 		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 1000)
 		var req tCMD.MatchTableReq
 		req.TableId = proto.Uint64(tableID)
 		for i := 0; i < int(seatCount); i++ {
-			log.Debug("", "设置用户,userId=%v", tablePlayers[i].UserID)
+			log.Debug("", "设置用户,userId=%v,tableID=%v", tablePlayers[i].UserID, tableID)
 			req.Players = append(req.Players, tablePlayers[i].UserID)
 			tablePlayers[i].TableServiceId = uint32(tableAppID)
 			tablePlayers[i].TableId = tableID
 			tablePlayers[i].SeatId = uint32(i)
+			t.Players[uint32(i)] = tablePlayers[i]
 			setPlayerToTable(tablePlayers[i], uint32(tableAppID))
 			setUserState(tablePlayers[i], player.PlayingState)
 		}
@@ -245,7 +238,6 @@ func setPlayerToTable(pl *player.Player, tableAppID uint32) {
 	req.SeatId = proto.Uint32(pl.SeatId)
 	req.Gateconnid = proto.Uint64(pl.GateConnId)
 	g.SendData2App(n.AppTable, tableAppID, n.CMDTable, uint32(tCMD.CMDTable_IDSetPlayerToTableReq), &req)
-
 }
 
 func setUserState(p *player.Player, s uint32) {
@@ -265,5 +257,4 @@ func setUserState(p *player.Player, s uint32) {
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserStateChange)}
 		g.SendMessage2Client(rspBm, p.GateConnId, 0)
 	}
-
 }

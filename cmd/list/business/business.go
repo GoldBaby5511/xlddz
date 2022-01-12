@@ -24,9 +24,9 @@ func handleRoomRegisterReq(args []interface{}) {
 	m := (b.MyMessage).(*list.RoomRegisterReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	regKey := util.MakeUint64FromUint32(m.GetInfo().GetRoomInfo().GetType(), m.GetInfo().GetRoomInfo().GetId())
+	regKey := util.MakeUint64FromUint32(m.GetInfo().GetAppInfo().GetType(), m.GetInfo().GetAppInfo().GetId())
 	roomList[regKey] = m.GetInfo()
-	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppID, m.GetInfo().GetRoomInfo().GetId())
+	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppID, m.GetInfo().GetAppInfo().GetId())
 }
 
 func handleRoomListReq(args []interface{}) {

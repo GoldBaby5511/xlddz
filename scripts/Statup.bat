@@ -1,5 +1,15 @@
 @echo build and run
 @cd ..
+@if not exist .\cmd\config\configs mkdir .\cmd\config\configs\config
+@copy .\configs\config\center.json .\cmd\config\configs\config
+@copy .\configs\config\config.json .\cmd\config\configs\config
+@copy .\configs\config\gateway-100.json .\cmd\config\configs\config
+@copy .\configs\config\list.json .\cmd\config\configs\config
+@copy .\configs\config\login.json .\cmd\config\configs\config
+@copy .\configs\config\property.json .\cmd\config\configs\config
+@copy .\configs\config\robot-3000.json .\cmd\config\configs\config
+@copy .\configs\config\room-2000.json .\cmd\config\configs\config
+@copy .\configs\config\table-1000.json .\cmd\config\configs\config
 
 @echo call build
 @call:build logger -Type=1 -Id=1 -CenterAddr="127.0.0.1:10050"

@@ -3,11 +3,11 @@ package log
 import (
 	"errors"
 	"fmt"
+	"mango/pkg/util"
 	"os"
 	"path"
 	"runtime"
 	"time"
-	"mango/pkg/util"
 )
 
 type LogInfo struct {
@@ -178,8 +178,8 @@ func printLog(classname, file, format string, line, level int, a ...interface{})
 	//组装格式
 	if screenPrint != 0 || level >= errorLevel || cb == nil {
 		//屏幕打印时调用位置不打印了 + fmt.Sprintf(" << %s, line #%d, func: %v ", file, line, runtime.FuncForPC(pc).Name())
-		format = nowTimeString() + GetLogLevelStr(level) + format
-		logStr := fmt.Sprintf(format, a...)
+		//format = nowTimeString() + GetLogLevelStr(level) + format
+		logStr := fmt.Sprintf(nowTimeString()+GetLogLevelStr(level)+format, a...)
 		fmt.Println(logStr)
 
 		//失去连接时写入文件保存
