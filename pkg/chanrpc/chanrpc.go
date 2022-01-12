@@ -130,7 +130,7 @@ func (s *Server) exec(ci *CallInfo) (err error) {
 func (s *Server) Exec(ci *CallInfo) {
 	err := s.exec(ci)
 	if err != nil {
-		log.Error("Server", "%v", err)
+		log.Error("Server", "22wwqq%v", err)
 	}
 }
 
@@ -221,7 +221,7 @@ func (c *Client) f(id interface{}, n int) (f interface{}, err error) {
 
 	f = c.s.functions[id]
 	if f == nil {
-		err = fmt.Errorf("function id %v: function not registered", id)
+		err = fmt.Errorf("function [id=%v] not registered", id)
 		return
 	}
 

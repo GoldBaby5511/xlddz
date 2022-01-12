@@ -7,8 +7,44 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"syscall"
 	"time"
 )
+
+var (
+	kernel32    *syscall.LazyDLL  = syscall.NewLazyDLL(`kernel32.dll`)
+	proc        *syscall.LazyProc = kernel32.NewProc(`SetConsoleTextAttribute`)
+	CloseHandle *syscall.LazyProc = kernel32.NewProc(`CloseHandle`)
+
+	// 给字体颜色对象赋值
+	FontColor Color = Color{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+)
+
+type Color struct {
+	black       int // 黑色
+	blue        int // 蓝色
+	green       int // 绿色
+	cyan        int // 青色
+	red         int // 红色
+	purple      int // 紫色
+	yellow      int // 黄色
+	lightGray   int // 淡灰色（系统默认值）
+	gray        int // 灰色
+	lightBlue   int // 亮蓝色
+	lightGreen  int // 亮绿色
+	lightCyan   int // 亮青色
+	lightRed    int // 亮红色
+	lightPurple int // 亮紫色
+	lightYellow int // 亮黄色
+	white       int // 白色
+}
+
+// 输出有颜色的字体
+func ColorPrint(s string, i int) {
+	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
+	print(s)
+	CloseHandle.Call(handle)
+}
 
 type LogInfo struct {
 	File      string
@@ -16,13 +52,13 @@ type LogInfo struct {
 	Classname string
 	Level     int
 	LogStr    string
-	TimeMs    uint64
+	TimeNs    int64
 }
 
-//全局变量
 var (
 	logger            *Logger                                    = nil
 	screenPrint       int                                        = 1
+	chanPrint         chan LogInfo                               = make(chan LogInfo, 100)
 	GetMinLevelConfig func(key string, defaultValue int64) int64 = nil
 	cb                func(i LogInfo)                            = nil
 	tempLogInfo       []LogInfo
@@ -52,8 +88,28 @@ type Logger struct {
 	pathname string
 }
 
-func New(appName string) (*Logger, error) {
+func init() {
+	go func() {
+		for {
+			i := <-chanPrint
+			logStr := i.LogStr
+			if i.Level >= warning && runtime.GOOS == `windows` {
+				if i.Level == warning {
+					ColorPrint(logStr, FontColor.yellow)
+				} else if i.Level == errorLevel {
+					ColorPrint(logStr, FontColor.red)
+				} else {
+					ColorPrint(logStr, FontColor.lightRed)
+				}
+				ColorPrint("\n", FontColor.lightGray)
+			} else {
+				fmt.Println(logStr)
+			}
+		}
+	}()
+}
 
+func New(appName string) (*Logger, error) {
 	pathname := ""
 	curPath, err := util.GetCurrentPath()
 	if err == nil {
@@ -129,7 +185,7 @@ func (l *Logger) doPrintf(level int, logInfo string) {
 	}
 
 	if level == fatalLevel {
-		os.Exit(1)
+		fatalExit()
 	}
 }
 
@@ -153,10 +209,8 @@ func SetCallback(c func(i LogInfo)) {
 		//清空缓存
 		tempLogInfo = append([]LogInfo{})
 	}
-
 }
 
-//显示日志开关
 func SetScreenPrint(print int) {
 	screenPrint = print
 }
@@ -169,18 +223,17 @@ func nowTimeString() string {
 }
 
 func printLog(classname, file, format string, line, level int, a ...interface{}) {
-
-	//配置等级判断
 	if GetMinLevelConfig != nil && level < int(GetMinLevelConfig("最低日志级别", 0)) {
 		return
 	}
 
 	//组装格式
 	if screenPrint != 0 || level >= errorLevel || cb == nil {
-		//屏幕打印时调用位置不打印了 + fmt.Sprintf(" << %s, line #%d, func: %v ", file, line, runtime.FuncForPC(pc).Name())
-		//format = nowTimeString() + GetLogLevelStr(level) + format
 		logStr := fmt.Sprintf(nowTimeString()+GetLogLevelStr(level)+format, a...)
-		fmt.Println(logStr)
+		chanPrint <- LogInfo{
+			LogStr: logStr,
+			Level:  level,
+		}
 
 		//失去连接时写入文件保存
 		if cb == nil && logger != nil {
@@ -196,7 +249,7 @@ func printLog(classname, file, format string, line, level int, a ...interface{})
 		Classname: classname,
 		Level:     level,
 		LogStr:    fmt.Sprintf(format, a...),
-		TimeMs:    uint64(time.Now().UnixNano() / 1000000),
+		TimeNs:    time.Now().UnixNano(),
 	}
 	if cb != nil {
 		cb(logInfo)
@@ -206,13 +259,11 @@ func printLog(classname, file, format string, line, level int, a ...interface{})
 }
 
 func Debug(classname, format string, a ...interface{}) {
-	//获取调用位置信息
 	_, file, line, _ := runtime.Caller(2)
 	printLog(classname, file, format, line, debugLevel, a...)
 }
 
 func Info(classname, format string, a ...interface{}) {
-	//获取调用位置信息
 	_, file, line, _ := runtime.Caller(2)
 	printLog(classname, file, format, line, info, a...)
 }
@@ -229,7 +280,12 @@ func Error(classname, format string, a ...interface{}) {
 
 func Fatal(classname, format string, a ...interface{}) {
 	_, file, line, _ := runtime.Caller(2)
-	printLog(classname, file, format, line, errorLevel, a...)
+	printLog(classname, file, format, line, fatalLevel, a...)
+	fatalExit()
+}
+
+func fatalExit() {
+	time.Sleep(1 * time.Second)
 	os.Exit(1)
 }
 

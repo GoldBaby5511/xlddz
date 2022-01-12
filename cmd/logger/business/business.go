@@ -139,7 +139,7 @@ func handleLogReq(args []interface{}) {
 	now := time.Now()
 	timeStr := fmt.Sprintf("[local:%v-%02d-%02d %02d:%02d:%02d.%09d]",
 		now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond())
-	now = time.Unix(0, int64(m.GetTimeMs()*1000000))
+	now = time.Unix(0, m.GetTimeNs())
 	timeStr = timeStr + fmt.Sprintf("[remote:%v-%02d-%02d %02d:%02d:%02d.%09d]\t",
 		now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond())
 	className := fmt.Sprintf("[%s]", string(m.GetClassName()))

@@ -76,7 +76,7 @@ func (a *agentClient) OnClose() {
 	if agentChanRPC != nil {
 		err := agentChanRPC.Call0(Disconnect, a, a.id)
 		if err != nil {
-			log.Error("agentClient", "chanrpc error: %v", err)
+			log.Warning("agentClient", "agentClient OnClose err=%v", err)
 		}
 	}
 }

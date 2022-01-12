@@ -240,7 +240,7 @@ func ConnectLogServer(logAddr string) {
 				logReq.Content = []byte(i.LogStr)
 				logReq.ClassName = []byte(i.Classname)
 				logReq.LogLevel = proto.Uint32(uint32(i.Level))
-				logReq.TimeMs = proto.Uint64(i.TimeMs)
+				logReq.TimeNs = proto.Int64(i.TimeNs)
 				logReq.SrcAppname = proto.String(conf.AppInfo.Name)
 				cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogger), SubCmdID: uint16(logger.CMDLogger_IDLogReq)}
 				bm := n.BaseMessage{MyMessage: &logReq, Cmd: cmd}

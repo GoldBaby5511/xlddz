@@ -1,11 +1,11 @@
 package network
 
 import (
+	"mango/pkg/log"
 	"net"
 	"strings"
 	"sync"
 	"time"
-	"mango/pkg/log"
 )
 
 //TCPClient 客户端连接
@@ -104,7 +104,7 @@ func (client *TCPClient) dial() net.Conn {
 			return conn
 		}
 
-		log.Warning("TCPClient", "error: %v,index=%v", err, index)
+		log.Warning("TCPClient", "err=%v,index=%v", err, index)
 		index++
 		if index >= len(addr) {
 			if client.AutoReconnect {
