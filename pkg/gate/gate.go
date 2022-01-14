@@ -18,6 +18,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -209,17 +210,14 @@ func handleApolloCfgRsp(args []interface{}) {
 }
 
 func ConnectLogServer(logAddr string) {
-	log.Info("gate", "开始日志服务器,Addr=%v", logAddr)
+	log.Info("gate", "连接日志服务器,Addr=%v", logAddr)
 	if conf.AppInfo.Type != n.AppLogger && logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
-		if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
+		if conf.RunInLocalDocker() {
 			addr := strings.Split(logAddr, "|")
 			logAddr = ""
 			for i, v := range addr {
 				curConnAddr := v
-				curAddr := strings.Split(curConnAddr, ":")
-				if len(curAddr) == 2 {
-					logAddr = logAddr + "logger:" + curAddr[1]
-				}
+				logAddr = logAddr + "logger:" + strconv.Itoa(util.GetPortFromIPAddress(curConnAddr))
 				if i != len(addr)-1 {
 					logAddr = logAddr + "|"
 				}
@@ -261,11 +259,8 @@ func sendRegAppReq(a *agentServer) {
 	registerReq.AppType = proto.Uint32(conf.AppInfo.Type)
 	registerReq.AppId = proto.Uint32(conf.AppInfo.Id)
 	myAddress := conf.AppInfo.ListenOnAddr
-	if v, ok := util.ParseArgsUint32(conf.ArgDockerRun); ok && v == 1 {
-		addr := strings.Split(conf.AppInfo.ListenOnAddr, ":")
-		if len(addr) == 2 {
-			myAddress = conf.AppInfo.Name + ":" + addr[1]
-		}
+	if conf.RunInLocalDocker() {
+		myAddress = strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
 	}
 	registerReq.MyAddress = proto.String(myAddress)
 	a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
@@ -322,7 +317,6 @@ func getDestAppInfo(destAppType, destAppid uint32) []*agentServer {
 		}
 		return destCount
 	}
-	sendResult := false
 	if destTypeAppCount() != 0 {
 		switch destAppid {
 		case n.Send2All:
@@ -331,12 +325,10 @@ func getDestAppInfo(destAppType, destAppid uint32) []*agentServer {
 					destAgent = append(destAgent, v)
 				}
 			}
-			sendResult = true
 		case n.Send2AnyOne:
 			for _, v := range servers {
 				if v.info.AppType == destAppType {
 					destAgent = append(destAgent, v)
-					sendResult = true
 					break
 				}
 			}
@@ -344,14 +336,13 @@ func getDestAppInfo(destAppType, destAppid uint32) []*agentServer {
 			for _, v := range servers {
 				if v.info.AppType == destAppType && v.info.AppID == destAppid {
 					destAgent = append(destAgent, v)
-					sendResult = true
 					break
 				}
 			}
 		}
 	}
 
-	if !sendResult {
+	if len(destAgent) == 0 {
 		log.Error("转发", "异常,消息转发失败,appCount=%v,destAppType=%v,destAppid=%v",
 			destTypeAppCount(), destAppType, destAppid)
 	}

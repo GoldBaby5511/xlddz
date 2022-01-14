@@ -1,7 +1,11 @@
 package util
 
 import (
+	"bytes"
+	"fmt"
 	"os"
+	"os/exec"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -58,4 +62,44 @@ func GetHUint32FromUint64(v uint64) uint32 {
 
 func GetLUint32FromUint64(v uint64) uint32 {
 	return uint32(v & 0xFFFFFFFF)
+}
+
+func GetIPFromIPAddress(addr string) string {
+	a := strings.Split(addr, ":")
+	if len(a) != 2 {
+		return ""
+	}
+	return a[0]
+}
+
+func GetPortFromIPAddress(addr string) int {
+	a := strings.Split(addr, ":")
+	if len(a) != 2 {
+		return 0
+	}
+	p, _ := strconv.Atoi(a[1])
+	return p
+}
+
+func PortInUse(portNumber int) int {
+	if runtime.GOOS != `windows` {
+		return -1
+	}
+	res := -1
+	var outBytes bytes.Buffer
+	cmdStr := fmt.Sprintf("netstat -ano -p tcp | findstr %d", portNumber)
+	cmd := exec.Command("cmd", "/c", cmdStr)
+	cmd.Stdout = &outBytes
+	cmd.Run()
+	resStr := outBytes.String()
+	r := regexp.MustCompile(`\s\d+\s`).FindAllString(resStr, -1)
+	if len(r) > 0 {
+		pid, err := strconv.Atoi(strings.TrimSpace(r[0]))
+		if err != nil {
+			res = -1
+		} else {
+			res = pid
+		}
+	}
+	return res
 }

@@ -285,7 +285,7 @@ func Fatal(classname, format string, a ...interface{}) {
 }
 
 func fatalExit() {
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second / 2)
 	os.Exit(1)
 }
 

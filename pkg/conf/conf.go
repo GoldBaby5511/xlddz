@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"mango/pkg/log"
 	"mango/pkg/util"
-	"strings"
+	"strconv"
 )
 
 const (
@@ -63,16 +63,31 @@ func LoadBaseConfig() {
 	if AppInfo.ListenOnAddr == "" {
 		AppInfo.ListenOnAddr = fmt.Sprintf("0.0.0.0:%d", 10000+AppInfo.Id)
 	}
-	if v, ok := util.ParseArgsUint32(ArgDockerRun); ok && v == 1 {
-		addr := strings.Split(AppInfo.CenterAddr, ":")
-		if len(addr) == 2 {
-			AppInfo.CenterAddr = "center:" + addr[1]
-		}
+	if AppInfo.CenterAddr == "" {
+		AppInfo.CenterAddr = "127.0.0.1:10050"
+		log.Warning("", "未指定中心服,使用默认地址,CenterAddr=%v", AppInfo.CenterAddr)
+	}
+	if RunInLocalDocker() {
+		AppInfo.CenterAddr = "center:" + strconv.Itoa(util.GetPortFromIPAddress(AppInfo.CenterAddr))
+	}
+
+	portPID := util.PortInUse(util.GetPortFromIPAddress(AppInfo.ListenOnAddr))
+	if portPID != -1 {
+		log.Fatal("初始化", "端口已被占用,PID=%v,AppInfo=%v", portPID, AppInfo)
+		return
 	}
 
 	if AppInfo.Name == "" || AppInfo.Type == 0 || AppInfo.Id == 0 || AppInfo.ListenOnAddr == "" || AppInfo.CenterAddr == "" {
 		log.Fatal("初始化", "初始参数异常,请检查,AppInfo=%v", AppInfo)
+		return
 	}
 
 	log.Debug("", "基础属性,%v", AppInfo)
+}
+
+func RunInLocalDocker() bool {
+	if v, ok := util.ParseArgsUint32(ArgDockerRun); ok && v == 1 {
+		return true
+	}
+	return false
 }
