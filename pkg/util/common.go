@@ -82,24 +82,34 @@ func GetPortFromIPAddress(addr string) int {
 }
 
 func PortInUse(portNumber int) int {
-	if runtime.GOOS != `windows` {
-		return -1
-	}
 	res := -1
-	var outBytes bytes.Buffer
-	cmdStr := fmt.Sprintf("netstat -ano -p tcp | findstr %d", portNumber)
-	cmd := exec.Command("cmd", "/c", cmdStr)
-	cmd.Stdout = &outBytes
-	cmd.Run()
-	resStr := outBytes.String()
-	r := regexp.MustCompile(`\s\d+\s`).FindAllString(resStr, -1)
-	if len(r) > 0 {
-		pid, err := strconv.Atoi(strings.TrimSpace(r[0]))
-		if err != nil {
-			res = -1
-		} else {
-			res = pid
+	resStr := ""
+	if runtime.GOOS == `windows` {
+		var outBytes bytes.Buffer
+		cmdStr := fmt.Sprintf("netstat -ano -p tcp | findstr %d", portNumber)
+		cmd := exec.Command("cmd", "/c", cmdStr)
+		cmd.Stdout = &outBytes
+		cmd.Run()
+		resStr = outBytes.String()
+	} else {
+		cmdStr := fmt.Sprintf("lsof -i:%d", portNumber)
+		output, _ := exec.Command("sh", "-c", cmdStr).CombinedOutput()
+		if len(output) > 0 {
+			resStr = string(output)
 		}
 	}
+
+	if resStr != "" {
+		r := regexp.MustCompile(`\s\d+\s`).FindAllString(resStr, -1)
+		if len(r) > 0 {
+			pid, err := strconv.Atoi(strings.TrimSpace(r[0]))
+			if err != nil {
+				res = -1
+			} else {
+				res = pid
+			}
+		}
+	}
+
 	return res
 }

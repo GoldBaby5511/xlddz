@@ -65,7 +65,7 @@ func LoadBaseConfig() {
 	}
 	if AppInfo.CenterAddr == "" {
 		AppInfo.CenterAddr = "127.0.0.1:10050"
-		log.Warning("", "未指定中心服,使用默认地址,CenterAddr=%v", AppInfo.CenterAddr)
+		log.Debug("", "未指定中心服,使用默认地址,CenterAddr=%v", AppInfo.CenterAddr)
 	}
 	if RunInLocalDocker() {
 		AppInfo.CenterAddr = "center:" + strconv.Itoa(util.GetPortFromIPAddress(AppInfo.CenterAddr))

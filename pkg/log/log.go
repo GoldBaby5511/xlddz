@@ -4,47 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"mango/pkg/util"
+	"mango/pkg/util/colorprint"
 	"os"
 	"path"
 	"runtime"
-	"syscall"
 	"time"
 )
-
-var (
-	kernel32    *syscall.LazyDLL  = syscall.NewLazyDLL(`kernel32.dll`)
-	proc        *syscall.LazyProc = kernel32.NewProc(`SetConsoleTextAttribute`)
-	CloseHandle *syscall.LazyProc = kernel32.NewProc(`CloseHandle`)
-
-	// 给字体颜色对象赋值
-	FontColor Color = Color{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-)
-
-type Color struct {
-	black       int // 黑色
-	blue        int // 蓝色
-	green       int // 绿色
-	cyan        int // 青色
-	red         int // 红色
-	purple      int // 紫色
-	yellow      int // 黄色
-	lightGray   int // 淡灰色（系统默认值）
-	gray        int // 灰色
-	lightBlue   int // 亮蓝色
-	lightGreen  int // 亮绿色
-	lightCyan   int // 亮青色
-	lightRed    int // 亮红色
-	lightPurple int // 亮紫色
-	lightYellow int // 亮黄色
-	white       int // 白色
-}
-
-// 输出有颜色的字体
-func ColorPrint(s string, i int) {
-	handle, _, _ := proc.Call(uintptr(syscall.Stdout), uintptr(i))
-	print(s)
-	CloseHandle.Call(handle)
-}
 
 type LogInfo struct {
 	File      string
@@ -93,15 +58,17 @@ func init() {
 		for {
 			i := <-chanPrint
 			logStr := i.LogStr
-			if i.Level >= warning && runtime.GOOS == `windows` {
+			if i.Level >= warning {
+				c := colorprint.FontColor.LightGray
 				if i.Level == warning {
-					ColorPrint(logStr, FontColor.yellow)
+					c = colorprint.FontColor.Yellow
 				} else if i.Level == errorLevel {
-					ColorPrint(logStr, FontColor.red)
+					c = colorprint.FontColor.Red
 				} else {
-					ColorPrint(logStr, FontColor.lightRed)
+					c = colorprint.FontColor.LightRed
 				}
-				ColorPrint("\n", FontColor.lightGray)
+				colorprint.ColorPrint(logStr, c)
+				colorprint.ColorPrint("\n", colorprint.FontColor.LightGray)
 			} else {
 				fmt.Println(logStr)
 			}
