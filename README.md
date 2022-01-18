@@ -12,22 +12,82 @@
 
 采用网状拓扑结构，中心center服务负责服务治理，除了日志服之外，其他所有服务两两互联且向center服务注册管理。
 
-* gateway：网关服务
-* center：中心服务
-* logger：日志服
+* gateway：网关服务(可水平扩展)
+* center：中心服务，服务注册、治理
+* logger：日志服，日志上报、预警
 * config：配置中心，支持携程apollo配置中心 或本地json文本配置文件，配置更新实时通知相应服务
-* login：登录服务
-* room：房间服务
-* table：桌子服务
-* 其他业务服务：比如 list、fund... ...(暂未实现)
+* login：登录服务，登录、在线管理等
+* room：房间服务，用户匹配等(可水平扩展)
+* table：桌子服务，游戏具体逻辑(可水平扩展)
+* list：房间列表服务，房间负载均衡、列表查询等
+* property：财富服务，用户道具增删改查
+* robot：机器人服务，模拟客户端行为、陪玩、压测(可水平扩展)
 
 ---
 
-## 用法
+## 使用
 
-* windows下执行statup.bat，依次编译并启动logger.exe、center.exe、config.exe、gateway.exe、login.exe
+### 脚本
 
-* 解压client，双击执行client.exe，单击“微信登录”，选择Test001
+* windows
+
+1. 启动：右键scripts\windows目录下Startup.bat已管理员身份运行，若无权限问题会依次编译并运行各个服务
+2. 创建：右键scripts\windows目录下CreateNewService.bat已管理员身份运行，输入新服务名，将会在cmd目录下创建对应新服务目录及模板源文件
+
+* linux
+
+1. 执行权限检查，转到scripts\linux目录，查看三个脚本是否有执行权限若没有则执行以下命令赋权
+
+``` bash
+chmod +x CreateNewService.sh
+chmod +x Shutdown.sh
+chmod +x Startup.sh
+```
+
+2. 启动：转到scripts\linux目录下执行./Startup.sh ，依次编译并后台运行各个服务
+
+``` bash
+#执行命令，验证服务是否启动成功
+ps -aux
+
+#成功的话会有十个进程，类似如下，若有未启动成功进程，可转入cmd对应服务目录下查看日志
+sanfeng   12248 15.3  0.7 1015440 29876 pts/1   Sl   11:41   0:02 ./logger -Type=1 -Id=1
+sanfeng   12333  0.1  0.3 906492 11916 pts/1    Sl   11:41   0:00 ./center -Type=2 -Id=50
+sanfeng   12417  1.1  0.6 1467784 23432 pts/1   Sl   11:41   0:00 ./config -Type=3 -Id=60
+sanfeng   12507 18.4  7.4 1417264 286952 pts/1  Sl   11:41   0:02 ./gateway -Type=4 -Id=100
+sanfeng   12593  4.9  0.5 1080816 20128 pts/1   Sl   11:41   0:00 ./login -Type=5 -Id=70
+sanfeng   12673  2.7  0.4 990388 17028 pts/1    Sl   11:41   0:00 ./list -Type=6 -Id=80
+sanfeng   12764  2.5  0.4 1055672 15468 pts/1   Sl   11:41   0:00 ./property -Type=7 -Id=90
+sanfeng   12851  1.9  0.5 941548 21116 pts/1    Sl   11:41   0:00 ./table -Type=8 -Id=1000
+sanfeng   12942  5.0  0.6 1146420 25668 pts/1   Sl   11:41   0:00 ./room -Type=9 -Id=2000
+sanfeng   13025 20.3 10.9 1627632 421024 pts/1  Sl   11:41   0:02 ./robot -Type=10 -Id=3000
+```
+
+3. 关闭：转到scripts\linux目录下执行./Shutdown.sh
+4. 创建新服务： 转到scripts\linux目录下执行./CreateNewService.sh，输入名称，会在cmd目录下生成对应服务
+
+### 手动编译
+
+windows下可能存在权限问题，导致脚本运行失败，若出现该类情况则可手动编译运行。
+
+1. 启动命令行或shell分别进入cmd下各个服务内，执行 go build
+2. 拷贝configs目录至cmd\config目录下，因为config(配置中心服)需要加载各个服务配置
+3. 命令行或shell进入cmd下各个服务内，执行以下命令启动服务
+
+```bash
+.\logger -Type=1 -Id=1
+.\center -Type=2 -Id=50
+.\config -Type=3 -Id=60
+.\gateway -Type=4 -Id=100
+.\login -Type=5 -Id=70
+.\list -Type=6 -Id=80
+.\property -Type=7 -Id=90
+.\table -Type=8 -Id=1000
+.\room -Type=9 -Id=2000
+.\robot.exe -Type=10 -Id=3000
+```
+
+服务启动完成后，robot会默认创建1000用户模拟客户端行为，连接网关-->登录-->报名-->举手-->游戏。起始用户数量可配，robot-3000.json 文件 "机器人数量"字段
 
 ---
 
@@ -41,6 +101,11 @@ docker build --target config --file ./build/package/Dockerfile.config --tag mang
 docker build --target gateway --file ./build/package/Dockerfile.gateway --tag mango/gateway .
 docker build --target logger --file ./build/package/Dockerfile.logger --tag mango/logger .
 docker build --target login --file ./build/package/Dockerfile.login --tag mango/login .
+docker build --target list --file ./build/package/Dockerfile.list --tag mango/list .
+docker build --target property --file ./build/package/Dockerfile.property --tag mango/property .
+docker build --target table --file ./build/package/Dockerfile.table --tag mango/table .
+docker build --target room --file ./build/package/Dockerfile.room --tag mango/room .
+docker build --target robot --file ./build/package/Dockerfile.robot --tag mango/robot .
 ```
 
 * 创建网桥
@@ -56,25 +121,18 @@ docker run -d --name="logger" --network mango mango/logger
 docker run -d --name="center" --network mango mango/center
 docker run -d --name="config" --network mango mango/config
 docker run -d --name="login" --network mango mango/login
-docker run -d -p 10102:10102 --name="gateway" --network mango mango/gateway
+docker run -d --name="list" --network mango mango/list
+docker run -d --name="property" --network mango mango/property
+docker run -d --name="table" --network mango mango/table
+docker run -d --name="room" --network mango mango/room
+docker run -d --name="robot" --network mango mango/robot
+docker run -d -p 10100:10100 --name="gateway" --network mango mango/gateway
 ```
-
----
-
-## 服务热切换
-
-以login服务为例，服务在router内的注册是以 appType+appId 为唯一标识，所以若要升级login只需要新开一个实例，使用 appType+新appId，然后修改配置文件(common-server-router.json)或 apollo内“服务维护”字段，写入原login的appType+appId，配置中心会实时将配置通知router，之后的登录消息将会被路由到新login。
-
-注意：
-
-* 切换完成后一定要删除“服务维护”内配置，否则配置内的服务重新启动后将无法正常工作
-* 目前该方法较为简单粗糙，适用于一些无状态的服务，若服务内有状态将会带来一定状态损失(待优化)
 
 ---
 
 ## 将来
 
-1. 完善剩余服务 list、fund、room、table使之成为一套完整架构
 2. 日志服对分片文本文件自动压缩；具备kafka上报，方便接入ELK、信息统计、消息预警等
 3. 服务治理，对除网关之外的服务实现热插拔式切换更新
 4. 管理工具，服务启动、监控守护、更新、切换等

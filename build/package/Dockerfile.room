@@ -9,11 +9,12 @@ ENV GO111MODULE=on \
 
 RUN mkdir /mango
 WORKDIR /mango
+
 COPY . .
-RUN go build ./cmd/center/
+RUN go build ./cmd/room/
 
-EXPOSE 10050
+EXPOSE 12000
 
-FROM scratch as center
+FROM scratch as room
 COPY --from=0 /mango /
-CMD ["./center","-Type=2","-Id=50","-DockerRun=1"]
+CMD ["./room","-Type=9","-Id=2000","-DockerRun=1"]

@@ -13,8 +13,8 @@ WORKDIR /mango
 COPY . .
 RUN go build ./cmd/login/
 
-EXPOSE 10010
+EXPOSE 10070
 
 FROM scratch as login
 COPY --from=0 /mango /
-CMD ["./login","/DockerRun","1"]
+CMD ["./login","-Type=5","-Id=70","-DockerRun=1"]

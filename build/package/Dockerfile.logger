@@ -17,4 +17,4 @@ EXPOSE 20001
 
 FROM scratch as logger
 COPY --from=0 /mango /
-CMD ["./logger"]
+CMD ["./logger","-Type=1","-Id=1","-DockerRun=1"]

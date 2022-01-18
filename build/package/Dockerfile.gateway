@@ -13,8 +13,8 @@ WORKDIR /mango
 COPY . .
 RUN go build ./cmd/gateway/
 
-EXPOSE 10102 
+EXPOSE 10100 
 
 FROM scratch as gateway
 COPY --from=0 /mango /
-CMD ["./gateway","/DockerRun","1"]
+CMD ["./gateway","-Type=4","-Id=100","-DockerRun=1"]

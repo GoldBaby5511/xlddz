@@ -19,6 +19,7 @@ import (
 	"mango/pkg/util"
 	"math/rand"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -96,6 +97,9 @@ func (p *Player) heartbeat() {
 func (p *Player) connect() {
 	tcpClient := new(n.TCPClient)
 	tcpClient.Addr = apollo.GetConfig("网关地址", "127.0.0.1:10100")
+	if conf.RunInLocalDocker() {
+		tcpClient.Addr = "gateway:" + strconv.Itoa(util.GetPortFromIPAddress(tcpClient.Addr))
+	}
 	tcpClient.PendingWriteNum = 0
 	tcpClient.AutoReconnect = false
 	tcpClient.NewAgent = func(conn *n.TCPConn) n.AgentServer {

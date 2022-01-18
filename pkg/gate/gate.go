@@ -260,7 +260,7 @@ func sendRegAppReq(a *agentServer) {
 	registerReq.AppId = proto.Uint32(conf.AppInfo.Id)
 	myAddress := conf.AppInfo.ListenOnAddr
 	if conf.RunInLocalDocker() {
-		myAddress = strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
+		myAddress = conf.AppInfo.Name + ":" + strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
 	}
 	registerReq.MyAddress = proto.String(myAddress)
 	a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
