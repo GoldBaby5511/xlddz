@@ -33,12 +33,14 @@
 
 1. 启动：右键scripts\windows目录下Startup.bat已管理员身份运行，若无权限问题会依次编译并运行各个服务
 2. 创建：右键scripts\windows目录下CreateNewService.bat已管理员身份运行，输入新服务名，将会在cmd目录下创建对应新服务目录及模板源文件
+3. 清理：右键scripts\windows目录下Cleanup.bat已管理员身份运行，将删除cmd内各服务内生成的中间及log文件
 
 * linux
 
 1. 执行权限检查，转到scripts\linux目录，查看三个脚本是否有执行权限若没有则执行以下命令赋权
 
 ``` bash
+chmod +x Cleanup.sh
 chmod +x CreateNewService.sh
 chmod +x Shutdown.sh
 chmod +x Startup.sh
@@ -64,7 +66,8 @@ sanfeng   13025 20.3 10.9 1627632 421024 pts/1  Sl   11:41   0:02 ./robot -Type=
 ```
 
 3. 关闭：转到scripts\linux目录下执行./Shutdown.sh
-4. 创建新服务： 转到scripts\linux目录下执行./CreateNewService.sh，输入名称，会在cmd目录下生成对应服务
+4. 创建：转到scripts\linux目录下执行./CreateNewService.sh，输入名称，会在cmd目录下生成对应服务
+5. 清理：转到scripts\linux目录下执行./Cleanup.sh
 
 ### 手动编译
 
@@ -96,16 +99,16 @@ windows下可能存在权限问题，导致脚本运行失败，若出现该类�
 * 本机部署好Docker环境，命令行执行以下命令，生成镜像
 
 ```bash
-docker build --target center --file ./build/package/Dockerfile.center --tag mango/center .
-docker build --target config --file ./build/package/Dockerfile.config --tag mango/config .
-docker build --target gateway --file ./build/package/Dockerfile.gateway --tag mango/gateway .
-docker build --target logger --file ./build/package/Dockerfile.logger --tag mango/logger .
-docker build --target login --file ./build/package/Dockerfile.login --tag mango/login .
-docker build --target list --file ./build/package/Dockerfile.list --tag mango/list .
-docker build --target property --file ./build/package/Dockerfile.property --tag mango/property .
-docker build --target table --file ./build/package/Dockerfile.table --tag mango/table .
-docker build --target room --file ./build/package/Dockerfile.room --tag mango/room .
-docker build --target robot --file ./build/package/Dockerfile.robot --tag mango/robot .
+docker build --file ./build/package/Dockerfile.center --tag mango/center .
+docker build --file ./build/package/Dockerfile.config --tag mango/config .
+docker build --file ./build/package/Dockerfile.gateway --tag mango/gateway .
+docker build --file ./build/package/Dockerfile.logger --tag mango/logger .
+docker build --file ./build/package/Dockerfile.login --tag mango/login .
+docker build --file ./build/package/Dockerfile.list --tag mango/list .
+docker build --file ./build/package/Dockerfile.property --tag mango/property .
+docker build --file ./build/package/Dockerfile.table --tag mango/table .
+docker build --file ./build/package/Dockerfile.room --tag mango/room .
+docker build --file ./build/package/Dockerfile.robot --tag mango/robot .
 ```
 
 * 创建网桥
@@ -161,7 +164,7 @@ mango(二)：架构：https://blog.csdn.net/weixin_42780662/article/details/1221
 
 ## 交流群
 
-* QQ群：781335145
+* QQ交流群：781335145
 
 
 
