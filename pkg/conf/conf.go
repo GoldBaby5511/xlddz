@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"mango/pkg/log"
+	n "mango/pkg/network"
 	"mango/pkg/util"
 	"strconv"
 )
@@ -19,9 +20,7 @@ const (
 )
 
 var (
-	LenStackBuf = 4096
-
-	// skeleton conf
+	LenStackBuf        = 4096
 	GoLen              = 10000
 	TimerDispatcherLen = 10000
 	AsynCallLen        = 10000
@@ -63,7 +62,7 @@ func LoadBaseConfig() {
 	if AppInfo.ListenOnAddr == "" {
 		AppInfo.ListenOnAddr = fmt.Sprintf("0.0.0.0:%d", 10000+AppInfo.Id)
 	}
-	if AppInfo.CenterAddr == "" {
+	if AppInfo.CenterAddr == "" && AppInfo.Type != n.AppCenter {
 		AppInfo.CenterAddr = "127.0.0.1:10050"
 		log.Debug("", "未指定中心服,使用默认地址,CenterAddr=%v", AppInfo.CenterAddr)
 	}
