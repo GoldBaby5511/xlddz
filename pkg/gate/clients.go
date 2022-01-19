@@ -30,8 +30,8 @@ func (a *agentClient) Run() {
 			log.Error("agentClient", "异常,解析器为nil断开连接,cmd=%v", &bm.Cmd)
 			break
 		}
-		if conf.AppInfo.Type != n.AppCenter && bm.Cmd.MainCmdID == uint16(n.CMDCenter) {
-			if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDAppRegReq) {
+		if conf.AppInfo.Type != n.AppCenter && bm.Cmd.AppType == uint16(n.AppCenter) {
+			if bm.Cmd.CmdId == uint16(center.CMDCenter_IDAppRegReq) {
 				var m center.RegisterAppReq
 				_ = proto.Unmarshal(msgData, &m)
 				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppID: m.GetAppId()}
@@ -39,7 +39,7 @@ func (a *agentClient) Run() {
 					agentChanRPC.Call0(CommonServerReg, a, a.info)
 				}
 				log.Debug("", "相互注册,%v", a.info)
-			} else if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDPulseNotify) {
+			} else if bm.Cmd.CmdId == uint16(center.CMDCenter_IDPulseNotify) {
 
 			}
 			continue
@@ -47,10 +47,10 @@ func (a *agentClient) Run() {
 
 		unmarshalCmd := bm.Cmd
 		var cmd, msg, dataReq interface{}
-		if bm.Cmd.MainCmdID == uint16(n.CMDGate) && bm.Cmd.SubCmdID == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
+		if bm.Cmd.AppType == uint16(n.AppGate) && bm.Cmd.CmdId == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
 			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
-			unmarshalCmd = n.TCPCommand{MainCmdID: uint16(m.GetDataCmdKind()), SubCmdID: uint16(m.GetDataCmdSubid())}
+			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataCmdKind()), CmdId: uint16(m.GetDataCmdSubid())}
 			msgData = m.GetData()
 			dataReq = &m
 			bm.AgentInfo = n.BaseAgentInfo{AgentType: n.NormalUser, AppType: util.GetHUint32FromUint64(m.GetGateconnid()), AppID: util.GetLUint32FromUint64(m.GetGateconnid())}
@@ -59,7 +59,7 @@ func (a *agentClient) Run() {
 			dataReq = a.info
 		}
 
-		cmd, msg, err = processor.Unmarshal(unmarshalCmd.MainCmdID, unmarshalCmd.SubCmdID, msgData)
+		cmd, msg, err = processor.Unmarshal(unmarshalCmd.AppType, unmarshalCmd.CmdId, msgData)
 		if err != nil {
 			log.Error("agentClient", "unmarshal message,headCmd=%v,error: %v", bm.Cmd, err)
 			continue

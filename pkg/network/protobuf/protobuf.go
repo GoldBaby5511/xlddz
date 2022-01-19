@@ -3,11 +3,11 @@ package protobuf
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"math"
-	"reflect"
 	"mango/pkg/chanrpc"
 	"mango/pkg/log"
 	"mango/pkg/network"
+	"math"
+	"reflect"
 )
 
 // -------------------------
@@ -49,7 +49,7 @@ func (p *Processor) Register(msg proto.Message, mainCmdID uint32, subCmdID uint1
 	}
 
 	//协议命令
-	command := network.TCPCommand{MainCmdID: uint16(mainCmdID), SubCmdID: subCmdID}
+	command := network.TCPCommand{AppType: uint16(mainCmdID), CmdId: subCmdID}
 	if _, ok := p.msgInfo[command]; ok {
 		log.Fatal("proto", "message %s,cmd=%v is already registered", msgType, command)
 	}
@@ -87,7 +87,7 @@ func (p *Processor) Route(args ...interface{}) error {
 
 // goroutine safe
 func (p *Processor) Unmarshal(mainCmdID, subCmdID uint16, data []byte) (interface{}, interface{}, error) {
-	id := network.TCPCommand{MainCmdID: mainCmdID, SubCmdID: subCmdID}
+	id := network.TCPCommand{AppType: mainCmdID, CmdId: subCmdID}
 	if _, ok := p.msgInfo[id]; !ok {
 		return &id, nil, fmt.Errorf("protobuf Unmarshal木有找到ID=%v", id)
 	}

@@ -70,7 +70,7 @@ func init() {
 	Skeleton = module.NewSkeleton(conf.GoLen, conf.TimerDispatcherLen, conf.AsynCallLen, conf.ChanRPCLen)
 	agentChanRPC = Skeleton.ChanRPCServer
 	closeSig = make(chan bool, 0)
-	MsgRegister(&config.ApolloCfgRsp{}, n.CMDConfig, uint16(config.CMDConfig_IDApolloCfgRsp), handleApolloCfgRsp)
+	MsgRegister(&config.ApolloCfgRsp{}, n.AppConfig, uint16(config.CMDConfig_IDApolloCfgRsp), handleApolloCfgRsp)
 }
 
 func Start(appName string) {
@@ -240,7 +240,7 @@ func ConnectLogServer(logAddr string) {
 				logReq.LogLevel = proto.Uint32(uint32(i.Level))
 				logReq.TimeNs = proto.Int64(i.TimeNs)
 				logReq.SrcAppname = proto.String(conf.AppInfo.Name)
-				cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogger), SubCmdID: uint16(logger.CMDLogger_IDLogReq)}
+				cmd := n.TCPCommand{AppType: uint16(n.AppLogger), CmdId: uint16(logger.CMDLogger_IDLogReq)}
 				bm := n.BaseMessage{MyMessage: &logReq, Cmd: cmd}
 				a.SendMessage(bm)
 			})
@@ -263,7 +263,7 @@ func sendRegAppReq(a *agentServer) {
 		myAddress = conf.AppInfo.Name + ":" + strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
 	}
 	registerReq.MyAddress = proto.String(myAddress)
-	a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
+	a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
 }
 
 func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
@@ -274,7 +274,7 @@ func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
 }
 
 func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) error {
-	cmd := n.TCPCommand{MainCmdID: uint16(mainCmdID), SubCmdID: uint16(subCmdID)}
+	cmd := n.TCPCommand{AppType: uint16(mainCmdID), CmdId: uint16(subCmdID)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
 	return sendData(bm, destAppType, destAppid)
 }
@@ -283,12 +283,12 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	var dataReq gateway.TransferDataReq
 	dataReq.AttApptype = proto.Uint32(n.AppGate)
 	dataReq.AttAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
-	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
-	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
+	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.AppType))
+	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.CmdId))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(gateConnID)
 	dataReq.AttSessionid = proto.Uint64(sessionID)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppGate), CmdId: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	return sendData(transBM, n.AppGate, util.GetLUint32FromUint64(gateConnID))
 }

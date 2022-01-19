@@ -67,16 +67,16 @@ func NewPlayer(account, passWord string) *Player {
 		p.Skeleton.Run()
 	}()
 
-	p.MsgRegister(&gateway.HelloRsp{}, n.CMDGate, uint16(gateway.CMDGateway_IDHelloRsp), p.handleHelloRsp)
-	p.MsgRegister(&login.LoginRsp{}, n.CMDLogin, uint16(login.CMDLogin_IDLoginRsp), p.handleLoginRsp)
-	p.MsgRegister(&list.RoomListRsp{}, n.CMDList, uint16(list.CMDList_IDRoomListRsp), p.handleRoomListRsp)
-	p.MsgRegister(&room.JoinRsp{}, n.CMDRoom, uint16(room.CMDRoom_IDJoinRsp), p.handleJoinRoomRsp)
-	p.MsgRegister(&room.UserActionRsp{}, n.CMDRoom, uint16(room.CMDRoom_IDUserActionRsp), p.handleRoomActionRsp)
-	p.MsgRegister(&room.UserStateChange{}, n.CMDRoom, uint16(room.CMDRoom_IDUserStateChange), p.handleUserStateChange)
+	p.MsgRegister(&gateway.HelloRsp{}, n.AppGate, uint16(gateway.CMDGateway_IDHelloRsp), p.handleHelloRsp)
+	p.MsgRegister(&login.LoginRsp{}, n.AppLogin, uint16(login.CMDLogin_IDLoginRsp), p.handleLoginRsp)
+	p.MsgRegister(&list.RoomListRsp{}, n.AppList, uint16(list.CMDList_IDRoomListRsp), p.handleRoomListRsp)
+	p.MsgRegister(&room.JoinRsp{}, n.AppRoom, uint16(room.CMDRoom_IDJoinRsp), p.handleJoinRoomRsp)
+	p.MsgRegister(&room.UserActionRsp{}, n.AppRoom, uint16(room.CMDRoom_IDUserActionRsp), p.handleRoomActionRsp)
+	p.MsgRegister(&room.UserStateChange{}, n.AppRoom, uint16(room.CMDRoom_IDUserStateChange), p.handleUserStateChange)
 
-	p.MsgRegister(&gameddz.GameStart{}, n.CMDTable, uint16(gameddz.CMDGameddz_IDGameStart), p.handleGameStart)
-	p.MsgRegister(&gameddz.OutCardRsp{}, n.CMDTable, uint16(gameddz.CMDGameddz_IDOutCardRsp), p.handleOutCardRsp)
-	p.MsgRegister(&gameddz.GameOver{}, n.CMDTable, uint16(gameddz.CMDGameddz_IDGameOver), p.handleGameOver)
+	p.MsgRegister(&gameddz.GameStart{}, n.AppTable, uint16(gameddz.CMDGameddz_IDGameStart), p.handleGameStart)
+	p.MsgRegister(&gameddz.OutCardRsp{}, n.AppTable, uint16(gameddz.CMDGameddz_IDOutCardRsp), p.handleOutCardRsp)
+	p.MsgRegister(&gameddz.GameOver{}, n.AppTable, uint16(gameddz.CMDGameddz_IDGameOver), p.handleGameOver)
 
 	p.Skeleton.AfterFunc(time.Duration(rand.Intn(9)+1)*time.Second, p.connect)
 
@@ -91,7 +91,7 @@ func (p *Player) MsgRegister(m proto.Message, mainCmdId uint32, subCmdId uint16,
 
 func (p *Player) heartbeat() {
 	var req gateway.PulseReq
-	p.a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDPulseReq), &req)
+	p.a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDPulseReq), &req)
 }
 
 func (p *Player) connect() {
@@ -107,7 +107,7 @@ func (p *Player) connect() {
 		p.a = a
 
 		var req gateway.HelloReq
-		a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDHelloReq), &req)
+		a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDHelloReq), &req)
 		return a
 	}
 
@@ -121,7 +121,7 @@ func (p *Player) connect() {
 func (p *Player) checkRoomList() {
 	var req list.RoomListReq
 	req.ListId = proto.Uint32(0)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDList), SubCmdID: uint16(list.CMDList_IDRoomListReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppList), CmdId: uint16(list.CMDList_IDRoomListReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
 	p.SendMessage2Gate(n.AppList, n.Send2AnyOne, bm)
 }
@@ -140,7 +140,7 @@ func (p *Player) joinRoom() {
 
 	p.State = JoinRoom
 	var req room.JoinReq
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(room.CMDRoom_IDJoinReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(room.CMDRoom_IDJoinReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
 	p.SendMessage2Gate(r.AppInfo.GetType(), r.AppInfo.GetId(), bm)
 }
@@ -154,7 +154,7 @@ func (p *Player) ActionRoom() {
 
 	var req room.UserActionReq
 	req.Action = (*room.ActionType)(proto.Int32(int32(room.ActionType_Ready)))
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDRoom), SubCmdID: uint16(room.CMDRoom_IDUserActionReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(room.CMDRoom_IDUserActionReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
 	p.SendMessage2Gate(n.AppRoom, p.RoomID, bm)
 }
@@ -168,7 +168,7 @@ func (p *Player) handleHelloRsp(args []interface{}) {
 	var req login.LoginReq
 	req.Account = proto.String(p.Account)
 	req.Password = proto.String(p.PassWord)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDLogin), SubCmdID: uint16(login.CMDLogin_IDLoginReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppLogin), CmdId: uint16(login.CMDLogin_IDLoginReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd, TraceId: b.TraceId}
 	p.SendMessage2Gate(n.AppLogin, n.Send2AnyOne, bm)
 
@@ -283,7 +283,7 @@ func (p *Player) outCards() {
 		req.OutCard = append(req.OutCard, byte(rand.Intn(3)+1))
 	}
 	gameMessage.Data, _ = proto.Marshal(&req)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDTable), SubCmdID: uint16(tCMD.CMDTable_IDGameMessage)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(tCMD.CMDTable_IDGameMessage)}
 	bm := n.BaseMessage{MyMessage: &gameMessage, Cmd: cmd}
 	p.SendMessage2Gate(n.AppTable, p.TableServiceId, bm)
 }
@@ -292,11 +292,11 @@ func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessag
 	var dataReq gateway.TransferDataReq
 	dataReq.AttApptype = proto.Uint32(destAppType)
 	dataReq.AttAppid = proto.Uint32(destAppid)
-	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.MainCmdID))
-	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
+	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.AppType))
+	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.CmdId))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(0)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppGate), CmdId: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	p.a.SendMessage(transBM)
 }
@@ -323,17 +323,17 @@ func (a *agentPlayer) Run() {
 
 		unmarshalCmd := bm.Cmd
 		var cmd, msg, dataReq interface{}
-		if bm.Cmd.MainCmdID == uint16(n.CMDGate) && bm.Cmd.SubCmdID == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
+		if bm.Cmd.AppType == uint16(n.AppGate) && bm.Cmd.CmdId == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
 			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
-			unmarshalCmd = n.TCPCommand{MainCmdID: uint16(m.GetDataCmdKind()), SubCmdID: uint16(m.GetDataCmdSubid())}
+			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataCmdKind()), CmdId: uint16(m.GetDataCmdSubid())}
 			msgData = m.GetData()
 			dataReq = &m
 		} else {
 			dataReq = a.info
 		}
 
-		cmd, msg, err = a.p.processor.Unmarshal(unmarshalCmd.MainCmdID, unmarshalCmd.SubCmdID, msgData)
+		cmd, msg, err = a.p.processor.Unmarshal(unmarshalCmd.AppType, unmarshalCmd.CmdId, msgData)
 		if err != nil {
 			log.Error("agentClient", "unmarshal message,headCmd=%v,error: %v", bm.Cmd, err)
 			continue
@@ -363,7 +363,7 @@ func (a *agentPlayer) SendMessage(bm n.BaseMessage) {
 		otherData = append(otherData, n.FlagOtherTraceId)
 		otherData = append(otherData, []byte(bm.TraceId)...)
 	}
-	err = a.conn.WriteMsg(bm.Cmd.MainCmdID, bm.Cmd.SubCmdID, data, otherData)
+	err = a.conn.WriteMsg(bm.Cmd.AppType, bm.Cmd.CmdId, data, otherData)
 	if err != nil {
 		log.Error("agentPlayer", "写信息失败 %v error: %v", reflect.TypeOf(m), err)
 	}

@@ -55,14 +55,14 @@ func (t *Table) SendTableData(seatID uint32, bm n.BaseMessage) {
 
 func (t *Table) WriteGameScore() {
 	var writeScore tCMD.WriteGameScore
-	g.SendData2App(n.AppRoom, t.HostAppID, n.CMDTable, uint32(tCMD.CMDTable_IDWriteGameScore), &writeScore)
+	g.SendData2App(n.AppRoom, t.HostAppID, n.AppTable, uint32(tCMD.CMDTable_IDWriteGameScore), &writeScore)
 }
 
 func (t *Table) GameOver() {
 	t.Players = make(map[uint32]*player.Player)
 	var over tCMD.GameOver
 	over.TableId = proto.Uint64(t.id)
-	g.SendData2App(n.AppRoom, t.HostAppID, n.CMDTable, uint32(tCMD.CMDTable_IDGameOver), &over)
+	g.SendData2App(n.AppRoom, t.HostAppID, n.AppTable, uint32(tCMD.CMDTable_IDGameOver), &over)
 }
 
 func (t *Table) Reset() {

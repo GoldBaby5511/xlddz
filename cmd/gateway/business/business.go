@@ -28,10 +28,10 @@ type connectionData struct {
 }
 
 func init() {
-	g.MsgRegister(&gateway.PulseReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDPulseReq), handlePulseReq)
-	g.MsgRegister(&gateway.TransferDataReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDTransferDataReq), handleTransferDataReq)
-	g.MsgRegister(&gateway.AuthInfo{}, n.CMDGate, uint16(gateway.CMDGateway_IDAuthInfo), handleAuthInfo)
-	g.MsgRegister(&gateway.HelloReq{}, n.CMDGate, uint16(gateway.CMDGateway_IDHelloReq), handleHelloReq)
+	g.MsgRegister(&gateway.PulseReq{}, n.AppGate, uint16(gateway.CMDGateway_IDPulseReq), handlePulseReq)
+	g.MsgRegister(&gateway.TransferDataReq{}, n.AppGate, uint16(gateway.CMDGateway_IDTransferDataReq), handleTransferDataReq)
+	g.MsgRegister(&gateway.AuthInfo{}, n.AppGate, uint16(gateway.CMDGateway_IDAuthInfo), handleAuthInfo)
+	g.MsgRegister(&gateway.HelloReq{}, n.AppGate, uint16(gateway.CMDGateway_IDHelloReq), handleHelloReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.CenterConnected, centerConnected)
@@ -64,7 +64,7 @@ func disconnect(args []interface{}) {
 
 		var logout login.LogoutReq
 		logout.UserId = proto.Uint64(v.userId)
-		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.CMDLogin, uint32(login.CMDLogin_IDLogoutReq), &logout)
+		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.AppLogin, uint32(login.CMDLogin_IDLogoutReq), &logout)
 
 		delete(userConnData, connId)
 	} else {
@@ -100,7 +100,7 @@ func handleTransferDataReq(args []interface{}) {
 		return
 	}
 
-	log.Debug("module", "n.CMDGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,%v,%v",
+	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,%v,%v",
 		m.GetAttApptype(), m.GetAttAppid(), m.GetDataCmdKind(), m.GetDataCmdSubid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
 
 	if m.GetGateconnid() != 0 && a.AgentInfo().AgentType == n.CommonServer {
@@ -112,12 +112,12 @@ func handleTransferDataReq(args []interface{}) {
 				util.GetHUint32FromUint64(m.GetGateconnid()))
 			return
 		}
-		a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
+		a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	} else {
 		m.Gateid = proto.Uint32(conf.AppInfo.Id)
 		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
 		m.UserId = proto.Uint64(connData.userId)
-		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.CMDGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
+		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	}
 
 }
@@ -157,7 +157,7 @@ func handleHelloReq(args []interface{}) {
 	if m.GetGuid() != "" {
 		rsp.Guid = proto.String(m.GetGuid())
 	}
-	a.SendData(n.CMDGate, uint32(gateway.CMDGateway_IDHelloRsp), &rsp)
+	a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDHelloRsp), &rsp)
 }
 
 func getUserConnData(a n.AgentClient) (*connectionData, error) {

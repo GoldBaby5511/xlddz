@@ -40,11 +40,11 @@ type connectionData struct {
 }
 
 func init() {
-	g.MsgRegister(&center.RegisterAppReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppRegReq), handleRegisterAppReq)
-	g.MsgRegister(&center.AppStateNotify{}, n.CMDCenter, uint16(center.CMDCenter_IDAppState), handleAppStateNotify)
-	g.MsgRegister(&center.AppPulseNotify{}, n.CMDCenter, uint16(center.CMDCenter_IDPulseNotify), handleAppPulseNotify)
-	g.MsgRegister(&center.AppOfflineReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppOfflineReq), handleAppOfflineReq)
-	g.MsgRegister(&center.AppUpdateReq{}, n.CMDCenter, uint16(center.CMDCenter_IDAppUpdateReq), handleAppUpdateReq)
+	g.MsgRegister(&center.RegisterAppReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppRegReq), handleRegisterAppReq)
+	g.MsgRegister(&center.AppStateNotify{}, n.AppCenter, uint16(center.CMDCenter_IDAppState), handleAppStateNotify)
+	g.MsgRegister(&center.AppPulseNotify{}, n.AppCenter, uint16(center.CMDCenter_IDPulseNotify), handleAppPulseNotify)
+	g.MsgRegister(&center.AppOfflineReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppOfflineReq), handleAppOfflineReq)
+	g.MsgRegister(&center.AppUpdateReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppUpdateReq), handleAppUpdateReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
@@ -132,7 +132,7 @@ func handleRegisterAppReq(args []interface{}) {
 			rsp.RegResult = proto.Uint32(1)
 			rsp.ReregToken = proto.String(resultMsg)
 			rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
-			a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
+			a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 
 			a.Close()
 			return
@@ -159,7 +159,7 @@ func handleRegisterAppReq(args []interface{}) {
 		rsp.AppType = proto.Uint32(i.appType)
 		rsp.AppId = proto.Uint32(i.appId)
 		rsp.AppAddress = proto.String(i.address)
-		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
+		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 	}
 
 	//广播已注册
@@ -192,7 +192,7 @@ func handleAppPulseNotify(args []interface{}) {
 	case center.AppPulseNotify_HeartBeatReq:
 		var rsp center.AppPulseNotify
 		rsp.Action = (*center.AppPulseNotify_PulseAction)(proto.Int32(int32(center.AppPulseNotify_HeartBeatRsp)))
-		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDPulseNotify), &rsp)
+		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDPulseNotify), &rsp)
 		appConnData[a].lastHeartbeat = time.Now().UnixNano()
 	}
 
@@ -220,6 +220,6 @@ func broadcastAppState(appType, appId uint32) {
 		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
 		rsp.AppType = proto.Uint32(appType)
 		rsp.AppId = proto.Uint32(appId)
-		a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDAppState), &rsp)
+		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppState), &rsp)
 	}
 }

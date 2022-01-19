@@ -14,8 +14,8 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&property.QueryPropertyReq{}, n.CMDProperty, uint16(property.CMDProperty_IDQueryPropertyReq), handleQueryPropertyReq)
-	g.MsgRegister(&property.ModifyPropertyReq{}, n.CMDProperty, uint16(property.CMDProperty_IDModifyPropertyReq), handleModifyPropertyReq)
+	g.MsgRegister(&property.QueryPropertyReq{}, n.AppProperty, uint16(property.CMDProperty_IDQueryPropertyReq), handleQueryPropertyReq)
+	g.MsgRegister(&property.ModifyPropertyReq{}, n.AppProperty, uint16(property.CMDProperty_IDModifyPropertyReq), handleModifyPropertyReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 }
@@ -43,7 +43,7 @@ func handleQueryPropertyReq(args []interface{}) {
 	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
 	p.PropCount = proto.Int64(userList[m.GetUserId()])
 	rsp.UserProps = append(rsp.UserProps, p)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDProperty), SubCmdID: uint16(property.CMDProperty_IDQueryPropertyRsp)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppProperty), CmdId: uint16(property.CMDProperty_IDQueryPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
 	g.SendData(srcApp, bm)
 }
@@ -71,7 +71,7 @@ func handleModifyPropertyReq(args []interface{}) {
 	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
 	p.PropCount = proto.Int64(100)
 	rsp.UserProps = append(rsp.UserProps, p)
-	cmd := n.TCPCommand{MainCmdID: uint16(n.CMDProperty), SubCmdID: uint16(property.CMDProperty_IDModifyPropertyRsp)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppProperty), CmdId: uint16(property.CMDProperty_IDModifyPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
 	g.SendData(b.AgentInfo, bm)
 }

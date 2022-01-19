@@ -45,7 +45,7 @@ func CheckApplyTable() {
 		var req tCMD.ApplyReq
 		req.ApplyCount = proto.Uint32(uint32(apollo.GetConfigAsInt64("申请桌子数", 1000)))
 		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 1000)
-		g.SendData2App(n.AppTable, uint32(tableAppID), n.CMDTable, uint32(tCMD.CMDTable_IDApplyReq), &req)
+		g.SendData2App(n.AppTable, uint32(tableAppID), n.AppTable, uint32(tCMD.CMDTable_IDApplyReq), &req)
 	}
 }
 

@@ -19,11 +19,11 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&tCMD.ApplyReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDApplyReq), handleApplyReq)
-	g.MsgRegister(&tCMD.ReleaseReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDReleaseReq), handleReleaseReq)
-	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
-	g.MsgRegister(&tCMD.MatchTableReq{}, n.CMDTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
-	g.MsgRegister(&tCMD.GameMessage{}, n.CMDTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
+	g.MsgRegister(&tCMD.ApplyReq{}, n.AppTable, uint16(tCMD.CMDTable_IDApplyReq), handleApplyReq)
+	g.MsgRegister(&tCMD.ReleaseReq{}, n.AppTable, uint16(tCMD.CMDTable_IDReleaseReq), handleReleaseReq)
+	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
+	g.MsgRegister(&tCMD.MatchTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
+	g.MsgRegister(&tCMD.GameMessage{}, n.AppTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
 	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 }
 
@@ -60,7 +60,7 @@ func handleApplyReq(args []interface{}) {
 		}
 	}
 
-	g.SendData2App(srcApp.AppType, srcApp.AppID, n.CMDTable, uint32(tCMD.CMDTable_IDApplyRsp), &rsp)
+	g.SendData2App(srcApp.AppType, srcApp.AppID, n.AppTable, uint32(tCMD.CMDTable_IDApplyRsp), &rsp)
 }
 
 func handleReleaseReq(args []interface{}) {

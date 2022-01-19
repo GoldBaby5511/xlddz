@@ -15,8 +15,8 @@ var (
 )
 
 func init() {
-	g.MsgRegister(&list.RoomRegisterReq{}, n.CMDList, uint16(list.CMDList_IDRoomRegisterReq), handleRoomRegisterReq)
-	g.MsgRegister(&list.RoomListReq{}, n.CMDList, uint16(list.CMDList_IDRoomListReq), handleRoomListReq)
+	g.MsgRegister(&list.RoomRegisterReq{}, n.AppList, uint16(list.CMDList_IDRoomRegisterReq), handleRoomRegisterReq)
+	g.MsgRegister(&list.RoomListReq{}, n.AppList, uint16(list.CMDList_IDRoomListReq), handleRoomListReq)
 }
 
 func handleRoomRegisterReq(args []interface{}) {
@@ -43,6 +43,6 @@ func handleRoomListReq(args []interface{}) {
 		rsp.Rooms = append(rsp.Rooms, room)
 	}
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.CMDList), SubCmdID: uint16(list.CMDList_IDRoomListRsp)}
+	rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppList), CmdId: uint16(list.CMDList_IDRoomListRsp)}
 	g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 }

@@ -14,20 +14,6 @@ const (
 )
 
 const (
-	NullType    uint32 = 0
-	CMDLogger   uint32 = 1
-	CMDCenter   uint32 = 2
-	CMDConfig   uint32 = 3
-	CMDGate     uint32 = 4
-	CMDLogin    uint32 = 5
-	CMDList     uint32 = 6
-	CMDProperty uint32 = 7
-	CMDTable    uint32 = 8
-	CMDRoom     uint32 = 9
-	CMDRobot    uint32 = 10
-)
-
-const (
 	AppLogger   uint32 = 1
 	AppCenter   uint32 = 2
 	AppConfig   uint32 = 3
@@ -53,8 +39,8 @@ const (
 
 //网络命令
 type TCPCommand struct {
-	MainCmdID uint16
-	SubCmdID  uint16
+	AppType uint16
+	CmdId   uint16
 }
 
 //消息头内other字段常量
@@ -66,7 +52,7 @@ const (
 type PackageHeader struct {
 	version uint8
 	encrypt uint8
-	CmdKind uint16
+	AppType uint16
 	CmdId   uint16
 	Other   string // 0xFF字节以内
 }
@@ -81,7 +67,7 @@ type BaseMessage struct {
 
 // MsgParser --------------
 // | msgSize | headSize | header | msgData |
-// | 4bit(msgSize) | 2bit(headSize) | 1bit(version) + 1bit(encrypt) + 2bit(CmdKind) + 2bit(CmdId) + Xbit(other) | msgData
+// | 4bit(msgSize) | 2bit(headSize) | 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
 // --------------
 type MsgParser struct {
 	lenMsgLen int
@@ -128,7 +114,7 @@ func (p *MsgParser) SetMsgLen(lenMsgLen int, minMsgLen uint32, maxMsgLen uint32)
 }
 
 // |	msgSize	 |	headSize		| 						header 												| msgData
-// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(CmdKind) + 2bit(CmdId) + Xbit(other) | msgData
+// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
 func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	msgSizeBuf := make([]byte, 4)
 	if _, err := io.ReadFull(conn, msgSizeBuf); err != nil {
@@ -157,7 +143,7 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	dataBuf := bytes.NewBuffer(allData[2:])
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.version)
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.encrypt)
-	_ = binary.Read(dataBuf, binary.BigEndian, &header.CmdKind)
+	_ = binary.Read(dataBuf, binary.BigEndian, &header.AppType)
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.CmdId)
 
 	//获取traceId，不做通用按字节去读，前8个字节是固定的，第9位如果等于1则紧跟在后边的16位就是traceId
@@ -172,14 +158,14 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	}
 
 	//构造参数
-	headCmd := &TCPCommand{MainCmdID: header.CmdKind, SubCmdID: header.CmdId}
+	headCmd := &TCPCommand{AppType: header.AppType, CmdId: header.CmdId}
 	msgData := allData[headSize+2:]
 	bm := BaseMessage{Cmd: *headCmd, TraceId: traceId}
 	return bm, msgData, nil
 }
 
 // |	msgSize	 |	headSize		| 						header 												| msgData
-// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(CmdKind) + 2bit(CmdId) + Xbit(other) | msgData
+// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
 func (p *MsgParser) Write(mainCmdID, subCmdID uint16, conn *TCPConn, msgData, otherData []byte) error {
 	var headSize uint16 = 1 + 1 + 2 + 2 + uint16(len(otherData))
 	var msgSize uint32 = 2 + uint32(headSize) + uint32(len(msgData))
@@ -190,7 +176,7 @@ func (p *MsgParser) Write(mainCmdID, subCmdID uint16, conn *TCPConn, msgData, ot
 	_ = binary.Write(buf, binary.BigEndian, headSize)
 	_ = binary.Write(buf, binary.BigEndian, header.version)
 	_ = binary.Write(buf, binary.BigEndian, header.encrypt)
-	_ = binary.Write(buf, binary.BigEndian, header.CmdKind)
+	_ = binary.Write(buf, binary.BigEndian, header.AppType)
 	_ = binary.Write(buf, binary.BigEndian, header.CmdId)
 	if len(otherData) > 0 {
 		_ = binary.Write(buf, binary.BigEndian, otherData)

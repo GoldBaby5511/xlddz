@@ -40,7 +40,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 				var pulse center.AppPulseNotify
 				pulse.Action = (*center.AppPulseNotify_PulseAction)(proto.Int32(int32(center.AppPulseNotify_HeartBeatReq)))
 				pulse.PulseData = proto.Uint64(uint64(time.Now().Unix()))
-				a.SendData(n.CMDCenter, uint32(center.CMDCenter_IDPulseNotify), &pulse)
+				a.SendData(n.AppCenter, uint32(center.CMDCenter_IDPulseNotify), &pulse)
 
 				t.Reset(timeInterval)
 			}
@@ -72,12 +72,12 @@ func (a *agentServer) Run() {
 			break
 		}
 
-		if bm.Cmd.MainCmdID != uint16(n.CMDCenter) {
+		if bm.Cmd.AppType != uint16(n.AppCenter) {
 			log.Warning("", "不可能出现非center消息,cmd=%v", bm.Cmd)
 			break
 		}
 
-		switch bm.Cmd.SubCmdID {
+		switch bm.Cmd.CmdId {
 		case uint16(center.CMDCenter_IDAppRegRsp):
 			var m center.RegisterAppRsp
 			_ = proto.Unmarshal(msgData, &m)
@@ -127,7 +127,7 @@ func (a *agentServer) Run() {
 
 		case uint16(center.CMDCenter_IDPulseNotify):
 		default:
-			log.Error("agentServer", "n.CMDCenter,异常,还未处理消息,%v", bm.Cmd)
+			log.Error("agentServer", "n.AppCenter,异常,还未处理消息,%v", bm.Cmd)
 		}
 	}
 }
@@ -164,7 +164,7 @@ func (a *agentServer) SendMessage(bm n.BaseMessage) {
 		otherData = append(otherData, n.FlagOtherTraceId)
 		otherData = append(otherData, []byte(bm.TraceId)...)
 	}
-	err = a.conn.WriteMsg(bm.Cmd.MainCmdID, bm.Cmd.SubCmdID, data, otherData)
+	err = a.conn.WriteMsg(bm.Cmd.AppType, bm.Cmd.CmdId, data, otherData)
 	if err != nil {
 		log.Error("agentServer", "写信息失败 %v error: %v", reflect.TypeOf(m), err)
 	}

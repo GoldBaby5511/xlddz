@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
 	"mango/pkg/chanrpc"
 	"mango/pkg/log"
+	"reflect"
 )
 
 type Processor struct {
@@ -140,8 +140,8 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, interface{}, error) {
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.DataKind)
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.CheckCode)
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.PacketSize)
-	//binary.Read(buf, binary.LittleEndian, &tcpHead.MainCmdID)
-	//binary.Read(buf, binary.LittleEndian, &tcpHead.SubCmdID)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.AppType)
+	//binary.Read(buf, binary.LittleEndian, &tcpHead.CmdId)
 	//
 	////log.Debug("JSON 解析数据% d\n", data)
 	//

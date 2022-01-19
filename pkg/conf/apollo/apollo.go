@@ -150,7 +150,7 @@ func SendSubscribeReq(k ConfKey, cancel bool) {
 	}
 	req.Subscribe = proto.Uint32(uint32(subscribe))
 
-	cmd := network.TCPCommand{MainCmdID: uint16(network.AppConfig), SubCmdID: uint16(config.CMDConfig_IDApolloCfgReq)}
+	cmd := network.TCPCommand{AppType: uint16(network.AppConfig), CmdId: uint16(config.CMDConfig_IDApolloCfgReq)}
 	bm := network.BaseMessage{MyMessage: &req, Cmd: cmd}
 	netAgent.SendMessage(bm)
 }
