@@ -64,6 +64,8 @@ func handleApplyRsp(args []interface{}) {
 	req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
 	req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
 	req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
+	req.Info.Kind = proto.Uint32(200)
+	req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
 	g.SendData2App(n.AppList, n.Send2AnyOne, n.AppList, uint32(list.CMDList_IDRoomRegisterReq), &req)
 }
 

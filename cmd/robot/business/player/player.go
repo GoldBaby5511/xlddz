@@ -145,7 +145,7 @@ func (p *Player) joinRoom() {
 	p.SendMessage2Gate(r.AppInfo.GetType(), r.AppInfo.GetId(), bm)
 }
 
-func (p *Player) ActionRoom() {
+func (p *Player) actionRoom() {
 	if p.State != StandingInRoom {
 		return
 	}
@@ -208,7 +208,7 @@ func (p *Player) handleJoinRoomRsp(args []interface{}) {
 	if m.GetErrInfo().GetCode() == 0 {
 		p.State = StandingInRoom
 		p.RoomID = m.GetAppId()
-		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.ActionRoom)
+		p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.actionRoom)
 	}
 }
 
@@ -265,7 +265,7 @@ func (p *Player) handleGameOver(args []interface{}) {
 	log.Debug("", "游戏结束消息,UserId=%v,a=%v", p.UserId, p.Account)
 
 	p.State = StandingInRoom
-	p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+3)*time.Second, p.ActionRoom)
+	p.Skeleton.AfterFunc(time.Duration(rand.Intn(3)+3)*time.Second, p.actionRoom)
 }
 
 func (p *Player) outCards() {
@@ -290,10 +290,10 @@ func (p *Player) outCards() {
 
 func (p *Player) SendMessage2Gate(destAppType, destAppid uint32, bm n.BaseMessage) {
 	var dataReq gateway.TransferDataReq
-	dataReq.AttApptype = proto.Uint32(destAppType)
-	dataReq.AttAppid = proto.Uint32(destAppid)
-	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.AppType))
-	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.CmdId))
+	dataReq.DestApptype = proto.Uint32(destAppType)
+	dataReq.DestAppid = proto.Uint32(destAppid)
+	dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.AppType))
+	dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.CmdId))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(0)
 	cmd := n.TCPCommand{AppType: uint16(n.AppGate), CmdId: uint16(gateway.CMDGateway_IDTransferDataReq)}
@@ -326,7 +326,7 @@ func (a *agentPlayer) Run() {
 		if bm.Cmd.AppType == uint16(n.AppGate) && bm.Cmd.CmdId == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
 			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
-			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataCmdKind()), CmdId: uint16(m.GetDataCmdSubid())}
+			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataApptype()), CmdId: uint16(m.GetDataCmdid())}
 			msgData = m.GetData()
 			dataReq = &m
 		} else {

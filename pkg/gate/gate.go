@@ -281,10 +281,10 @@ func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Me
 
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	var dataReq gateway.TransferDataReq
-	dataReq.AttApptype = proto.Uint32(n.AppGate)
-	dataReq.AttAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
-	dataReq.DataCmdKind = proto.Uint32(uint32(bm.Cmd.AppType))
-	dataReq.DataCmdSubid = proto.Uint32(uint32(bm.Cmd.CmdId))
+	dataReq.DestApptype = proto.Uint32(n.AppGate)
+	dataReq.DestAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
+	dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.AppType))
+	dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.CmdId))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(gateConnID)
 	dataReq.AttSessionid = proto.Uint64(sessionID)

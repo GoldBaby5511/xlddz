@@ -58,12 +58,19 @@ message UserRoomInfo{
 }
 
 message RoomInfo{
+	enum RoomType{
+		Gold = 0x0001;		//金币
+		Private = 0x0010;	//私有
+		RedPack = 0x0020;	//红包
+	}
 	optional BaseAppInfo			app_info = 1;
-	optional uint32					level = 2;
-	optional string					name = 3;
-	optional int64					base_score = 4;
-	optional int64					join_min = 5;
-	optional int64					join_max = 6;
-	optional int64					out_score = 7;
-	optional int64					win_limit = 8;
+	optional uint32					kind = 2;
+	optional RoomType				type = 3;
+	optional uint32					level = 4;
+	optional string					name = 5;
+	optional int64					base_score = 6;
+	optional int64					join_min = 7;
+	optional int64					join_max = 8;
+	optional int64					out_score = 9;
+	optional int64					win_limit = 10;
 }

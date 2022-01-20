@@ -27,10 +27,10 @@ message	PulseRsp{
 
 //数据转发请求
 message TransferDataReq{
-	optional uint32 att_apptype=1;   	//目标或源apptype
-	optional uint32 att_appid=2;     	//目标或源appid
-	optional uint32 data_cmd_kind=3;
-	optional uint32 data_cmd_subid=4;
+	optional uint32 dest_apptype=1;   	//目标或源apptype
+	optional uint32 dest_appid=2;     	//目标或源appid
+	optional uint32 data_apptype=3;
+	optional uint32 data_cmdid=4;
 	optional bytes 	data = 5;
 	optional uint32 req_id =6;
 	optional uint32 client_ip_v4=7;		//客户端的ip

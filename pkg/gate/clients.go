@@ -50,7 +50,7 @@ func (a *agentClient) Run() {
 		if bm.Cmd.AppType == uint16(n.AppGate) && bm.Cmd.CmdId == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
 			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
-			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataCmdKind()), CmdId: uint16(m.GetDataCmdSubid())}
+			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataApptype()), CmdId: uint16(m.GetDataCmdid())}
 			msgData = m.GetData()
 			dataReq = &m
 			bm.AgentInfo = n.BaseAgentInfo{AgentType: n.NormalUser, AppType: util.GetHUint32FromUint64(m.GetGateconnid()), AppID: util.GetLUint32FromUint64(m.GetGateconnid())}

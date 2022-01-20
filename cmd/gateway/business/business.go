@@ -101,7 +101,7 @@ func handleTransferDataReq(args []interface{}) {
 	}
 
 	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,%v,%v",
-		m.GetAttApptype(), m.GetAttAppid(), m.GetDataCmdKind(), m.GetDataCmdSubid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
+		m.GetDestApptype(), m.GetDestAppid(), m.GetDataApptype(), m.GetDataCmdid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
 
 	if m.GetGateconnid() != 0 && a.AgentInfo().AgentType == n.CommonServer {
 		a, err := getUserAgent(m.GetGateconnid())
@@ -117,9 +117,8 @@ func handleTransferDataReq(args []interface{}) {
 		m.Gateid = proto.Uint32(conf.AppInfo.Id)
 		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
 		m.UserId = proto.Uint64(connData.userId)
-		g.SendData2App(m.GetAttApptype(), m.GetAttAppid(), n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
+		g.SendData2App(m.GetDestApptype(), m.GetDestAppid(), n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	}
-
 }
 
 func handleAuthInfo(args []interface{}) {
