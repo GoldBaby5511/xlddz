@@ -166,11 +166,11 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 
 // |	msgSize	 |	headSize		| 						header 												| msgData
 // |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
-func (p *MsgParser) Write(mainCmdID, subCmdID uint16, conn *TCPConn, msgData, otherData []byte) error {
+func (p *MsgParser) Write(appType, cmdId uint16, conn *TCPConn, msgData, otherData []byte) error {
 	var headSize uint16 = 1 + 1 + 2 + 2 + uint16(len(otherData))
 	var msgSize uint32 = 2 + uint32(headSize) + uint32(len(msgData))
 
-	header := PackageHeader{uint8(99), uint8(104), mainCmdID, subCmdID, ""}
+	header := PackageHeader{uint8(99), uint8(104), appType, cmdId, ""}
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.BigEndian, msgSize)
 	_ = binary.Write(buf, binary.BigEndian, headSize)

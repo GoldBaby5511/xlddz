@@ -4,7 +4,7 @@ type Processor interface {
 	// must goroutine safe
 	Route(args ...interface{}) error
 	// must goroutine safe
-	Unmarshal(mainCmdID uint16, subCmdID uint16, data []byte) (interface{}, interface{}, error)
+	Unmarshal(appType uint16, cmdId uint16, data []byte) (interface{}, interface{}, error)
 	// must goroutine safe
 	Marshal(msg interface{}) ([][]byte, error)
 }

@@ -13,7 +13,7 @@ const InvalidSeadID = 0xFFFF
 
 type GameSink interface {
 	StartGame(f Frame)
-	GameMessage(seatID, subCmdID uint32, data []byte)
+	GameMessage(seatID, cmdId uint32, data []byte)
 }
 
 type Frame interface {
@@ -94,6 +94,6 @@ func (t *Table) Start() {
 	t.gameSink.StartGame(t)
 }
 
-func (t *Table) GameMessage(seatID, subCmdID uint32, data []byte) {
-	t.gameSink.GameMessage(seatID, subCmdID, data)
+func (t *Table) GameMessage(seatID, cmdId uint32, data []byte) {
+	t.gameSink.GameMessage(seatID, cmdId, data)
 }

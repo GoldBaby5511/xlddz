@@ -2,9 +2,9 @@ package network
 
 import (
 	"errors"
+	"mango/pkg/log"
 	"net"
 	"sync"
-	"mango/pkg/log"
 
 	"github.com/gorilla/websocket"
 )
@@ -98,12 +98,12 @@ func (wsConn *WSConn) ReadMsg() (BaseMessage, []byte, error) {
 	return BaseMessage{}, b, err
 }
 
-func (wsConn *WSConn) WriteCMD(mainCmdID, subCmdID uint16) {
+func (wsConn *WSConn) WriteCMD(appType, cmdId uint16) {
 
 }
 
 // args must not be modified by the others goroutines
-func (wsConn *WSConn) WriteMsg(mainCmdID, subCmdID uint16, msgData, otherData []byte) error {
+func (wsConn *WSConn) WriteMsg(appType, cmdId uint16, msgData, otherData []byte) error {
 	wsConn.Lock()
 	defer wsConn.Unlock()
 	if wsConn.closeFlag {

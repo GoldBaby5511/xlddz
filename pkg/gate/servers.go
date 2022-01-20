@@ -170,13 +170,13 @@ func (a *agentServer) SendMessage(bm n.BaseMessage) {
 	}
 }
 
-func (a *agentServer) SendData(mainCmdID, subCmdID uint32, m proto.Message) {
+func (a *agentServer) SendData(appType, cmdId uint32, m proto.Message) {
 	data, err := proto.Marshal(m)
 	if err != nil {
 		log.Error("agentServer", "异常,proto.Marshal %v error: %v", reflect.TypeOf(m), err)
 		return
 	}
-	err = a.conn.WriteMsg(uint16(mainCmdID), uint16(subCmdID), data, nil)
+	err = a.conn.WriteMsg(uint16(appType), uint16(cmdId), data, nil)
 	if err != nil {
 		log.Error("agentServer", "write message %v error: %v", reflect.TypeOf(m), err)
 	}

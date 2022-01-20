@@ -51,9 +51,9 @@ func (s *Sink) EndGame() {
 
 }
 
-func (s *Sink) GameMessage(seatID, subCmdID uint32, data []byte) {
-	log.Debug("", "游戏消息,%v,%v", seatID, subCmdID)
-	switch subCmdID {
+func (s *Sink) GameMessage(seatID, cmdId uint32, data []byte) {
+	log.Debug("", "游戏消息,%v,%v", seatID, cmdId)
+	switch cmdId {
 	case uint32(gameddz.CMDGameddz_IDCallLandReq):
 		s.CallLandReq(seatID, data)
 	case uint32(gameddz.CMDGameddz_IDOutCardReq):
@@ -61,7 +61,7 @@ func (s *Sink) GameMessage(seatID, subCmdID uint32, data []byte) {
 	case uint32(gameddz.CMDGameddz_IDGameDataReq):
 		s.GameDataReq(seatID, data)
 	default:
-		log.Warning("", "未定义消息,seatID=%d,subCmdID=%d", seatID, subCmdID)
+		log.Warning("", "未定义消息,seatID=%d,cmdId=%d", seatID, cmdId)
 	}
 }
 

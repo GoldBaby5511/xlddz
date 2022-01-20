@@ -21,7 +21,7 @@ type BaseAgentInfo struct {
 type AgentClient interface {
 	Run()
 	OnClose()
-	SendData(mainCmdID, subCmdID uint32, m proto.Message)
+	SendData(appType, cmdId uint32, m proto.Message)
 	AgentInfo() BaseAgentInfo
 	LocalAddr() net.Addr
 	RemoteAddr() net.Addr
@@ -33,7 +33,7 @@ type AgentServer interface {
 	Run()
 	OnClose()
 	SendMessage(bm BaseMessage)
-	SendData(mainCmdID, subCmdID uint32, m proto.Message)
+	SendData(appType, cmdId uint32, m proto.Message)
 	Close()
 	Destroy()
 }

@@ -83,9 +83,9 @@ func NewPlayer(account, passWord string) *Player {
 	return p
 }
 
-func (p *Player) MsgRegister(m proto.Message, mainCmdId uint32, subCmdId uint16, f interface{}) {
+func (p *Player) MsgRegister(m proto.Message, appType uint32, cmdId uint16, f interface{}) {
 	chanRPC := p.Skeleton.ChanRPCServer
-	p.processor.Register(m, mainCmdId, subCmdId, chanRPC)
+	p.processor.Register(m, appType, cmdId, chanRPC)
 	chanRPC.Register(reflect.TypeOf(m), f)
 }
 
@@ -369,13 +369,13 @@ func (a *agentPlayer) SendMessage(bm n.BaseMessage) {
 	}
 }
 
-func (a *agentPlayer) SendData(mainCmdID, subCmdID uint32, m proto.Message) {
+func (a *agentPlayer) SendData(appType, cmdId uint32, m proto.Message) {
 	data, err := proto.Marshal(m)
 	if err != nil {
 		log.Error("agentPlayer", "异常,proto.Marshal %v error: %v", reflect.TypeOf(m), err)
 		return
 	}
-	err = a.conn.WriteMsg(uint16(mainCmdID), uint16(subCmdID), data, nil)
+	err = a.conn.WriteMsg(uint16(appType), uint16(cmdId), data, nil)
 	if err != nil {
 		log.Error("agentPlayer", "write message %v error: %v", reflect.TypeOf(m), err)
 	}

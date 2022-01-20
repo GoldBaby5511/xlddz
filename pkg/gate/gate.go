@@ -121,9 +121,9 @@ func Stop() {
 	wg.Wait()
 }
 
-func MsgRegister(m proto.Message, mainCmdId uint32, subCmdId uint16, f interface{}) {
+func MsgRegister(m proto.Message, appType uint32, cmdId uint16, f interface{}) {
 	chanRPC := Skeleton.ChanRPCServer
-	processor.Register(m, mainCmdId, subCmdId, chanRPC)
+	processor.Register(m, appType, cmdId, chanRPC)
 	chanRPC.Register(reflect.TypeOf(m), f)
 }
 
@@ -273,8 +273,8 @@ func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
 	return SendMessage2Client(bm, util.MakeUint64FromUint32(dataSrc.AppType, dataSrc.AppID), 0)
 }
 
-func SendData2App(destAppType, destAppid, mainCmdID, subCmdID uint32, m proto.Message) error {
-	cmd := n.TCPCommand{AppType: uint16(mainCmdID), CmdId: uint16(subCmdID)}
+func SendData2App(destAppType, destAppid, appType, cmdId uint32, m proto.Message) error {
+	cmd := n.TCPCommand{AppType: uint16(appType), CmdId: uint16(cmdId)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
 	return sendData(bm, destAppType, destAppid)
 }
