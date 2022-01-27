@@ -78,7 +78,7 @@ func disconnect(args []interface{}) {
 }
 
 func configChangeNotify(args []interface{}) {
-	log.Info("配置", "真的收到了配置消息=%d", len(args))
+	//log.Info("配置", "真的收到了配置消息=%d", len(args))
 	//key := apollo.ConfKey{AppType: lconf.AppInfo.Type, AppId: lconf.AppInfo.Id, Key: "服务维护"}
 	//if k == key {
 	//	type appInfo struct {

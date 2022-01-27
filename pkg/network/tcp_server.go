@@ -13,7 +13,7 @@ type TCPServer struct {
 	Addr            string
 	MaxConnNum      int
 	PendingWriteNum int
-	NewAgent        func(*TCPConn, uint32) AgentClient
+	NewAgent        func(*TCPConn) AgentClient
 	GetConfig       func(key string, defaultValue int64) int64
 	ln              net.Listener
 	conns           ConnSet
@@ -22,10 +22,8 @@ type TCPServer struct {
 	wgConns         sync.WaitGroup
 	memOverLimit    bool
 	rwMemLimit      sync.RWMutex
-	agentId         uint32
 
 	// msg parser
-	LenMsgLen int
 	MinMsgLen uint32
 	MaxMsgLen uint32
 	msgParser *MsgParser
@@ -55,11 +53,10 @@ func (server *TCPServer) init() {
 	server.ln = ln
 	server.conns = make(ConnSet)
 	server.memOverLimit = false
-	server.agentId = 0
 
 	// msg parser
 	msgParser := NewMsgParser()
-	msgParser.SetMsgLen(server.LenMsgLen, server.MinMsgLen, server.MaxMsgLen)
+	msgParser.SetMsgLen(server.MinMsgLen, server.MaxMsgLen)
 	server.msgParser = msgParser
 }
 
@@ -96,16 +93,14 @@ func (server *TCPServer) run() {
 			log.Warning("TCPServer", "超出连接上限,MaxConnNum=%d,alloc=%v,curMemory=%d", server.MaxConnNum, alloc, curMemory)
 			continue
 		}
-
 		server.conns[conn] = struct{}{}
-		server.agentId++
 		server.mutexConns.Unlock()
 
 		server.wgConns.Add(1)
 
 		tcpConn := newTCPConn(conn, server.PendingWriteNum, server.msgParser)
-		agent := server.NewAgent(tcpConn, server.agentId)
-		go func(id uint32) {
+		agent := server.NewAgent(tcpConn)
+		go func() {
 			agent.Run()
 			// cleanup
 			tcpConn.Close()
@@ -115,7 +110,7 @@ func (server *TCPServer) run() {
 			agent.OnClose()
 
 			server.wgConns.Done()
-		}(server.agentId)
+		}()
 	}
 }
 

@@ -136,7 +136,7 @@ func (p *Processor) Unmarshal(data []byte) (interface{}, interface{}, error) {
 
 	//buf := bytes.NewBuffer(head)
 
-	//tcpHead := &network.PackageHeader{}
+	//tcpHead := &network.MessageHeader{}
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.DataKind)
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.CheckCode)
 	//binary.Read(buf, binary.LittleEndian, &tcpHead.PacketSize)

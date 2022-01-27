@@ -14,8 +14,8 @@ type (
 	BaseAgentInfo struct {
 		AgentType    uint32
 		AppName      string
-		AppID        uint32
 		AppType      uint32
+		AppID        uint32
 		ListenOnAddr string
 	}
 
@@ -29,7 +29,7 @@ type (
 
 	AgentClient interface {
 		Agent
-		AgentInfo() BaseAgentInfo
+		AgentInfo() *BaseAgentInfo
 		LocalAddr() net.Addr
 		RemoteAddr() net.Addr
 	}

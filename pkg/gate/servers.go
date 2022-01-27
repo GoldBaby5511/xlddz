@@ -7,6 +7,7 @@ import (
 	"mango/pkg/conf/apollo"
 	"mango/pkg/log"
 	n "mango/pkg/network"
+	"mango/pkg/util"
 	"reflect"
 	"time"
 )
@@ -30,7 +31,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 	tcpClient.AutoReconnect = autoReconnect
 	tcpClient.NewAgent = func(conn *n.TCPConn) n.AgentServer {
 		a := &agentServer{tcpClient: tcpClient, conn: conn, info: info}
-		log.Debug("agentServer", "连接成功,%v,autoReconnect=%v", a.info, autoReconnect)
+		log.Debug("agentServer", "连接成功,info=%v", a.info)
 		sendRegAppReq(a)
 		timeInterval := 30 * time.Second
 		timerHeartbeat := time.NewTimer(timeInterval)
@@ -52,12 +53,12 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 		}
 
 		mxServers.Lock()
-		servers[uint64(info.AppType)<<32|uint64(info.AppID)] = a
+		servers[util.MakeUint64FromUint32(info.AppType, info.AppID)] = a
 		mxServers.Unlock()
 		return a
 	}
 
-	log.Debug("agentServer", "开始连接,%v,autoReconnect=%v", info, autoReconnect)
+	log.Debug("agentServer", "开始连接,info=%v", info)
 
 	if tcpClient != nil {
 		tcpClient.Start()
@@ -73,7 +74,7 @@ func (a *agentServer) Run() {
 		}
 
 		if bm.Cmd.AppType != uint16(n.AppCenter) {
-			log.Warning("", "不可能出现非center消息,cmd=%v", bm.Cmd)
+			log.Warning("agentServer", "不可能出现非center消息,cmd=%v", bm.Cmd)
 			break
 		}
 
@@ -88,7 +89,7 @@ func (a *agentServer) Run() {
 
 				//获取配置
 				mxServers.Lock()
-				_, ok := servers[uint64(m.GetAppType())<<32|uint64(m.GetAppId())]
+				_, ok := servers[util.MakeUint64FromUint32(m.GetAppType(), m.GetAppId())]
 				mxServers.Unlock()
 				if !(conf.AppInfo.Type == m.GetAppType() && conf.AppInfo.Id == m.GetAppId()) && !ok {
 					if m.GetAppAddress() != "" {
@@ -102,8 +103,9 @@ func (a *agentServer) Run() {
 
 				if conf.AppInfo.Type == n.AppConfig {
 					mxServers.Lock()
-					if _, ok := servers[uint64(n.AppCenter)<<32|uint64(0)]; ok {
-						servers[uint64(n.AppCenter)<<32|uint64(0)].info.AppID = m.GetCenterId()
+					key := util.MakeUint64FromUint32(n.AppCenter, 0)
+					if _, ok := servers[key]; ok {
+						servers[key].info.AppID = m.GetCenterId()
 					}
 					mxServers.Unlock()
 				}
@@ -120,8 +122,9 @@ func (a *agentServer) Run() {
 				m.GetAppState(), m.GetCenterId(), m.GetAppType(), m.GetAppId())
 
 			mxServers.Lock()
-			if _, ok := servers[uint64(m.GetAppType())<<32|uint64(m.GetAppId())]; ok {
-				servers[uint64(m.GetAppType())<<32|uint64(m.GetAppId())].Close()
+			key := util.MakeUint64FromUint32(m.GetAppType(), m.GetAppId())
+			if _, ok := servers[key]; ok {
+				servers[key].Close()
 			}
 			mxServers.Unlock()
 
@@ -147,7 +150,7 @@ func (a *agentServer) OnClose() {
 		a.tcpClient.Close()
 	}
 	mxServers.Lock()
-	delete(servers, uint64(a.info.AppType)<<32|uint64(a.info.AppID))
+	delete(servers, util.MakeUint64FromUint32(a.info.AppType, a.info.AppID))
 	mxServers.Unlock()
 }
 

@@ -12,9 +12,7 @@ import (
 	"reflect"
 )
 
-//代理
 type agentClient struct {
-	id   uint32
 	conn n.Conn
 	info n.BaseAgentInfo
 }
@@ -23,7 +21,7 @@ func (a *agentClient) Run() {
 	for {
 		bm, msgData, err := a.conn.ReadMsg()
 		if err != nil {
-			log.Warning("agentClient", "异常,网关读取消息失败,id=%v,err=%v", a.id, err)
+			log.Warning("agentClient", "异常,网关读取消息失败,info=%v,err=%v", a.info, err)
 			break
 		}
 		if processor == nil {
@@ -74,7 +72,7 @@ func (a *agentClient) Run() {
 
 func (a *agentClient) OnClose() {
 	if agentChanRPC != nil {
-		err := agentChanRPC.Call0(Disconnect, a, a.id)
+		err := agentChanRPC.Call0(Disconnect, a)
 		if err != nil {
 			log.Warning("agentClient", "agentClient OnClose err=%v", err)
 		}
@@ -109,6 +107,6 @@ func (a *agentClient) SendData(appType, cmdId uint32, m proto.Message) {
 	}
 }
 
-func (a *agentClient) AgentInfo() n.BaseAgentInfo {
-	return a.info
+func (a *agentClient) AgentInfo() *n.BaseAgentInfo {
+	return &a.info
 }

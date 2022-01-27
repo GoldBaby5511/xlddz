@@ -76,7 +76,8 @@ func LoadBaseConfig() {
 		return
 	}
 
-	if AppInfo.Name == "" || AppInfo.Type == 0 || AppInfo.Id == 0 || AppInfo.ListenOnAddr == "" || AppInfo.CenterAddr == "" {
+	if AppInfo.Name == "" || AppInfo.Type == 0 || AppInfo.Id == 0 || AppInfo.ListenOnAddr == "" ||
+		(AppInfo.CenterAddr == "" && AppInfo.Type != n.AppCenter) {
 		log.Fatal("初始化", "初始参数异常,请检查,AppInfo=%v", AppInfo)
 		return
 	}

@@ -266,6 +266,8 @@ func GetLogLevelStr(level int) string {
 		logLevel = printWarningLevel
 	} else if level == errorLevel {
 		logLevel = printErrorLevel
+	} else if level == fatalLevel {
+		logLevel = printFatalLevel
 	}
 	return logLevel
 }

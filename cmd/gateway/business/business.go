@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	connectionId uint32                     = 0
 	userConnData map[uint32]*connectionData = make(map[uint32]*connectionData)
 )
 
@@ -40,35 +41,32 @@ func init() {
 }
 
 func connectSuccess(args []interface{}) {
-	if len(args) != 2 {
-		return
-	}
-	connId := args[g.IdIndex].(uint32)
+	connectionId++
+	connId := connectionId
 	userConnData[connId] = &connectionData{
 		a:           args[g.AgentIndex].(n.AgentClient),
 		connId:      connId,
 		hasHello:    false,
 		lastPulseTk: time.Now().Unix(),
 	}
+	userConnData[connId].a.AgentInfo().AppType = connId
+	userConnData[connId].a.AgentInfo().AppID = conf.AppInfo.Id
 
-	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v", connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id))
+	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v,info=%v",
+		connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id), *userConnData[connId].a.AgentInfo())
 }
 
 func disconnect(args []interface{}) {
-	if len(args) != 2 {
-		return
-	}
-	connId := args[g.IdIndex].(uint32)
-	if v, ok := userConnData[connId]; ok {
-		log.Debug("agent1", "走了老弟,userId=%v,connId=%v,当前连接数=%d", v.userId, v.connId, len(userConnData))
+	if a, err := getUserConnData(args[g.AgentIndex].(n.AgentClient)); err == nil {
+		log.Debug("module", "走了老弟,userId=%v,connId=%v,当前连接数=%d,info=%v", a.userId, a.connId, len(userConnData), a.a.AgentInfo())
 
 		var logout login.LogoutReq
-		logout.UserId = proto.Uint64(v.userId)
+		logout.UserId = proto.Uint64(a.userId)
 		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.AppLogin, uint32(login.CMDLogin_IDLogoutReq), &logout)
 
-		delete(userConnData, connId)
+		delete(userConnData, a.connId)
 	} else {
-		log.Warning("agent1", "一个没有注册过的连接?,当前连接数=%d", len(userConnData))
+		log.Warning("module", "一个没有注册过的连接?,当前连接数=%d", len(userConnData))
 	}
 }
 
@@ -100,13 +98,13 @@ func handleTransferDataReq(args []interface{}) {
 		return
 	}
 
-	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,%v,%v",
+	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,gateConnId=%v,AgentType=%v",
 		m.GetDestApptype(), m.GetDestAppid(), m.GetDataApptype(), m.GetDataCmdid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
 
 	if m.GetGateconnid() != 0 && a.AgentInfo().AgentType == n.CommonServer {
 		a, err := getUserAgent(m.GetGateconnid())
 		if err != nil {
-			log.Error("消息转发", "根本没找到用户连接,"+
+			log.Warning("消息转发", "为找到可能已下线,"+
 				"AttGateconnid=%v,connId=%v",
 				m.GetGateconnid(),
 				util.GetHUint32FromUint64(m.GetGateconnid()))

@@ -24,8 +24,8 @@ import (
 	"time"
 )
 
-//事件
 const (
+	//事件
 	ConnectSuccess     string = "ConnectSuccess"
 	Disconnect         string = "Disconnect"
 	ConfigChangeNotify string = "ConfigChangeNotify"
@@ -33,11 +33,8 @@ const (
 	CenterDisconnect   string = "CenterDisconnect"
 	CenterRegResult    string = "CenterRegResult"
 	CommonServerReg    string = "CommonServerReg"
-)
 
-const (
 	AgentIndex = 0
-	IdIndex    = 1
 )
 
 var (
@@ -51,6 +48,7 @@ var (
 	processor                                  = protobuf.NewProcessor()
 	MaxConnNum         int
 	PendingWriteNum    int
+	MinMsgLen          uint32
 	MaxMsgLen          uint32
 
 	// websocket
@@ -59,9 +57,7 @@ var (
 	CertFile    string
 	KeyFile     string
 
-	// tcp
-	LenMsgLen int
-	closeSig  chan bool
+	closeSig chan bool
 )
 
 func init() {
@@ -159,13 +155,13 @@ func Run() {
 		tcpServer.Addr = conf.AppInfo.ListenOnAddr
 		tcpServer.MaxConnNum = MaxConnNum
 		tcpServer.PendingWriteNum = PendingWriteNum
-		tcpServer.LenMsgLen = LenMsgLen
+		tcpServer.MinMsgLen = MinMsgLen
 		tcpServer.MaxMsgLen = MaxMsgLen
 		tcpServer.GetConfig = apollo.GetConfigAsInt64
-		tcpServer.NewAgent = func(conn *n.TCPConn, agentId uint32) n.AgentClient {
-			a := &agentClient{id: agentId, conn: conn, info: n.BaseAgentInfo{AgentType: n.NormalUser}}
+		tcpServer.NewAgent = func(conn *n.TCPConn) n.AgentClient {
+			a := &agentClient{conn: conn, info: n.BaseAgentInfo{AgentType: n.NormalUser}}
 			if agentChanRPC != nil {
-				agentChanRPC.Go(ConnectSuccess, a, agentId)
+				agentChanRPC.Go(ConnectSuccess, a)
 			}
 			return a
 		}

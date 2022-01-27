@@ -40,18 +40,14 @@ func init() {
 func SetNetAgent(a network.AgentServer) {
 	netAgent = a
 
-	//连接成功后开启定时订阅
 	timeInterval := 30 * time.Second
 	timer := time.NewTimer(timeInterval)
 	go func(t *time.Timer) {
 		for {
 			<-t.C
-
-			//保持订阅
 			for key, _ := range regSubList {
 				SendSubscribeReq(key, false)
 			}
-
 			t.Reset(timeInterval)
 		}
 	}(timer)
@@ -68,14 +64,14 @@ func ProcessConfigRsp(m *config.ApolloCfgRsp) {
 		return
 	}
 
-	nsKey := ConfKey{Key: m.GetKeyName(), AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
+	key := ConfKey{Key: m.GetKeyName(), AppType: m.GetSubAppType(), AppId: m.GetSubAppId()}
 	mxRegSub.Lock()
-	if _, ok := regSubList[nsKey]; !ok {
+	if _, ok := regSubList[key]; !ok {
 		mxRegSub.Unlock()
-		log.Error("apollo", "异常，返回的竟然是自己没订阅的")
+		log.Warning("apollo", "异常，返回的竟然是自己没订阅的,key=%v", key)
 		return
 	}
-	regSubList[nsKey].RspCount += 1
+	regSubList[key].RspCount += 1
 	mxRegSub.Unlock()
 
 	for i := 0; i < len(m.GetKey()); i++ {
@@ -96,10 +92,10 @@ func ProcessConfigRsp(m *config.ApolloCfgRsp) {
 }
 
 func GetConfig(key, defaultValue string) string {
-	nsKey := ConfKey{Key: key, AppType: conf.AppInfo.Type, AppId: conf.AppInfo.Id}
+	regKey := ConfKey{Key: key, AppType: conf.AppInfo.Type, AppId: conf.AppInfo.Id}
 	mutexConfig.Lock()
 	defer mutexConfig.Unlock()
-	if item, ok := configValues[nsKey]; ok {
+	if item, ok := configValues[regKey]; ok {
 		return item.Value
 	}
 	return defaultValue
@@ -112,17 +108,18 @@ func GetConfigAsInt64(key string, defaultValue int64) int64 {
 
 func RegisterConfig(key string, reqAppType, reqAppId uint32, cb cbNotify) {
 	mxRegSub.Lock()
-	nsKey := ConfKey{Key: key, AppType: reqAppType, AppId: reqAppId}
-	if _, ok := regSubList[nsKey]; ok {
-		log.Info("Apollo", "这个key已经注册过了")
+	regKey := ConfKey{Key: key, AppType: reqAppType, AppId: reqAppId}
+	if _, ok := regSubList[regKey]; ok {
+		mxRegSub.Unlock()
+		log.Debug("Apollo", "这个key已经注册过了,key=%v", regKey)
 		return
 	}
 
-	regSubList[nsKey] = &ConfValue{Cb: cb}
+	regSubList[regKey] = &ConfValue{Cb: cb}
 	mxRegSub.Unlock()
-	log.Info("Apollo", "注册Apollo订阅，%v", nsKey)
+	log.Info("Apollo", "注册Apollo订阅，%v", regKey)
 
-	SendSubscribeReq(nsKey, false)
+	SendSubscribeReq(regKey, false)
 }
 
 func SendSubscribeReq(k ConfKey, cancel bool) {
