@@ -24,7 +24,7 @@ func configChangeNotify(args []interface{}) {
 		robotCount := apollo.GetConfigAsInt64("机器人数量", 10000)
 		log.Debug("", "开始创建,robotCount=%v", robotCount)
 		for i := 0; i < int(robotCount); i++ {
-			pl := player.NewPlayer(fmt.Sprintf("robot%05d", i), "")
+			pl := player.NewPlayer(fmt.Sprintf("robot%05d", i), "", 666)
 			if pl != nil {
 				userList = append(userList, pl)
 			}

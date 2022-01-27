@@ -51,21 +51,20 @@ func (s *Sink) EndGame() {
 
 }
 
-func (s *Sink) GameMessage(seatID, cmdId uint32, data []byte) {
-	log.Debug("", "游戏消息,%v,%v", seatID, cmdId)
+func (s *Sink) GameMessage(seatId, cmdId uint32, data []byte) {
 	switch cmdId {
 	case uint32(gameddz.CMDGameddz_IDCallLandReq):
-		s.CallLandReq(seatID, data)
+		s.CallLandReq(seatId, data)
 	case uint32(gameddz.CMDGameddz_IDOutCardReq):
-		s.OutCardReq(seatID, data)
+		s.OutCardReq(seatId, data)
 	case uint32(gameddz.CMDGameddz_IDGameDataReq):
-		s.GameDataReq(seatID, data)
+		s.GameDataReq(seatId, data)
 	default:
-		log.Warning("", "未定义消息,seatID=%d,cmdId=%d", seatID, cmdId)
+		log.Warning("", "未定义消息,seatId=%d,cmdId=%d", seatId, cmdId)
 	}
 }
 
-func (s *Sink) CallLandReq(seatID uint32, data []byte) {
+func (s *Sink) CallLandReq(seatId uint32, data []byte) {
 	var m gameddz.CallLandReq
 	_ = proto.Unmarshal(data, &m)
 
@@ -74,27 +73,27 @@ func (s *Sink) CallLandReq(seatID uint32, data []byte) {
 	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDCallLandRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
-	log.Debug("", "叫地主消息,seatID=%d", seatID)
+	log.Debug("", "叫地主消息,seatId=%d", seatId)
 }
 
-func (s *Sink) OutCardReq(seatID uint32, data []byte) {
+func (s *Sink) OutCardReq(seatId uint32, data []byte) {
 	var m gameddz.OutCardReq
 	_ = proto.Unmarshal(data, &m)
 
-	if len(m.GetOutCard()) >= len(s.userHandCards[seatID]) {
-		s.userHandCards[seatID] = append([]uint8{})
+	if len(m.GetOutCard()) >= len(s.userHandCards[seatId]) {
+		s.userHandCards[seatId] = append([]uint8{})
 	} else {
-		s.userHandCards[seatID] = s.userHandCards[seatID][:len(s.userHandCards[seatID])-len(m.GetOutCard())]
+		s.userHandCards[seatId] = s.userHandCards[seatId][:len(s.userHandCards[seatId])-len(m.GetOutCard())]
 	}
 
 	var rsp gameddz.OutCardRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDOutCardRsp)}
-	s.frame.SendTableData(seatID, bm)
+	s.frame.SendTableData(seatId, bm)
 
-	log.Debug("", "出牌消息,seatID=%d,len=%v", seatID, len(s.userHandCards[seatID]))
+	log.Debug("", "出牌消息,seatId=%d,len=%v", seatId, len(s.userHandCards[seatId]))
 
-	if len(s.userHandCards[seatID]) == 0 {
+	if len(s.userHandCards[seatId]) == 0 {
 		log.Debug("", "本局结束")
 
 		var over gameddz.GameOver
@@ -107,7 +106,7 @@ func (s *Sink) OutCardReq(seatID uint32, data []byte) {
 	}
 }
 
-func (s *Sink) GameDataReq(seatID uint32, data []byte) {
+func (s *Sink) GameDataReq(seatId uint32, data []byte) {
 	var m gameddz.GameDataReq
 	_ = proto.Unmarshal(data, &m)
 
@@ -116,5 +115,5 @@ func (s *Sink) GameDataReq(seatID uint32, data []byte) {
 	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDGameDataRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
-	log.Debug("", "数据消息,seatID=%d", seatID)
+	log.Debug("", "数据消息,seatId=%d", seatId)
 }

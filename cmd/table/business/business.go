@@ -51,8 +51,8 @@ func handleApplyReq(args []interface{}) {
 	var rsp tCMD.ApplyRsp
 	rsp.ApplyCount = proto.Uint32(m.GetApplyCount())
 	for k, v := range freeTables {
-		rsp.TableIds = append(rsp.TableIds, v.GeTableID())
-		v.SetHostID(srcApp.AppID)
+		rsp.TableIds = append(rsp.TableIds, v.Id)
+		v.HostAppID = srcApp.AppID
 		delete(freeTables, k)
 		usedTables[k] = v
 		if len(rsp.GetTableIds()) == int(m.GetApplyCount()) {
@@ -102,7 +102,7 @@ func handleSetPlayerToTableReq(args []interface{}) {
 
 	pl = player.NewPlayer()
 	pl.UserID = m.GetUserId()
-	pl.TableID = t.GeTableID()
+	pl.TableID = t.Id
 	pl.SrcAppID = srcApp.AppID
 	pl.SeatID = m.GetSeatId()
 	pl.GateConnID = m.GetGateconnid()
@@ -144,7 +144,7 @@ func handleGameMessage(args []interface{}) {
 
 func getTable(srcAppID uint32, tableID uint64) *table.Table {
 	for _, t := range usedTables {
-		if t.GeTableID() == tableID && t.GetHostID() == srcAppID {
+		if t.Id == tableID && t.HostAppID == srcAppID {
 			return t
 		}
 	}

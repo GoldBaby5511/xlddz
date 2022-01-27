@@ -33,18 +33,9 @@ func init() {
 	g.MsgRegister(&rCMD.UserActionReq{}, n.AppRoom, uint16(rCMD.CMDRoom_IDUserActionReq), handleUserActionReq)
 	g.MsgRegister(&rCMD.ExitReq{}, n.AppRoom, uint16(rCMD.CMDRoom_IDExitReq), handleExitReq)
 	g.MsgRegister(&property.ModifyPropertyRsp{}, n.AppProperty, uint16(property.CMDProperty_IDModifyPropertyRsp), handleModifyPropertyRsp)
-	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
 
 	g.Skeleton.LoopFunc(1*time.Second, checkMatchTable, timer.LoopForever)
-}
-
-func configChangeNotify(args []interface{}) {
-	tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 0)
-	if tableAppID != 0 {
-		g.Skeleton.LoopFunc(3*time.Second, table.CheckApplyTable, timer.LoopForever)
-	}
-
-	log.Info("配置", "真的收到了配置消息=%d,%d", len(args), tableAppID)
+	g.Skeleton.LoopFunc(3*time.Second, table.CheckApplyTable, timer.LoopForever)
 }
 
 func handleApplyRsp(args []interface{}) {

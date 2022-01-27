@@ -38,13 +38,14 @@ func NewTable(id uint64) {
 
 func CheckApplyTable() {
 	maxCount := int(apollo.GetConfigAsInt64("最大桌子数量", 3000))
-	if GetTableCount(All) > maxCount {
+	tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 0)
+	if tableAppID == 0 || GetTableCount(All) > maxCount {
 		return
 	}
+
 	if GetTableCount(Free) == 0 && GetTableCount(All) <= maxCount {
 		var req tCMD.ApplyReq
 		req.ApplyCount = proto.Uint32(uint32(apollo.GetConfigAsInt64("申请桌子数", 1000)))
-		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 1000)
 		g.SendData2App(n.AppTable, uint32(tableAppID), n.AppTable, uint32(tCMD.CMDTable_IDApplyReq), &req)
 	}
 }

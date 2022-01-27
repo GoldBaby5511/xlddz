@@ -72,7 +72,7 @@ func LoadBaseConfig() {
 
 	portPID := util.PortInUse(util.GetPortFromIPAddress(AppInfo.ListenOnAddr))
 	if portPID != -1 {
-		log.Fatal("初始化", "端口已被占用,PID=%v,AppInfo=%v", portPID, AppInfo)
+		log.Fatal("初始化", "端口[%v]已被[PID=%v]占用,请检查运行环境", util.GetPortFromIPAddress(AppInfo.ListenOnAddr), portPID)
 		return
 	}
 
