@@ -8,17 +8,17 @@ const (
 )
 
 type Player struct {
-	UserID     uint64
+	UserId     uint64
 	State      uint32
-	TableID    uint64
-	SeatID     uint32
-	GateConnID uint64
-	SrcAppID   uint32
+	TableId    uint64
+	SeatId     uint32
+	GateConnId uint64
+	SrcAppId   uint32
 }
 
 func NewPlayer() *Player {
 	p := new(Player)
-	p.UserID = 0
+	p.UserId = 0
 	p.State = NilState
 	return p
 }

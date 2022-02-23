@@ -9,29 +9,33 @@ import (
 	n "mango/pkg/network"
 )
 
-const InvalidSeadID = 0xFFFF
+const (
+	InvalidSeadID = 0xFFFF
+
+	DdzKind int64 = 666
+)
 
 type (
-	GameSink interface {
-		StartGame(f Frame)
-		GameMessage(seatId, cmdId uint32, data []byte)
-	}
-
 	Frame interface {
 		SendTableData(seatId uint32, bm n.BaseMessage)
 		WriteGameScore()
 		GameOver()
+	}
+
+	FrameSink interface {
+		StartGame(f Frame)
+		GameMessage(seatId, cmdId uint32, data []byte)
 	}
 )
 
 type Table struct {
 	Id        uint64
 	HostAppID uint32
-	gameSink  GameSink
+	gameSink  FrameSink
 	Players   map[uint32]*player.Player
 }
 
-func NewTable(id uint64, sink GameSink) *Table {
+func NewTable(id uint64, sink FrameSink) *Table {
 	t := new(Table)
 	t.Id = id
 	t.HostAppID = 0
@@ -49,7 +53,7 @@ func (t *Table) SendTableData(seatId uint32, bm n.BaseMessage) {
 
 	if seatId == InvalidSeadID {
 		for _, pl := range t.Players {
-			g.SendMessage2Client(bm, pl.GateConnID, 0)
+			g.SendMessage2Client(bm, pl.GateConnId, 0)
 		}
 	} else {
 		pl, ok := t.Players[seatId]
@@ -57,7 +61,7 @@ func (t *Table) SendTableData(seatId uint32, bm n.BaseMessage) {
 			log.Warning("", "没找到,seatId=%d,id=%v,hostId=%v", seatId, t.Id, t.HostAppID)
 			return
 		}
-		g.SendMessage2Client(bm, pl.GateConnID, 0)
+		g.SendMessage2Client(bm, pl.GateConnId, 0)
 	}
 }
 
@@ -79,11 +83,11 @@ func (t *Table) Reset() {
 }
 
 func (t *Table) SetPlayer(pl *player.Player) {
-	if _, ok := t.Players[pl.SeatID]; ok {
-		log.Warning("", "有人了,id=%v,userId=%v,seatId=%v", t.Id, pl.UserID, pl.SeatID)
+	if _, ok := t.Players[pl.SeatId]; ok {
+		log.Warning("", "有人了,id=%v,userId=%v,seatId=%v", t.Id, pl.UserId, pl.SeatId)
 		return
 	}
-	t.Players[pl.SeatID] = pl
+	t.Players[pl.SeatId] = pl
 }
 
 func (t *Table) Start() {

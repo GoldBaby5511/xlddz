@@ -29,10 +29,17 @@ func init() {
 
 func configChangeNotify(args []interface{}) {
 	tableCount := apollo.GetConfigAsInt64("桌子数量", 5000)
-	if len(freeTables) == 0 && len(usedTables) == 0 && tableCount != 0 {
-		log.Info("配置", "初始化桌子,tableCount=%d", tableCount)
+	gameKind := apollo.GetConfigAsInt64("游戏类型", 0)
+	if len(freeTables) == 0 && len(usedTables) == 0 && tableCount != 0 && gameKind != 0 {
+		log.Info("配置", "初始化桌子,tableCount=%d,gameKind=%v", tableCount, gameKind)
 		for i := 0; i < int(tableCount); i++ {
-			freeTables[uint64(i)] = table.NewTable(uint64(i), new(ddz.Sink))
+
+			switch gameKind {
+			case table.DdzKind:
+				freeTables[uint64(i)] = table.NewTable(uint64(i), new(ddz.TableSink))
+			default:
+				log.Warning("", "异常,游戏类型不存在,gameKind=%v", gameKind)
+			}
 		}
 	}
 }
@@ -68,14 +75,14 @@ func handleReleaseReq(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "收到释放,ApplyCount=%d,len=%d,srcID=%d", m.GetReleaseCount(), len(freeTables), srcApp.AppID)
-	for _, tID := range m.GetTableIds() {
-		t := getTable(srcApp.AppID, tID)
+	for _, tId := range m.GetTableIds() {
+		t := getTable(srcApp.AppID, tId)
 		if t == nil {
 			continue
 		}
 		t.Reset()
-		delete(usedTables, tID)
-		freeTables[tID] = t
+		delete(usedTables, tId)
+		freeTables[tId] = t
 	}
 }
 
@@ -94,18 +101,18 @@ func handleSetPlayerToTableReq(args []interface{}) {
 
 	pl := getPlayer(m.GetUserId())
 	if pl != nil {
-		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserID, m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
+		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserId, m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
 		return
 	}
 
-	log.Debug("", "收到入座,UserID=%v,SeatId=%v,TableId=%d,len=%d,srcID=%d", m.GetUserId(), m.GetSeatId(), m.GetTableId(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到入座,UserId=%v,SeatId=%v,TableId=%d,len=%d,srcID=%d", m.GetUserId(), m.GetSeatId(), m.GetTableId(), len(freeTables), srcApp.AppID)
 
 	pl = player.NewPlayer()
-	pl.UserID = m.GetUserId()
-	pl.TableID = t.Id
-	pl.SrcAppID = srcApp.AppID
-	pl.SeatID = m.GetSeatId()
-	pl.GateConnID = m.GetGateconnid()
+	pl.UserId = m.GetUserId()
+	pl.TableId = t.Id
+	pl.SrcAppId = srcApp.AppID
+	pl.SeatId = m.GetSeatId()
+	pl.GateConnId = m.GetGateconnid()
 	pl.State = player.SitdownState
 	t.SetPlayer(pl)
 }
@@ -134,12 +141,12 @@ func handleGameMessage(args []interface{}) {
 		return
 	}
 
-	t := getTable(pl.SrcAppID, pl.TableID)
+	t := getTable(pl.SrcAppId, pl.TableId)
 	if t == nil {
-		log.Warning("", "游戏消息,没找到桌子啊,userID=%v,SrcAppID=%v,TableID=%v", userID, pl.SrcAppID, pl.TableID)
+		log.Warning("", "游戏消息,没找到桌子啊,userID=%v,SrcAppId=%v,TableId=%v", userID, pl.SrcAppId, pl.TableId)
 		return
 	}
-	t.GameMessage(pl.SeatID, m.GetSubCmdid(), m.GetData())
+	t.GameMessage(pl.SeatId, m.GetSubCmdid(), m.GetData())
 }
 
 func getTable(srcAppID uint32, tableID uint64) *table.Table {
@@ -154,7 +161,7 @@ func getTable(srcAppID uint32, tableID uint64) *table.Table {
 func getPlayer(userID uint64) *player.Player {
 	for _, t := range usedTables {
 		for _, pl := range t.Players {
-			if pl.UserID == userID {
+			if pl.UserId == userID {
 				return pl
 			}
 		}
