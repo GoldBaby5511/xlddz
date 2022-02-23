@@ -30,7 +30,7 @@ type (
 
 type Table struct {
 	Id        uint64
-	HostAppID uint32
+	HostAppId uint32
 	gameSink  FrameSink
 	Players   map[uint32]*player.Player
 }
@@ -38,7 +38,7 @@ type Table struct {
 func NewTable(id uint64, sink FrameSink) *Table {
 	t := new(Table)
 	t.Id = id
-	t.HostAppID = 0
+	t.HostAppId = 0
 	t.gameSink = sink
 	t.Players = make(map[uint32]*player.Player)
 	return t
@@ -58,7 +58,7 @@ func (t *Table) SendTableData(seatId uint32, bm n.BaseMessage) {
 	} else {
 		pl, ok := t.Players[seatId]
 		if !ok {
-			log.Warning("", "没找到,seatId=%d,id=%v,hostId=%v", seatId, t.Id, t.HostAppID)
+			log.Warning("", "没找到,seatId=%d,id=%v,hostId=%v", seatId, t.Id, t.HostAppId)
 			return
 		}
 		g.SendMessage2Client(bm, pl.GateConnId, 0)
@@ -67,18 +67,18 @@ func (t *Table) SendTableData(seatId uint32, bm n.BaseMessage) {
 
 func (t *Table) WriteGameScore() {
 	var writeScore tCMD.WriteGameScore
-	g.SendData2App(n.AppRoom, t.HostAppID, n.AppTable, uint32(tCMD.CMDTable_IDWriteGameScore), &writeScore)
+	g.SendData2App(n.AppRoom, t.HostAppId, n.AppTable, uint32(tCMD.CMDTable_IDWriteGameScore), &writeScore)
 }
 
 func (t *Table) GameOver() {
 	t.Players = make(map[uint32]*player.Player)
 	var over tCMD.GameOver
 	over.TableId = proto.Uint64(t.Id)
-	g.SendData2App(n.AppRoom, t.HostAppID, n.AppTable, uint32(tCMD.CMDTable_IDGameOver), &over)
+	g.SendData2App(n.AppRoom, t.HostAppId, n.AppTable, uint32(tCMD.CMDTable_IDGameOver), &over)
 }
 
 func (t *Table) Reset() {
-	t.HostAppID = 0
+	t.HostAppId = 0
 	t.Players = make(map[uint32]*player.Player)
 }
 

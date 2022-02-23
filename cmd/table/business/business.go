@@ -59,7 +59,7 @@ func handleApplyReq(args []interface{}) {
 	rsp.ApplyCount = proto.Uint32(m.GetApplyCount())
 	for k, v := range freeTables {
 		rsp.TableIds = append(rsp.TableIds, v.Id)
-		v.HostAppID = srcApp.AppID
+		v.HostAppId = srcApp.AppID
 		delete(freeTables, k)
 		usedTables[k] = v
 		if len(rsp.GetTableIds()) == int(m.GetApplyCount()) {
@@ -95,13 +95,13 @@ func handleSetPlayerToTableReq(args []interface{}) {
 	}
 	t := getTable(srcApp.AppID, m.GetTableId())
 	if t == nil {
-		log.Warning("", "这桌子不是你的啊,tableId=%v,host=%v,srcId=%v", m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
+		log.Warning("", "这桌子不是你的啊,tableId=%v,host=%v,srcId=%v", m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppID)
 		return
 	}
 
 	pl := getPlayer(m.GetUserId())
 	if pl != nil {
-		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserId, m.GetTableId(), usedTables[m.GetTableId()].HostAppID, srcApp.AppID)
+		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserId, m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppID)
 		return
 	}
 
@@ -149,9 +149,9 @@ func handleGameMessage(args []interface{}) {
 	t.GameMessage(pl.SeatId, m.GetSubCmdid(), m.GetData())
 }
 
-func getTable(srcAppID uint32, tableID uint64) *table.Table {
+func getTable(srcAppId uint32, tableID uint64) *table.Table {
 	for _, t := range usedTables {
-		if t.Id == tableID && t.HostAppID == srcAppID {
+		if t.Id == tableID && t.HostAppId == srcAppId {
 			return t
 		}
 	}
