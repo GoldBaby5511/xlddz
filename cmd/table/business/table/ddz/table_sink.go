@@ -14,13 +14,13 @@ const (
 	playerCount = 3
 )
 
-type Sink struct {
+type TableSink struct {
 	frame         table.Frame
 	userHandCards [playerCount][]uint8
 	bottomCards   []uint8
 }
 
-func (s *Sink) StartGame(f table.Frame) {
+func (s *TableSink) StartGame(f table.Frame) {
 	s.frame = f
 
 	c := cardData
@@ -47,11 +47,11 @@ func (s *Sink) StartGame(f table.Frame) {
 	}
 }
 
-func (s *Sink) EndGame() {
+func (s *TableSink) EndGame() {
 
 }
 
-func (s *Sink) GameMessage(seatId, cmdId uint32, data []byte) {
+func (s *TableSink) GameMessage(seatId, cmdId uint32, data []byte) {
 	switch cmdId {
 	case uint32(gameddz.CMDGameddz_IDCallLandReq):
 		s.CallLandReq(seatId, data)
@@ -64,7 +64,7 @@ func (s *Sink) GameMessage(seatId, cmdId uint32, data []byte) {
 	}
 }
 
-func (s *Sink) CallLandReq(seatId uint32, data []byte) {
+func (s *TableSink) CallLandReq(seatId uint32, data []byte) {
 	var m gameddz.CallLandReq
 	_ = proto.Unmarshal(data, &m)
 
@@ -76,7 +76,7 @@ func (s *Sink) CallLandReq(seatId uint32, data []byte) {
 	log.Debug("", "叫地主消息,seatId=%d", seatId)
 }
 
-func (s *Sink) OutCardReq(seatId uint32, data []byte) {
+func (s *TableSink) OutCardReq(seatId uint32, data []byte) {
 	var m gameddz.OutCardReq
 	_ = proto.Unmarshal(data, &m)
 
@@ -106,7 +106,7 @@ func (s *Sink) OutCardReq(seatId uint32, data []byte) {
 	}
 }
 
-func (s *Sink) GameDataReq(seatId uint32, data []byte) {
+func (s *TableSink) GameDataReq(seatId uint32, data []byte) {
 	var m gameddz.GameDataReq
 	_ = proto.Unmarshal(data, &m)
 
