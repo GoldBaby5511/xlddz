@@ -17,6 +17,7 @@ import (
 	"mango/third_party/agollo"
 	aConfig "mango/third_party/agollo/env/config"
 	"mango/third_party/agollo/storage"
+	"mango/third_party/go-simplejson"
 )
 
 var (
@@ -116,8 +117,8 @@ func loadConfigs() {
 			l.listenChange()
 			listenerList = append(listenerList, l)
 
-			log.Debug("创建", "文件模式创建,appType=%v,appId=%v,len=%v",
-				l.appType, l.appId, len(listenerList))
+			log.Debug("创建", "文件模式创建,file=%v,appType=%v,appId=%v",
+				l.fileName, l.appType, l.appId)
 		}
 	}
 }
@@ -238,12 +239,10 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string) {
 				break
 			}
 		}
-		appType := util.GetHUint32FromUint64(k) // uint32(k >> 32)
-		appId := util.GetLUint32FromUint64(k)   // uint32(k & 0xFFFFFFFF)
-
+		appType := util.GetHUint32FromUint64(k)
+		appId := util.GetLUint32FromUint64(k)
 		log.Debug("通知", "下发通知,appType=%v, appId=%v,SubAppType=%v, SubAppId=%v,changeKey=%v",
 			appType, appId, v.AppType, v.AppId, changeKey)
-
 		g.SendData2App(appType, appId, n.AppConfig, uint32(config.CMDConfig_IDApolloCfgRsp), &rsp)
 	}
 }
@@ -251,33 +250,34 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string) {
 func (c *configChangeListener) loadConfigFile() error {
 	jsonData, err := ioutil.ReadFile(c.fileName)
 	if err != nil {
-		log.Error("Listener", "加载配置文件失败,fileName=%v,err=%v", c.fileName, err)
-		return err
-	}
-	var v interface{}
-	err = json.Unmarshal(jsonData, &v)
-	if err != nil {
-		log.Error("jsonconf", "Unmarshal err=%v", err)
+		log.Fatal("Listener", "加载配置文件失败,fileName=%v,err=%v", c.fileName, err)
 		return err
 	}
 
+	config, err := simplejson.NewJson(jsonData)
+	if err != nil {
+		log.Warning("", "Error!err=%v", err)
+		return err
+	}
+
+	configurations := config.Get("configurations")
 	c.configs = make(map[string]string)
-	for k, v := range v.(map[string]interface{}) {
-		switch v := v.(type) {
+	for k, v := range configurations.MustMap() {
+		var value string
+		switch t := v.(type) {
+		case string:
+			value = t
 		case map[string]interface{}:
-			if k == "configurations" {
-				configData, _ := json.Marshal(v)
-				err := json.Unmarshal(configData, &c.configs)
-				if err != nil {
-					log.Error("jsonconf", "不符合json格式,Unmarshal err=%v", err)
-					panic(1)
-				}
+			if b, err := configurations.Get(k).MarshalJSON(); err == nil {
+				value = string(b)
+			} else {
+				log.Warning("", "出错,file=%v,k=%v,err=%v", c.fileName, k, err)
 			}
 		default:
+			log.Warning("", "未处理类型配置,file=%v,k=%v,t=%v", c.fileName, k, t)
 		}
+		c.configs[k] = value
 	}
-
-	log.Debug("测试", "文件加载完成,appType=%v,id=%v,=%v", c.appType, c.appId, c.configs)
 	return nil
 }
 
@@ -286,13 +286,15 @@ func (c *configChangeListener) watchConfigFile() {
 	var err error
 	c.fileWatch, err = fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatal("", "%v", err)
+		log.Fatal("", "err=%v", err)
+		return
 	}
 
 	//添加要监控的对象，文件或文件夹
 	err = c.fileWatch.Add(c.fileName)
 	if err != nil {
-		log.Fatal("", "%v", err)
+		log.Fatal("", "err=%v", err)
+		return
 	}
 	//我们另启一个goroutine来处理监控对象的事件
 	go func() {
@@ -310,7 +312,7 @@ func (c *configChangeListener) watchConfigFile() {
 						log.Debug("", "创建文件 : %v", ev.Name)
 					}
 					if ev.Op&fsnotify.Write == fsnotify.Write {
-						log.Debug("", "写入文件 : %v,%v", ev.Name, &c)
+						log.Debug("", "写入文件 : %v", ev.Name)
 						c.changeChan <- struct{}{}
 					}
 					if ev.Op&fsnotify.Remove == fsnotify.Remove {
@@ -326,7 +328,7 @@ func (c *configChangeListener) watchConfigFile() {
 			case err := <-c.fileWatch.Errors:
 				{
 					if err != nil {
-						log.Error("", "fileWatch.Errors,err=%v : ", err)
+						log.Error("", "fileWatch.Errors,err=%v", err)
 					}
 					return
 				}

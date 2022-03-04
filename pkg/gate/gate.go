@@ -10,11 +10,13 @@ import (
 	"mango/pkg/chanrpc"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
+	"mango/pkg/database"
 	"mango/pkg/log"
 	"mango/pkg/module"
 	n "mango/pkg/network"
 	"mango/pkg/network/protobuf"
 	"mango/pkg/util"
+
 	"os"
 	"os/signal"
 	"reflect"
@@ -193,6 +195,11 @@ func Run() {
 func handleApolloCfgRsp(args []interface{}) {
 	apollo.ProcessConfigRsp(args[n.DataIndex].(n.BaseMessage).MyMessage.(*config.ApolloCfgRsp))
 
+	dbConfig := apollo.GetConfig("数据库配置", "")
+	if database.DBC == nil && dbConfig != "" {
+		database.InitDBHelper(dbConfig)
+	}
+
 	logAddr := apollo.GetConfig("日志服务器地址", "")
 	if logAddr != "" && tcpLog != nil && !tcpLog.IsRunning() {
 		ConnectLogServer(logAddr)
@@ -223,7 +230,7 @@ func ConnectLogServer(logAddr string) {
 		tcpLog.AutoReconnect = true
 		tcpLog.NewAgent = func(conn *n.TCPConn) n.AgentServer {
 			a := &agentServer{tcpClient: tcpLog, conn: conn, info: n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "logger", AppType: n.AppLogger, AppID: 0, ListenOnAddr: logAddr}}
-			log.Info("gate", "日志服务器连接成功,服务启动完成,阔以开始了... ...")
+			log.Info("gate", "日志服务器连接成功")
 
 			log.SetCallback(func(i log.LogInfo) {
 				var logReq logger.LogReq

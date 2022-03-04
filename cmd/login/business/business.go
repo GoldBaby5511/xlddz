@@ -20,6 +20,11 @@ func init() {
 	g.MsgRegister(&login.LoginReq{}, n.AppLogin, uint16(login.CMDLogin_IDLoginReq), handleLoginReq)
 	g.MsgRegister(&login.LogoutReq{}, n.AppLogin, uint16(login.CMDLogin_IDLogoutReq), handleLogoutReq)
 	g.MsgRegister(&property.QueryPropertyRsp{}, n.AppProperty, uint16(property.CMDProperty_IDQueryPropertyRsp), handleQueryPropertyRsp)
+	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
+}
+
+func configChangeNotify(args []interface{}) {
+
 }
 
 func handleLoginReq(args []interface{}) {
@@ -66,7 +71,7 @@ func handleQueryPropertyRsp(args []interface{}) {
 	}
 	userList[m.GetUserId()].UserProps = append(userList[m.GetUserId()].UserProps, m.GetUserProps()...)
 
-	log.Debug("", "财富查询,userId=%v,len=%v,GateConnid=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnid())
+	log.Debug("", "财富查询,userId=%v,len=%v,gateConnId=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnid())
 
 	var authRsp gateway.AuthInfo
 	authRsp.UserId = proto.Uint64(m.GetUserId())
