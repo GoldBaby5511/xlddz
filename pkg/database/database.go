@@ -47,7 +47,8 @@ func InitDBHelper(dbConfig string) {
 				mongoDatabase, _ := mongodb.Get("database").String()
 				mongoUserid := mongodb.Get("userid").MustString("")
 				mongoPassword := mongodb.Get("password").MustString("")
-				DBC.MongoHelper = mgohelper.GetMgoInstance(mongoHost, mongoDatabase, mongoUserid, mongoPassword)
+				DBC.MongoHelper = &mgohelper.MgoHelper{}
+				DBC.MongoHelper.Init(mongoHost, mongoDatabase, mongoUserid, mongoPassword)
 			}
 		}
 
@@ -73,4 +74,32 @@ func InitDBHelper(dbConfig string) {
 	}
 
 	log.Info("", "数据库初始化完成")
+}
+
+func GetSqlDB(name string) *sqlhelper.SqlHelper {
+	if DBC == nil {
+		return nil
+	}
+	return DBC.SqlHelperMap[name]
+}
+
+func GetMCHelper() *mchelper.MCHelper {
+	if DBC == nil {
+		return nil
+	}
+	return DBC.MCHelper
+}
+
+func GetRedisHelper() *redishelper.RedisHelper {
+	if DBC == nil {
+		return nil
+	}
+	return DBC.RedisHelper
+}
+
+func GetMongoHelper() *mgohelper.MgoHelper {
+	if DBC == nil {
+		return nil
+	}
+	return DBC.MongoHelper
 }
