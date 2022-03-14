@@ -35,7 +35,7 @@ func InitDBHelper(dbConfig string) {
 	noSql, ok := dataBase.CheckGet("nosql")
 	if ok {
 		memcached, err := noSql.Get("memcached").String()
-		if err == nil {
+		if err == nil && memcached!=""{
 			DBC.MCHelper = &mchelper.MCHelper{}
 			DBC.MCHelper.Init(strings.Split(memcached, ",")...)
 		}
@@ -43,7 +43,7 @@ func InitDBHelper(dbConfig string) {
 		mongodb, ok := noSql.CheckGet("mongodb")
 		if ok {
 			mongoHost, err := mongodb.Get("server").String()
-			if err == nil {
+			if err == nil && mongoHost != ""{
 				mongoDatabase, _ := mongodb.Get("database").String()
 				mongoUserid := mongodb.Get("userid").MustString("")
 				mongoPassword := mongodb.Get("password").MustString("")
@@ -55,7 +55,7 @@ func InitDBHelper(dbConfig string) {
 		redis, ok := noSql.CheckGet("redis")
 		if ok {
 			redisServer, err := redis.Get("server").String()
-			if err == nil {
+			if err == nil && redisServer!= ""{
 				redisPassword := redis.Get("password").MustString("")
 				DBC.RedisHelper = &redishelper.RedisHelper{}
 				DBC.RedisHelper.Init(redisServer, redisPassword)
@@ -65,7 +65,10 @@ func InitDBHelper(dbConfig string) {
 
 	DBC.SqlHelperMap = make(map[string]*sqlhelper.SqlHelper)
 	for key, _ := range dataBase.MustMap() {
-		if key == "nosql" {
+		if key == "nosql" || key == ""{
+			continue
+		}
+		if dataBase.Get(key).Get("server").MustString("") == ""{
 			continue
 		}
 		helper := &sqlhelper.SqlHelper{}

@@ -10,7 +10,7 @@
         "数据库配置": {
             "master": {
                 "driver": "mysql",
-                "server": "TODO",
+                "server": "",
                 "database": "TODO",
                 "port": "TODO",
                 "userid": "TODO",
@@ -21,7 +21,7 @@
             },
             "nosql": {
                 "redis": {
-                    "server": "TODO",
+                    "server": "",
                     "password": "TODO"
                 }
             }
