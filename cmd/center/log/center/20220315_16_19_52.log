@@ -1,0 +1,12 @@
+2022-03-15 16:19:52.803836000[ debug ] 基础属性,{center 2 50 0.0.0.0:10050 } << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #87 
+2022-03-15 16:19:52.803991000[ info  ] 注册Apollo订阅，{2 50 } << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #90 
+2022-03-15 16:19:52.804256000[ debug ] Run,ListenOnAddr=0.0.0.0:10050 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #100 
+2022-03-15 16:21:33.578540000[ info  ] 来了老弟,当前连接数=0 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-15 16:21:33.588485000[warning] 异常,网关读取消息失败,info={0  0 0 },err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-15 16:21:33.588690000[ info  ] 告辞中,当前连接数=1 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-15 16:21:33.588730000[ info  ] 再见,appType=0,appId=0,regKey=0 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-15 16:23:21.139365000[ info  ] 来了老弟,当前连接数=0 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-15 16:23:21.140383000[ debug ] 服务注册,appType=3,appId=60,regKey=12884901948,0.0.0.0:10060 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-15 16:23:21.141628000[ info  ] 连接日志服务器,Addr=127.0.0.1:10001 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #207 
+2022-03-15 16:23:21.142128000[ info  ] 日志服务器连接成功 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-15 16:23:48.590725000[ info  ] 日志服务器断开 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 

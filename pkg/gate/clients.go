@@ -37,6 +37,10 @@ func (a *agentClient) Run() {
 					agentChanRPC.Call0(CommonServerReg, a, a.info)
 				}
 				log.Debug("", "相互注册,%v", a.info)
+				mxClients.Lock()
+				clients[util.MakeUint64FromUint32(a.info.AppType, a.info.AppID)] = a
+				mxClients.Unlock()
+				sendRegConfigReq()
 			} else if bm.Cmd.CmdId == uint16(center.CMDCenter_IDPulseNotify) {
 
 			}
@@ -77,6 +81,10 @@ func (a *agentClient) OnClose() {
 			log.Warning("agentClient", "agentClient OnClose err=%v", err)
 		}
 	}
+
+	mxClients.Lock()
+	delete(clients, util.MakeUint64FromUint32(a.info.AppType, a.info.AppID))
+	mxClients.Unlock()
 }
 
 func (a *agentClient) LocalAddr() net.Addr {

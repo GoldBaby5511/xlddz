@@ -1,0 +1,8 @@
+2022-03-13 14:11:59.858163000[ debug ] 基础属性,{center 2 50 0.0.0.0:10050 } << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #85 
+2022-03-13 14:11:59.858383000[ info  ] 注册Apollo订阅，{2 50 } << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #88 
+2022-03-13 14:11:59.858566000[ debug ] Run,ListenOnAddr=0.0.0.0:10050 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #98 
+2022-03-13 14:12:00.753555000[ info  ] 来了老弟,当前连接数=0 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-13 14:12:00.754186000[ debug ] 服务注册,appType=3,appId=60,regKey=12884901948,0.0.0.0:10060 << /Users/zhangjinbao/Documents/mango/pkg/chanrpc/chanrpc.go, line #117 
+2022-03-13 14:12:00.755309000[ info  ] 连接日志服务器,Addr=127.0.0.1:10001 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #205 
+2022-03-13 14:12:00.755625000[ info  ] 日志服务器连接成功 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-13 14:12:18.268161000[ info  ] 日志服务器断开 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 

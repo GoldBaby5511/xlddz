@@ -43,8 +43,10 @@ var (
 	cbCenterDisconnect []func()
 	tcpLog             *n.TCPClient = nil
 	mxServers          sync.Mutex
+	mxClients          sync.Mutex
 	wg                 sync.WaitGroup
 	servers            map[uint64]*agentServer = make(map[uint64]*agentServer)
+	clients            map[uint64]*agentClient = make(map[uint64]*agentClient)
 	agentChanRPC       *chanrpc.Server         = nil
 	Skeleton           *module.Skeleton        = nil
 	processor                                  = protobuf.NewProcessor()
@@ -267,6 +269,27 @@ func sendRegAppReq(a *agentServer) {
 	}
 	registerReq.MyAddress = proto.String(myAddress)
 	a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
+}
+
+func sendRegConfigReq() {
+	mxClients.Lock()
+	for _, v := range clients {
+		if v.info.AppType != n.AppConfig {
+			continue
+		}
+		mxServers.Lock()
+		for _, sv := range servers {
+			if sv.info.AppType == v.info.AppType && sv.info.AppID == v.info.AppID {
+				apollo.SetNetAgent(sv)
+				apollo.RegisterConfig("", conf.AppInfo.Type, conf.AppInfo.Id, nil)
+				mxClients.Unlock()
+				mxServers.Unlock()
+				return
+			}
+		}
+		mxServers.Unlock()
+	}
+	mxClients.Unlock()
 }
 
 func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {

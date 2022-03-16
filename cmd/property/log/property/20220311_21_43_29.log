@@ -1,0 +1,32 @@
+2022-03-11 21:43:29.660174000[ debug ] 未指定中心服,使用默认地址,CenterAddr=127.0.0.1:10050 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #85 
+2022-03-11 21:43:29.709472000[ debug ] 基础属性,{property 7 90 0.0.0.0:10090 127.0.0.1:10050} << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #85 
+2022-03-11 21:43:29.709768000[ debug ] Run,ListenOnAddr=0.0.0.0:10090 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #98 
+2022-03-11 21:43:29.709852000[ debug ] 开始连接,info={1 center 2 0 127.0.0.1:10050} << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #173 
+2022-03-11 21:43:29.710351000[ debug ] 连接成功,info={1 center 2 0 127.0.0.1:10050} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-11 21:43:29.711023000[ info  ] 注册消息,regResult=0,CenterId=50,appName=gateway,appType=4,appId=100,Addr=0.0.0.0:10100 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-11 21:43:29.711084000[ debug ] 开始连接,info={1 gateway 4 100 0.0.0.0:10100} << /Users/zhangjinbao/Documents/mango/pkg/gate/servers.go, line #95 
+2022-03-11 21:43:29.711153000[ info  ] 注册消息,regResult=0,CenterId=50,appName=list,appType=6,appId=80,Addr=0.0.0.0:10080 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-11 21:43:29.711185000[ debug ] 开始连接,info={1 list 6 80 0.0.0.0:10080} << /Users/zhangjinbao/Documents/mango/pkg/gate/servers.go, line #95 
+2022-03-11 21:43:29.711279000[ info  ] 注册消息,regResult=0,CenterId=50,appName=property,appType=7,appId=90,Addr=0.0.0.0:10090 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-11 21:43:29.711408000[ info  ] 注册消息,regResult=0,CenterId=50,appName=config,appType=3,appId=60,Addr=0.0.0.0:10060 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-11 21:43:29.711445000[ debug ] 开始连接,info={1 config 3 60 0.0.0.0:10060} << /Users/zhangjinbao/Documents/mango/pkg/gate/servers.go, line #95 
+2022-03-11 21:43:29.711723000[ debug ] 连接成功,info={1 config 3 60 0.0.0.0:10060} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-11 21:43:29.711838000[ info  ] 注册Apollo订阅，{7 90 } << /Users/zhangjinbao/Documents/mango/pkg/gate/servers.go, line #53 
+2022-03-11 21:43:29.712205000[ debug ] 连接成功,info={1 list 6 80 0.0.0.0:10080} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-11 21:43:29.712386000[ debug ] 相互注册,{1 config 3 60 } << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-11 21:43:29.712426000[ debug ] 连接成功,info={1 gateway 4 100 0.0.0.0:10100} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-11 21:43:29.712580000[ debug ] 相互注册,{1 gateway 4 100 } << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-11 21:43:29.712580000[ debug ] 相互注册,{1 list 6 80 } << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-11 21:43:29.712683000[ info  ] 连接日志服务器,Addr=127.0.0.1:10001 << /Users/zhangjinbao/Documents/mango/pkg/gate/gate.go, line #205 
+2022-03-11 21:43:29.713181000[ info  ] 日志服务器连接成功 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #50 
+2022-03-13 14:07:13.693908000[ info  ] 日志服务器断开 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 
+2022-03-13 14:07:13.893197000[warning] 异常,网关读取消息失败,info={1 center 2 0 127.0.0.1:10050},err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-13 14:07:13.893275000[ debug ] 服务间连接断开了,info={1 center 2 0 127.0.0.1:10050} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 
+2022-03-13 14:07:13.893312000[warning] 异常,与center连接断开,世界需要重启... ... << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 
+2022-03-13 14:07:14.178853000[warning] 异常,网关读取消息失败,info={1 gateway 4 100 },err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-13 14:07:14.179095000[warning] 异常,网关读取消息失败,info={1 gateway 4 100 0.0.0.0:10100},err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-13 14:07:14.179142000[ debug ] 服务间连接断开了,info={1 gateway 4 100 0.0.0.0:10100} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 
+2022-03-13 14:07:14.538850000[warning] 异常,网关读取消息失败,info={1 list 6 80 },err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_server.go, line #104 
+2022-03-13 14:07:14.539107000[warning] 异常,网关读取消息失败,info={1 list 6 80 0.0.0.0:10080},err=消息头读取失败,EOF << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #51 
+2022-03-13 14:07:14.539733000[ debug ] 服务间连接断开了,info={1 list 6 80 0.0.0.0:10080} << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #58 
+2022-03-13 14:07:14.709428000[warning] err=dial tcp 0.0.0.0:13000: connect: connection refused,index=0 << /Users/zhangjinbao/Documents/mango/pkg/network/tcp_client.go, line #35 

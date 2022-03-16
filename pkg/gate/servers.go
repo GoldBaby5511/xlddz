@@ -4,7 +4,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
 	"mango/pkg/conf"
-	"mango/pkg/conf/apollo"
 	"mango/pkg/log"
 	n "mango/pkg/network"
 	"mango/pkg/util"
@@ -48,14 +47,11 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 			}
 		}(timerHeartbeat)
 
-		if n.AppConfig == info.AppType {
-			apollo.SetNetAgent(a)
-			apollo.RegisterConfig("", conf.AppInfo.Type, conf.AppInfo.Id, nil)
-		}
-
 		mxServers.Lock()
 		servers[util.MakeUint64FromUint32(info.AppType, info.AppID)] = a
 		mxServers.Unlock()
+
+		sendRegConfigReq()
 		return a
 	}
 
@@ -142,9 +138,12 @@ func (a *agentServer) OnClose() {
 	if a.tcpClient != nil && !a.tcpClient.AutoReconnect {
 		a.tcpClient.Close()
 	}
-	mxServers.Lock()
-	delete(servers, util.MakeUint64FromUint32(a.info.AppType, a.info.AppID))
-	mxServers.Unlock()
+
+	if !a.tcpClient.AutoReconnect {
+		mxServers.Lock()
+		delete(servers, util.MakeUint64FromUint32(a.info.AppType, a.info.AppID))
+		mxServers.Unlock()
+	}
 }
 
 func (a *agentServer) SendMessage(bm n.BaseMessage) {

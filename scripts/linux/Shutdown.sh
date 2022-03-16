@@ -2,10 +2,9 @@
 
 KillApp(){
 	echo "查找 $1 "
-	if [ $(ps -ef|grep sanfeng |grep ./$1|grep -v grep|awk '{print $2}') ]; then
-		echo "kill $1"
-		kill -9 $(ps -ef|grep sanfeng |grep ./$1|grep -v grep|awk '{print $2}')
-	fi
+    pid=$(ps -ef|grep ./$1|grep Type=|grep -v grep|awk '{print $2}')
+    echo $pid
+    kill -9 $pid
 }
 
 KillApp logger
