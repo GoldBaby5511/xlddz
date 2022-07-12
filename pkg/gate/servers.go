@@ -3,10 +3,10 @@ package gate
 import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
-	"mango/pkg/conf"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/util"
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/util"
 	"reflect"
 	"time"
 )

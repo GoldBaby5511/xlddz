@@ -3,8 +3,8 @@ package log
 import (
 	"errors"
 	"fmt"
-	"mango/pkg/util"
-	"mango/pkg/util/colorprint"
+	"github.com/GoldBaby5511/go-mango-core/util"
+	"github.com/GoldBaby5511/go-mango-core/util/colorprint"
 	"os"
 	"path"
 	"runtime"

@@ -4,10 +4,10 @@ import (
 	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/types"
-	g "mango/pkg/gate"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/util"
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/util"
 )
 
 var (

@@ -3,8 +3,8 @@ package redishelper
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
-	"mango/pkg/log"
-	"mango/pkg/util/errorhelper"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	"github.com/GoldBaby5511/go-mango-core/util/errorhelper"
 	"sync"
 	"time"
 )

@@ -1,13 +1,13 @@
 package gate
 
 import (
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
 	"mango/api/gateway"
-	"mango/pkg/conf"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/util"
 	"net"
 	"reflect"
 )

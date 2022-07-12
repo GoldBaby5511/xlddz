@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "mango/cmd/center/business"
-	"mango/pkg/gate"
+	"github.com/GoldBaby5511/go-mango-core/gate"
 )
 
 func main() {

@@ -2,7 +2,7 @@ package util_test
 
 import (
 	"fmt"
-	"mango/pkg/util"
+	"github.com/GoldBaby5511/go-mango-core/util"
 )
 
 func ExampleMap() {

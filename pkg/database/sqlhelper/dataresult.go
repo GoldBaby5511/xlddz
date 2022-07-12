@@ -1,7 +1,7 @@
 package sqlhelper
 
 import (
-	"mango/pkg/util/timehelper"
+	"github.com/GoldBaby5511/go-mango-core/util/timehelper"
 	"strconv"
 	"time"
 )

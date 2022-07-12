@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	g "mango/pkg/go"
+	g "github.com/GoldBaby5511/go-mango-core/go"
 )
 
 func Example() {

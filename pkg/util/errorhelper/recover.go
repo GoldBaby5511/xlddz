@@ -1,7 +1,7 @@
 package errorhelper
 
 import (
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	"runtime/debug"
 )
 

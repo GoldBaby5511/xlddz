@@ -2,7 +2,7 @@ package network
 
 import (
 	"errors"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	"net"
 	"sync"
 

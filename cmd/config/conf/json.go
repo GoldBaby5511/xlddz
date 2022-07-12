@@ -3,7 +3,7 @@ package conf
 import (
 	"encoding/json"
 	"io/ioutil"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	aConfig "mango/third_party/agollo/env/config"
 )
 

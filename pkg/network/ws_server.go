@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 
 	"github.com/gorilla/websocket"
 )

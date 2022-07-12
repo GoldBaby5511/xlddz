@@ -3,9 +3,9 @@ package protobuf
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"mango/pkg/chanrpc"
-	"mango/pkg/log"
-	"mango/pkg/network"
+	"github.com/GoldBaby5511/go-mango-core/chanrpc"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	"github.com/GoldBaby5511/go-mango-core/network"
 	"math"
 	"reflect"
 )

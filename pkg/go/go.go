@@ -4,8 +4,8 @@ import (
 	"container/list"
 	"runtime"
 	"sync"
-	"mango/pkg/conf"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
 )
 
 // one Go per goroutine (goroutine not safe)

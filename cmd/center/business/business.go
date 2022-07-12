@@ -2,19 +2,19 @@ package business
 
 import (
 	"fmt"
+	lconf "github.com/GoldBaby5511/go-mango-core/conf"
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/golang/protobuf/proto"
 	"mango/api/center"
-	lconf "mango/pkg/conf"
-	g "mango/pkg/gate"
-	"mango/pkg/log"
-	n "mango/pkg/network"
 	"math/rand"
 	"time"
 )
 
 var (
-	appConnData map[n.AgentClient]*connectionData = make(map[n.AgentClient]*connectionData)
-	appRegData  map[uint64]*connectionData        = make(map[uint64]*connectionData)
+	appConnData = make(map[n.AgentClient]*connectionData)
+	appRegData  = make(map[uint64]*connectionData)
 )
 
 const (
@@ -47,7 +47,7 @@ func init() {
 	g.MsgRegister(&center.AppUpdateReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppUpdateReq), handleAppUpdateReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
-	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
+	g.CallBackRegister(g.CbConfigChangeNotify, configChangeNotify)
 
 	//apollo.RegPublicCB(configChangeNotify)
 }

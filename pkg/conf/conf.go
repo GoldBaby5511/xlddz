@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/util"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/util"
 	"strconv"
 )
 

@@ -1,7 +1,7 @@
 package log_test
 
 import (
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 )
 
 func Example() {

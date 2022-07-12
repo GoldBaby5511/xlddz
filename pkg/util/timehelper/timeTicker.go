@@ -1,7 +1,7 @@
 package timehelper
 
 import (
-	"mango/pkg/util/errorhelper"
+	"github.com/GoldBaby5511/go-mango-core/util/errorhelper"
 	"time"
 )
 

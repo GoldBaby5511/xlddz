@@ -3,9 +3,9 @@ package business
 import (
 	"fmt"
 	"mango/cmd/robot/business/player"
-	"mango/pkg/conf/apollo"
-	g "mango/pkg/gate"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
 )
 
 var (

@@ -3,8 +3,8 @@ package chanrpc
 import (
 	"errors"
 	"fmt"
-	"mango/pkg/conf"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	"runtime"
 )
 

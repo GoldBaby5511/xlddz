@@ -1,11 +1,11 @@
 package database
 
 import (
-	"mango/pkg/database/mchelper"
-	"mango/pkg/database/mgohelper"
-	"mango/pkg/database/redishelper"
-	"mango/pkg/database/sqlhelper"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/database/mchelper"
+	"github.com/GoldBaby5511/go-mango-core/database/mgohelper"
+	"github.com/GoldBaby5511/go-mango-core/database/redishelper"
+	"github.com/GoldBaby5511/go-mango-core/database/sqlhelper"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	"mango/third_party/go-simplejson"
 	"strings"
 )
@@ -35,7 +35,7 @@ func InitDBHelper(dbConfig string) {
 	noSql, ok := dataBase.CheckGet("nosql")
 	if ok {
 		memcached, err := noSql.Get("memcached").String()
-		if err == nil && memcached!=""{
+		if err == nil && memcached != "" {
 			DBC.MCHelper = &mchelper.MCHelper{}
 			DBC.MCHelper.Init(strings.Split(memcached, ",")...)
 		}
@@ -43,7 +43,7 @@ func InitDBHelper(dbConfig string) {
 		mongodb, ok := noSql.CheckGet("mongodb")
 		if ok {
 			mongoHost, err := mongodb.Get("server").String()
-			if err == nil && mongoHost != ""{
+			if err == nil && mongoHost != "" {
 				mongoDatabase, _ := mongodb.Get("database").String()
 				mongoUserid := mongodb.Get("userid").MustString("")
 				mongoPassword := mongodb.Get("password").MustString("")
@@ -55,7 +55,7 @@ func InitDBHelper(dbConfig string) {
 		redis, ok := noSql.CheckGet("redis")
 		if ok {
 			redisServer, err := redis.Get("server").String()
-			if err == nil && redisServer!= ""{
+			if err == nil && redisServer != "" {
 				redisPassword := redis.Get("password").MustString("")
 				DBC.RedisHelper = &redishelper.RedisHelper{}
 				DBC.RedisHelper.Init(redisServer, redisPassword)
@@ -65,10 +65,10 @@ func InitDBHelper(dbConfig string) {
 
 	DBC.SqlHelperMap = make(map[string]*sqlhelper.SqlHelper)
 	for key, _ := range dataBase.MustMap() {
-		if key == "nosql" || key == ""{
+		if key == "nosql" || key == "" {
 			continue
 		}
-		if dataBase.Get(key).Get("server").MustString("") == ""{
+		if dataBase.Get(key).Get("server").MustString("") == "" {
 			continue
 		}
 		helper := &sqlhelper.SqlHelper{}

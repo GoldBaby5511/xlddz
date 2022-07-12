@@ -3,9 +3,9 @@ package apollo
 import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/config"
-	"mango/pkg/conf"
-	"mango/pkg/log"
-	"mango/pkg/network"
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	"github.com/GoldBaby5511/go-mango-core/network"
 	"strconv"
 	"sync"
 	"time"

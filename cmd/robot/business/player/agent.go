@@ -3,9 +3,9 @@ package player
 import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
-	"mango/pkg/conf"
-	"mango/pkg/log"
-	n "mango/pkg/network"
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
 	"reflect"
 )
 

@@ -3,7 +3,7 @@ package timer_test
 import (
 	"fmt"
 	"time"
-	"mango/pkg/timer"
+	"github.com/GoldBaby5511/go-mango-core/timer"
 )
 
 func ExampleTimer() {

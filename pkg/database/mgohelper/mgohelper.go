@@ -2,7 +2,7 @@ package mgohelper
 
 import (
 	"gopkg.in/mgo.v2"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/log"
 )
 
 type MgoHelper struct {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"mango/pkg/chanrpc"
-	"mango/pkg/log"
+	"github.com/GoldBaby5511/go-mango-core/chanrpc"
+	"github.com/GoldBaby5511/go-mango-core/log"
 	"reflect"
 )
 

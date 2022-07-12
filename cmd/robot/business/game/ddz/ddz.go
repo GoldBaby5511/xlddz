@@ -4,8 +4,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"mango/api/gameddz"
 	"mango/cmd/robot/business/game"
-	"mango/pkg/log"
-	n "mango/pkg/network"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
 	"math/rand"
 	"time"
 )

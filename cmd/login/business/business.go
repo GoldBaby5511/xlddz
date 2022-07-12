@@ -1,15 +1,15 @@
 package business
 
 import (
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/login"
 	"mango/api/property"
 	"mango/api/types"
-	g "mango/pkg/gate"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/util"
 )
 
 var (

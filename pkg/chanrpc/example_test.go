@@ -3,7 +3,7 @@ package chanrpc_test
 import (
 	"fmt"
 	"sync"
-	"mango/pkg/chanrpc"
+	"github.com/GoldBaby5511/go-mango-core/chanrpc"
 )
 
 func Example() {
