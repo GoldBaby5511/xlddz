@@ -2,18 +2,16 @@ package conf
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"github.com/GoldBaby5511/go-mango-core/log"
-	aConfig "mango/third_party/agollo/env/config"
+	aConfig "github.com/apolloconfig/agollo/v4/env/config"
+	"io/ioutil"
+)
+
+const (
+	DefaultConfigFile string = "configs/config/config.json"
 )
 
 var Server struct {
-	AppName      string
-	AppType      uint32
-	AppID        uint32
-	ListenOnAddr string
-	CenterAddr   string
-
 	UseApollo     bool `default:"false" json:"UseApollo"`
 	LoggerAddr    string
 	Config        aConfig.AppConfig
@@ -30,14 +28,14 @@ type ApolloConfig struct {
 }
 
 func init() {
-	data, err := ioutil.ReadFile("configs/config/config.json")
+	data, err := ioutil.ReadFile(DefaultConfigFile)
 	if err != nil {
-		log.Fatal("jsonconf", "%v", err)
+		log.Fatal("", "%v", err)
 	}
 	err = json.Unmarshal(data, &Server)
 	if err != nil {
-		log.Fatal("jsonconf", "%v", err)
+		log.Fatal("", "%v", err)
 	}
 
-	log.Info("jsonconf", "配置文件载入成功%v", Server)
+	log.Info("", "配置文件载入成功%v", Server)
 }
