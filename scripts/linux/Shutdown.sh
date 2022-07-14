@@ -11,7 +11,7 @@ KillApp logger
 KillApp center
 KillApp config
 KillApp gateway
-KillApp login
+KillApp lobby
 KillApp list
 KillApp property
 KillApp table

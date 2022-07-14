@@ -32,7 +32,7 @@
         {
             "appID":"",
             "cluster":"",
-            "namespaceName":"configs/config/login.json",
+            "namespaceName":"configs/config/lobby.json",
             "serverType":5,
             "serverID":0
         },
