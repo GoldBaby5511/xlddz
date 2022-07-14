@@ -2,12 +2,12 @@ package business
 
 import (
 	"fmt"
+	"github.com/GoldBaby5511/go-mango-core/api/center"
 	lconf "github.com/GoldBaby5511/go-mango-core/conf"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/golang/protobuf/proto"
-	"mango/api/center"
 	"math/rand"
 	"time"
 )
@@ -42,9 +42,7 @@ type connectionData struct {
 func init() {
 	g.MsgRegister(&center.RegisterAppReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppRegReq), handleRegisterAppReq)
 	g.MsgRegister(&center.AppStateNotify{}, n.AppCenter, uint16(center.CMDCenter_IDAppState), handleAppStateNotify)
-	g.MsgRegister(&center.AppPulseNotify{}, n.AppCenter, uint16(center.CMDCenter_IDPulseNotify), handleAppPulseNotify)
-	g.MsgRegister(&center.AppOfflineReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppOfflineReq), handleAppOfflineReq)
-	g.MsgRegister(&center.AppUpdateReq{}, n.AppCenter, uint16(center.CMDCenter_IDAppUpdateReq), handleAppUpdateReq)
+	g.MsgRegister(&center.HeartBeatReq{}, n.AppCenter, uint16(center.CMDCenter_IDHeartBeatReq), handleHeartBeatReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
 	g.CallBackRegister(g.CbConfigChangeNotify, configChangeNotify)
@@ -176,9 +174,9 @@ func handleAppStateNotify(args []interface{}) {
 
 }
 
-func handleAppPulseNotify(args []interface{}) {
+func handleHeartBeatReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*center.AppPulseNotify)
+	m := (b.MyMessage).(*center.HeartBeatReq)
 	a := args[n.AgentIndex].(n.AgentClient)
 
 	//非法判断
@@ -186,23 +184,16 @@ func handleAppPulseNotify(args []interface{}) {
 		log.Warning("心跳", "莫名的心跳?")
 		return
 	}
+	app := appConnData[a]
 
-	switch m.GetAction() {
-	case center.AppPulseNotify_LogoutReq:
-	case center.AppPulseNotify_HeartBeatReq:
-		var rsp center.AppPulseNotify
-		rsp.Action = (*center.AppPulseNotify_PulseAction)(proto.Int32(int32(center.AppPulseNotify_HeartBeatRsp)))
-		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDPulseNotify), &rsp)
-		appConnData[a].lastHeartbeat = time.Now().UnixNano()
-	}
+	log.Trace("", "心跳,aInfo=%v,state=%v,desc=%v,http=%v,rpc=%v",
+		app.lastHeartbeat, m.GetServiceState(), m.GetStateDescription(), m.GetHttpAddress(), m.GetRpcAddress())
 
-}
+	app.lastHeartbeat = time.Now().UnixNano()
 
-func handleAppOfflineReq(args []interface{}) {
-
-}
-
-func handleAppUpdateReq(args []interface{}) {
+	var rsp center.HeartBeatRsp
+	rsp.PulseTime = proto.Int64(time.Now().Unix())
+	a.SendData(n.AppCenter, uint32(center.CMDCenter_IDHeartBeatRsp), &rsp)
 
 }
 
@@ -216,7 +207,6 @@ func broadcastAppState(appType, appId uint32) {
 			continue
 		}
 		var rsp center.AppStateNotify
-		rsp.AppState = proto.Uint32(uint32(center.AppStateNotify_OffLine))
 		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
 		rsp.AppType = proto.Uint32(appType)
 		rsp.AppId = proto.Uint32(appId)

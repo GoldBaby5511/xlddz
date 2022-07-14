@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/GoldBaby5511/go-mango-core/api/gateway"
 	"github.com/GoldBaby5511/go-mango-core/conf"
 	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
 	"github.com/GoldBaby5511/go-mango-core/log"
@@ -10,7 +11,6 @@ import (
 	"github.com/GoldBaby5511/go-mango-core/timer"
 	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
-	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/lobby"
 	"mango/api/room"
