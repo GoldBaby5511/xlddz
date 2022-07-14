@@ -7,34 +7,34 @@ import (
 	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
-	"mango/api/login"
+	"mango/api/lobby"
 	"mango/api/property"
 	"mango/api/types"
 )
 
 var (
-	userList map[uint64]*types.BaseUserInfo = make(map[uint64]*types.BaseUserInfo)
+	userList = make(map[uint64]*types.BaseUserInfo)
 )
 
 func init() {
-	g.MsgRegister(&login.LoginReq{}, n.AppLogin, uint16(login.CMDLogin_IDLoginReq), handleLoginReq)
-	g.MsgRegister(&login.LogoutReq{}, n.AppLogin, uint16(login.CMDLogin_IDLogoutReq), handleLogoutReq)
+	g.MsgRegister(&lobby.LoginReq{}, n.AppLobby, uint16(lobby.CMDLobby_IDLoginReq), handleLoginReq)
+	g.MsgRegister(&lobby.LogoutReq{}, n.AppLobby, uint16(lobby.CMDLobby_IDLogoutReq), handleLogoutReq)
 	g.MsgRegister(&property.QueryPropertyRsp{}, n.AppProperty, uint16(property.CMDProperty_IDQueryPropertyRsp), handleQueryPropertyRsp)
-	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
+	g.CallBackRegister(g.CbAppControlNotify, appControlNotify)
 }
 
-func configChangeNotify(args []interface{}) {
+func appControlNotify(args []interface{}) {
 
 }
 
 func handleLoginReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*login.LoginReq)
+	m := (b.MyMessage).(*lobby.LoginReq)
 	srcData := b.AgentInfo
-	gateConnId := util.MakeUint64FromUint32(srcData.AppType, srcData.AppID)
+	gateConnId := util.MakeUint64FromUint32(srcData.AppType, srcData.AppId)
 
 	log.Debug("登录", "收到登录,AppType=%v,AppID=%v,Account=%v,gateConnId=%d,子渠道=%d",
-		b.AgentInfo.AppType, b.AgentInfo.AppID, m.GetAccount(), gateConnId, m.GetSiteId())
+		b.AgentInfo.AppType, b.AgentInfo.AppId, m.GetAccount(), gateConnId, m.GetSiteId())
 
 	var userId uint64 = 0
 	for _, v := range userList {
@@ -58,7 +58,7 @@ func handleLoginReq(args []interface{}) {
 
 func handleLogoutReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*login.LogoutReq)
+	m := (b.MyMessage).(*lobby.LogoutReq)
 	log.Debug("注销", "注销请求,userId=%v", m.GetUserId())
 }
 
@@ -76,16 +76,16 @@ func handleQueryPropertyRsp(args []interface{}) {
 	var authRsp gateway.AuthInfo
 	authRsp.UserId = proto.Uint64(m.GetUserId())
 	authRsp.Gateconnid = proto.Uint64(userList[m.GetUserId()].GetGateConnid())
-	authRsp.Result = proto.Uint32(uint32(login.LoginRsp_SUCCESS))
+	authRsp.Result = proto.Uint32(uint32(lobby.LoginRsp_SUCCESS))
 	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
 
-	var rsp login.LoginRsp
+	var rsp lobby.LoginRsp
 	rsp.ErrInfo = new(types.ErrorInfo)
 	rsp.ErrInfo.Info = proto.String("成功")
-	rsp.ErrInfo.Code = proto.Int32(int32(login.LoginRsp_SUCCESS))
+	rsp.ErrInfo.Code = proto.Int32(int32(lobby.LoginRsp_SUCCESS))
 	rsp.BaseInfo = new(types.BaseUserInfo)
 	rsp.BaseInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppLogin), CmdId: uint16(login.CMDLogin_IDLoginRsp)}
+	rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppLobby), CmdId: uint16(lobby.CMDLobby_IDLoginRsp)}
 	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid(), 0)
 }
