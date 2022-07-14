@@ -2,9 +2,6 @@ package business
 
 import (
 	"errors"
-	"github.com/golang/protobuf/proto"
-	gateway "mango/api/gateway"
-	"mango/api/login"
 	"github.com/GoldBaby5511/go-mango-core/conf"
 	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
@@ -12,12 +9,15 @@ import (
 	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/GoldBaby5511/go-mango-core/timer"
 	"github.com/GoldBaby5511/go-mango-core/util"
+	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
+	"mango/api/login"
 	"time"
 )
 
 var (
-	connectionId uint32                     = 0
-	userConnData map[uint32]*connectionData = make(map[uint32]*connectionData)
+	connectionId uint32 = 0
+	userConnData        = make(map[uint32]*connectionData)
 )
 
 type connectionData struct {
@@ -35,7 +35,6 @@ func init() {
 	g.MsgRegister(&gateway.HelloReq{}, n.AppGate, uint16(gateway.CMDGateway_IDHelloReq), handleHelloReq)
 	g.EventRegister(g.ConnectSuccess, connectSuccess)
 	g.EventRegister(g.Disconnect, disconnect)
-	g.EventRegister(g.CenterConnected, centerConnected)
 
 	g.Skeleton.LoopFunc(30*time.Second, checkConnectionAlive, timer.LoopForever)
 }
@@ -50,7 +49,7 @@ func connectSuccess(args []interface{}) {
 		lastPulseTk: time.Now().Unix(),
 	}
 	userConnData[connId].a.AgentInfo().AppType = connId
-	userConnData[connId].a.AgentInfo().AppID = conf.AppInfo.Id
+	userConnData[connId].a.AgentInfo().AppId = conf.AppInfo.Id
 
 	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v,info=%v",
 		connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id), *userConnData[connId].a.AgentInfo())
@@ -62,15 +61,12 @@ func disconnect(args []interface{}) {
 
 		var logout login.LogoutReq
 		logout.UserId = proto.Uint64(a.userId)
-		g.SendData2App(n.AppLogin, n.Send2AnyOne, n.AppLogin, uint32(login.CMDLogin_IDLogoutReq), &logout)
+		g.SendData2App(n.AppLobby, n.Send2AnyOne, n.AppLobby, uint32(login.CMDLogin_IDLogoutReq), &logout)
 
 		delete(userConnData, a.connId)
 	} else {
 		log.Warning("module", "一个没有注册过的连接?,当前连接数=%d", len(userConnData))
 	}
-}
-
-func centerConnected(args []interface{}) {
 }
 
 func handlePulseReq(args []interface{}) {
@@ -124,7 +120,7 @@ func handleAuthInfo(args []interface{}) {
 	m := (b.MyMessage).(*gateway.AuthInfo)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppID, m.GetUserId())
+	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppId, m.GetUserId())
 	connData, ok := userConnData[util.GetHUint32FromUint64(m.GetGateconnid())]
 	if !ok {
 		return
