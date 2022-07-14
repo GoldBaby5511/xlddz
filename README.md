@@ -15,8 +15,8 @@
 * gateway：网关服务(可水平扩展)
 * center：中心服务，服务注册、治理
 * logger：日志服，日志上报、预警
-* config：配置中心，支持携程apollo配置中心 或本地json文本配置文件，配置更新实时通知相应服务
-* login：登录服务，登录、在线管理等
+* config：配置中心，支持携程apollo配置中心或本地json、csv、excel文本配置文件，配置更新实时通知相应服务
+* lobby：大厅服务，登录、在线管理等
 * room：房间服务，用户匹配等(可水平扩展)
 * table：桌子服务，游戏具体逻辑(可水平扩展)
 * list：房间列表服务，房间负载均衡、列表查询等
@@ -57,7 +57,7 @@ sanfeng   12248 15.3  0.7 1015440 29876 pts/1   Sl   11:41   0:02 ./logger -Type
 sanfeng   12333  0.1  0.3 906492 11916 pts/1    Sl   11:41   0:00 ./center -Type=2 -Id=50
 sanfeng   12417  1.1  0.6 1467784 23432 pts/1   Sl   11:41   0:00 ./config -Type=3 -Id=60
 sanfeng   12507 18.4  7.4 1417264 286952 pts/1  Sl   11:41   0:02 ./gateway -Type=4 -Id=100
-sanfeng   12593  4.9  0.5 1080816 20128 pts/1   Sl   11:41   0:00 ./login -Type=5 -Id=70
+sanfeng   12593  4.9  0.5 1080816 20128 pts/1   Sl   11:41   0:00 ./lobby -Type=5 -Id=70
 sanfeng   12673  2.7  0.4 990388 17028 pts/1    Sl   11:41   0:00 ./list -Type=6 -Id=80
 sanfeng   12764  2.5  0.4 1055672 15468 pts/1   Sl   11:41   0:00 ./property -Type=7 -Id=90
 sanfeng   12851  1.9  0.5 941548 21116 pts/1    Sl   11:41   0:00 ./table -Type=8 -Id=1000
@@ -82,7 +82,7 @@ windows下可能存在权限问题，导致脚本运行失败，若出现该类�
 .\center -Type=2 -Id=50
 .\config -Type=3 -Id=60
 .\gateway -Type=4 -Id=100
-.\login -Type=5 -Id=70
+.\lobby -Type=5 -Id=70
 .\list -Type=6 -Id=80
 .\property -Type=7 -Id=90
 .\table -Type=8 -Id=1000
@@ -103,7 +103,7 @@ docker build --file ./build/package/Dockerfile.center --tag mango/center .
 docker build --file ./build/package/Dockerfile.config --tag mango/config .
 docker build --file ./build/package/Dockerfile.gateway --tag mango/gateway .
 docker build --file ./build/package/Dockerfile.logger --tag mango/logger .
-docker build --file ./build/package/Dockerfile.login --tag mango/login .
+docker build --file ./build/package/Dockerfile.lobby --tag mango/lobby .
 docker build --file ./build/package/Dockerfile.list --tag mango/list .
 docker build --file ./build/package/Dockerfile.property --tag mango/property .
 docker build --file ./build/package/Dockerfile.table --tag mango/table .
@@ -123,7 +123,7 @@ docker network create mango
 docker run -d --name="logger" --network mango mango/logger
 docker run -d --name="center" --network mango mango/center
 docker run -d --name="config" --network mango mango/config
-docker run -d --name="login" --network mango mango/login
+docker run -d --name="lobby" --network mango mango/lobby
 docker run -d --name="list" --network mango mango/list
 docker run -d --name="property" --network mango mango/property
 docker run -d --name="table" --network mango mango/table
@@ -136,9 +136,9 @@ docker run -d -p 10100:10100 --name="gateway" --network mango mango/gateway
 
 ## 将来
 
-2. 日志服对分片文本文件自动压缩；具备kafka上报，方便接入ELK、信息统计、消息预警等
-3. 服务治理，对除网关之外的服务实现热插拔式切换更新
-4. 管理工具，服务启动、监控守护、更新、切换等
+1. 日志服对分片文本文件自动压缩；具备kafka上报，方便接入ELK、信息统计、消息预警等
+2. 服务治理，对除网关之外的服务实现热插拔式切换更新
+3. 管理工具，服务启动、监控守护、更新、切换等
 
 最终目的不仅是一套完整的服务框架，同时可以将是某些特定业务直接的解决方案。
 

@@ -11,10 +11,10 @@ RUN mkdir /mango
 WORKDIR /mango
 
 COPY . .
-RUN go build ./cmd/login/
+RUN go build ./cmd/lobby/
 
 EXPOSE 10070
 
-FROM scratch as login
+FROM scratch as lobby
 COPY --from=0 /mango /
-CMD ["./login","-Type=5","-Id=70","-DockerRun=1"]
+CMD ["./lobby","-Type=5","-Id=70","-DockerRun=1"]
