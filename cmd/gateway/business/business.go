@@ -11,7 +11,7 @@ import (
 	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
-	"mango/api/login"
+	"mango/api/lobby"
 	"time"
 )
 
@@ -59,9 +59,9 @@ func disconnect(args []interface{}) {
 	if a, err := getUserConnData(args[g.AgentIndex].(n.AgentClient)); err == nil {
 		log.Debug("module", "走了老弟,userId=%v,connId=%v,当前连接数=%d,info=%v", a.userId, a.connId, len(userConnData), a.a.AgentInfo())
 
-		var logout login.LogoutReq
+		var logout lobby.LogoutReq
 		logout.UserId = proto.Uint64(a.userId)
-		g.SendData2App(n.AppLobby, n.Send2AnyOne, n.AppLobby, uint32(login.CMDLogin_IDLogoutReq), &logout)
+		g.SendData2App(n.AppLobby, n.Send2AnyOne, n.AppLobby, uint32(lobby.CMDLobby_IDLogoutReq), &logout)
 
 		delete(userConnData, a.connId)
 	} else {
