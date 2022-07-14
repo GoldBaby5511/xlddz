@@ -2,11 +2,11 @@ package business
 
 import (
 	"fmt"
-	"mango/api/logger"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/GoldBaby5511/go-mango-core/util"
+	"mango/api/logger"
 	"math/rand"
 	"os"
 	"path"
@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	appConnData map[n.AgentClient]*connectionData = make(map[n.AgentClient]*connectionData)
+	appConnData = make(map[n.AgentClient]*connectionData)
 )
 
 const (

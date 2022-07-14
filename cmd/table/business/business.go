@@ -1,21 +1,21 @@
 package business
 
 import (
+	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
 	"mango/cmd/table/business/table"
 	"mango/cmd/table/business/table/ddz"
-	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
 )
 
 var (
-	freeTables map[uint64]*table.Table = make(map[uint64]*table.Table)
-	usedTables map[uint64]*table.Table = make(map[uint64]*table.Table)
+	freeTables = make(map[uint64]*table.Table)
+	usedTables = make(map[uint64]*table.Table)
 )
 
 func init() {
@@ -24,7 +24,7 @@ func init() {
 	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
 	g.MsgRegister(&tCMD.MatchTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
 	g.MsgRegister(&tCMD.GameMessage{}, n.AppTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
-	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
+	g.EventRegister(g.CbConfigChangeNotify, configChangeNotify)
 }
 
 func configChangeNotify(args []interface{}) {
@@ -59,7 +59,7 @@ func handleApplyReq(args []interface{}) {
 	rsp.ApplyCount = proto.Uint32(m.GetApplyCount())
 	for k, v := range freeTables {
 		rsp.TableIds = append(rsp.TableIds, v.Id)
-		v.HostAppId = srcApp.AppID
+		v.HostAppId = srcApp.AppId
 		delete(freeTables, k)
 		usedTables[k] = v
 		if len(rsp.GetTableIds()) == int(m.GetApplyCount()) {
@@ -67,16 +67,16 @@ func handleApplyReq(args []interface{}) {
 		}
 	}
 
-	g.SendData2App(srcApp.AppType, srcApp.AppID, n.AppTable, uint32(tCMD.CMDTable_IDApplyRsp), &rsp)
+	g.SendData2App(srcApp.AppType, srcApp.AppId, n.AppTable, uint32(tCMD.CMDTable_IDApplyRsp), &rsp)
 }
 
 func handleReleaseReq(args []interface{}) {
 	m := args[n.DataIndex].(n.BaseMessage).MyMessage.(*tCMD.ReleaseReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	log.Debug("", "收到释放,ApplyCount=%d,len=%d,srcID=%d", m.GetReleaseCount(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到释放,ApplyCount=%d,len=%d,srcID=%d", m.GetReleaseCount(), len(freeTables), srcApp.AppId)
 	for _, tId := range m.GetTableIds() {
-		t := getTable(srcApp.AppID, tId)
+		t := getTable(srcApp.AppId, tId)
 		if t == nil {
 			continue
 		}
@@ -93,24 +93,24 @@ func handleSetPlayerToTableReq(args []interface{}) {
 		log.Warning("", "没找到桌子啊,tableId=%v", m.GetTableId())
 		return
 	}
-	t := getTable(srcApp.AppID, m.GetTableId())
+	t := getTable(srcApp.AppId, m.GetTableId())
 	if t == nil {
-		log.Warning("", "这桌子不是你的啊,tableId=%v,host=%v,srcId=%v", m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppID)
+		log.Warning("", "这桌子不是你的啊,tableId=%v,host=%v,srcId=%v", m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppId)
 		return
 	}
 
 	pl := getPlayer(m.GetUserId())
 	if pl != nil {
-		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserId, m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppID)
+		log.Warning("", "已经存在了啊,userId=%v,tableId=%v,host=%v,srcId=%v", pl.UserId, m.GetTableId(), usedTables[m.GetTableId()].HostAppId, srcApp.AppId)
 		return
 	}
 
-	log.Debug("", "收到入座,UserId=%v,SeatId=%v,TableId=%d,len=%d,srcID=%d", m.GetUserId(), m.GetSeatId(), m.GetTableId(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到入座,UserId=%v,SeatId=%v,TableId=%d,len=%d,srcID=%d", m.GetUserId(), m.GetSeatId(), m.GetTableId(), len(freeTables), srcApp.AppId)
 
 	pl = player.NewPlayer()
 	pl.UserId = m.GetUserId()
 	pl.TableId = t.Id
-	pl.SrcAppId = srcApp.AppID
+	pl.SrcAppId = srcApp.AppId
 	pl.SeatId = m.GetSeatId()
 	pl.GateConnId = m.GetGateconnid()
 	pl.State = player.SitdownState
@@ -121,12 +121,12 @@ func handleMatchTableReq(args []interface{}) {
 	m := args[n.DataIndex].(n.BaseMessage).MyMessage.(*tCMD.MatchTableReq)
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
-	t := getTable(srcApp.AppID, m.GetTableId())
+	t := getTable(srcApp.AppId, m.GetTableId())
 	if t == nil {
 		return
 	}
 
-	log.Debug("", "收到配桌,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppID)
+	log.Debug("", "收到配桌,TableId=%d,len=%d,srcID=%d", m.GetTableId(), len(freeTables), srcApp.AppId)
 	t.Start()
 }
 

@@ -1,16 +1,16 @@
 package business
 
 import (
-	"github.com/golang/protobuf/proto"
-	"mango/api/property"
-	"mango/api/types"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/golang/protobuf/proto"
+	"mango/api/property"
+	"mango/api/types"
 )
 
 var (
-	userList map[uint64]int64 = make(map[uint64]int64)
+	userList = make(map[uint64]int64)
 )
 
 func init() {
@@ -35,7 +35,7 @@ func handleQueryPropertyReq(args []interface{}) {
 		userList[m.GetUserId()] = 1000000000
 	}
 
-	log.Debug("", "收到查询,appId=%d,userId=%d", srcApp.AppID, m.GetUserId())
+	log.Debug("", "收到查询,appId=%d,userId=%d", srcApp.AppId, m.GetUserId())
 
 	var rsp property.QueryPropertyRsp
 	rsp.UserId = proto.Uint64(m.GetUserId())
@@ -56,7 +56,7 @@ func handleModifyPropertyReq(args []interface{}) {
 		userList[m.GetUserId()] = 1000000000
 	}
 
-	log.Debug("", "收到修改,appId=%d,userId=%d,opType=%v", b.AgentInfo.AppID, m.GetUserId(), m.GetOpType())
+	log.Debug("", "收到修改,appId=%d,userId=%d,opType=%v", b.AgentInfo.AppId, m.GetUserId(), m.GetOpType())
 
 	if m.GetOpType() == 0 {
 		userList[m.GetUserId()] += 100

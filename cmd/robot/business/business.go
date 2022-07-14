@@ -2,19 +2,19 @@ package business
 
 import (
 	"fmt"
-	"mango/cmd/robot/business/player"
 	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
+	"mango/cmd/robot/business/player"
 )
 
 var (
-	userList    []*player.Player = make([]*player.Player, 0)
-	curWorkMode int64            = 0
+	userList          = make([]*player.Player, 0)
+	curWorkMode int64 = 0
 )
 
 func init() {
-	g.EventRegister(g.ConfigChangeNotify, configChangeNotify)
+	g.EventRegister(g.CbConfigChangeNotify, configChangeNotify)
 }
 
 func configChangeNotify(args []interface{}) {

@@ -1,15 +1,6 @@
 package player
 
 import (
-	"github.com/golang/protobuf/proto"
-	"mango/api/gateway"
-	"mango/api/list"
-	"mango/api/login"
-	"mango/api/room"
-	tCMD "mango/api/table"
-	"mango/api/types"
-	"mango/cmd/robot/business/game"
-	"mango/cmd/robot/business/game/ddz"
 	"github.com/GoldBaby5511/go-mango-core/conf"
 	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
 	"github.com/GoldBaby5511/go-mango-core/log"
@@ -18,6 +9,15 @@ import (
 	"github.com/GoldBaby5511/go-mango-core/network/protobuf"
 	"github.com/GoldBaby5511/go-mango-core/timer"
 	"github.com/GoldBaby5511/go-mango-core/util"
+	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
+	"mango/api/list"
+	"mango/api/lobby"
+	"mango/api/room"
+	tCMD "mango/api/table"
+	"mango/api/types"
+	"mango/cmd/robot/business/game"
+	"mango/cmd/robot/business/game/ddz"
 	"math/rand"
 	"reflect"
 	"strconv"
@@ -60,7 +60,7 @@ func NewPlayer(account, passWord string, gameKind uint32) *Player {
 	}()
 
 	p.msgRegister(&gateway.HelloRsp{}, n.AppGate, uint16(gateway.CMDGateway_IDHelloRsp), p.handleHelloRsp)
-	p.msgRegister(&login.LoginRsp{}, n.AppLogin, uint16(login.CMDLogin_IDLoginRsp), p.handleLoginRsp)
+	p.msgRegister(&lobby.LoginRsp{}, n.AppLobby, uint16(lobby.CMDLobby_IDLoginRsp), p.handleLoginRsp)
 	p.msgRegister(&list.RoomListRsp{}, n.AppList, uint16(list.CMDList_IDRoomListRsp), p.handleRoomListRsp)
 	p.msgRegister(&room.JoinRsp{}, n.AppRoom, uint16(room.CMDRoom_IDJoinRsp), p.handleJoinRoomRsp)
 	p.msgRegister(&room.UserActionRsp{}, n.AppRoom, uint16(room.CMDRoom_IDUserActionRsp), p.handleRoomActionRsp)
@@ -186,24 +186,24 @@ func (p *Player) handleHelloRsp(args []interface{}) {
 
 	log.Debug("", "收到hello消息,UserId=%v,a=%v,RspFlag=%v", p.userInfo.UserId, p.userInfo.Account, m.GetRspFlag())
 
-	var req login.LoginReq
+	var req lobby.LoginReq
 	req.Account = proto.String(p.userInfo.Account)
 	req.Password = proto.String(p.userInfo.PassWord)
-	cmd := n.TCPCommand{AppType: uint16(n.AppLogin), CmdId: uint16(login.CMDLogin_IDLoginReq)}
+	cmd := n.TCPCommand{AppType: uint16(n.AppLobby), CmdId: uint16(lobby.CMDLobby_IDLoginReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd, TraceId: b.TraceId}
-	p.sendMessage2Gate(n.AppLogin, n.Send2AnyOne, bm)
+	p.sendMessage2Gate(n.AppLobby, n.Send2AnyOne, bm)
 
 	p.skeleton.LoopFunc(30*time.Second, p.heartbeat, timer.LoopForever)
 }
 
 func (p *Player) handleLoginRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	m := (b.MyMessage).(*login.LoginRsp)
+	m := (b.MyMessage).(*lobby.LoginRsp)
 
 	p.userInfo.UserId = m.GetBaseInfo().GetUserId()
 
 	log.Debug("", "收到登录回复,UserId=%v,a=%v,Result=%v", p.userInfo.UserId, p.userInfo.Account, m.GetResult())
-	if m.GetResult() == login.LoginRsp_SUCCESS {
+	if m.GetResult() == lobby.LoginRsp_SUCCESS {
 		p.userInfo.State = LoggedIn
 		p.skeleton.AfterFunc(time.Duration(rand.Intn(3)+1)*time.Second, p.checkRoomList)
 	}

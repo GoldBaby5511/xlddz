@@ -1,6 +1,13 @@
 package business
 
 import (
+	"github.com/GoldBaby5511/go-mango-core/conf"
+	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
+	g "github.com/GoldBaby5511/go-mango-core/gate"
+	"github.com/GoldBaby5511/go-mango-core/log"
+	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/GoldBaby5511/go-mango-core/timer"
+	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/list"
@@ -10,18 +17,11 @@ import (
 	"mango/api/types"
 	"mango/cmd/room/business/player"
 	"mango/cmd/room/business/table"
-	"github.com/GoldBaby5511/go-mango-core/conf"
-	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
-	"github.com/GoldBaby5511/go-mango-core/timer"
-	"github.com/GoldBaby5511/go-mango-core/util"
 	"time"
 )
 
 var (
-	userList map[uint64]*player.Player = make(map[uint64]*player.Player)
+	userList = make(map[uint64]*player.Player)
 )
 
 func init() {
@@ -47,7 +47,7 @@ func handleApplyRsp(args []interface{}) {
 		table.NewTable(v)
 	}
 	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d",
-		m.GetApplyCount(), srcApp.AppID, table.GetTableCount(table.All))
+		m.GetApplyCount(), srcApp.AppId, table.GetTableCount(table.All))
 
 	var req list.RoomRegisterReq
 	req.Info = new(types.RoomInfo)
@@ -66,7 +66,7 @@ func handleWriteGameScore(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "收到写分,tableId=%d,AttAppid=%d,len=%d",
-		m.GetTableId(), srcApp.AppID, table.GetTableCount(table.Free))
+		m.GetTableId(), srcApp.AppId, table.GetTableCount(table.Free))
 
 	var req property.ModifyPropertyReq
 	p := new(types.PropItem)
@@ -82,7 +82,7 @@ func handleGameOver(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "收到结束,table=%d,AttAppid=%d",
-		m.GetTableId(), srcApp.AppID)
+		m.GetTableId(), srcApp.AppId)
 
 	for _, p := range userList {
 		if p.TableId != m.GetTableId() {
@@ -95,7 +95,7 @@ func handleGameOver(args []interface{}) {
 
 func handleRoomRegisterRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	log.Debug("", "注册返回,AttAppid=%d", b.AgentInfo.AppID)
+	log.Debug("", "注册返回,AttAppid=%d", b.AgentInfo.AppId)
 }
 
 func handleJoinReq(args []interface{}) {
@@ -122,7 +122,7 @@ func handleJoinReq(args []interface{}) {
 	}
 
 	p := player.NewPlayer(userID)
-	p.GateConnId = util.MakeUint64FromUint32(b.AgentInfo.AppType, b.AgentInfo.AppID)
+	p.GateConnId = util.MakeUint64FromUint32(b.AgentInfo.AppType, b.AgentInfo.AppId)
 	userList[userID] = p
 
 	msgRespond(0)
