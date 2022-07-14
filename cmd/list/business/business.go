@@ -1,17 +1,17 @@
 package business
 
 import (
-	"mango/api/gateway"
-	"mango/api/list"
-	"mango/api/types"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/GoldBaby5511/go-mango-core/util"
+	"mango/api/gateway"
+	"mango/api/list"
+	"mango/api/types"
 )
 
 var (
-	roomList map[uint64]*types.RoomInfo = make(map[uint64]*types.RoomInfo)
+	roomList = make(map[uint64]*types.RoomInfo)
 )
 
 func init() {
@@ -26,7 +26,7 @@ func handleRoomRegisterReq(args []interface{}) {
 
 	regKey := util.MakeUint64FromUint32(m.GetInfo().GetAppInfo().GetType(), m.GetInfo().GetAppInfo().GetId())
 	roomList[regKey] = m.GetInfo()
-	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppID, m.GetInfo().GetAppInfo().GetId())
+	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppId, m.GetInfo().GetAppInfo().GetId())
 }
 
 func handleRoomListReq(args []interface{}) {
