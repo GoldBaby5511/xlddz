@@ -1,13 +1,13 @@
 package table
 
 import (
-	"github.com/golang/protobuf/proto"
-	tCMD "mango/api/table"
-	"mango/cmd/room/business/player"
 	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	n "github.com/GoldBaby5511/go-mango-core/network"
+	"github.com/golang/protobuf/proto"
+	tCMD "mango/api/table"
+	"mango/cmd/room/business/player"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	gameTables map[uint64]*Table = make(map[uint64]*Table)
+	gameTables = make(map[uint64]*Table)
 )
 
 type Table struct {

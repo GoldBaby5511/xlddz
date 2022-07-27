@@ -24,7 +24,7 @@ func init() {
 	g.MsgRegister(&tCMD.SetPlayerToTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDSetPlayerToTableReq), handleSetPlayerToTableReq)
 	g.MsgRegister(&tCMD.MatchTableReq{}, n.AppTable, uint16(tCMD.CMDTable_IDMatchTableReq), handleMatchTableReq)
 	g.MsgRegister(&tCMD.GameMessage{}, n.AppTable, uint16(tCMD.CMDTable_IDGameMessage), handleGameMessage)
-	g.EventRegister(g.CbConfigChangeNotify, configChangeNotify)
+	g.CallBackRegister(g.CbConfigChangeNotify, configChangeNotify)
 }
 
 func configChangeNotify(args []interface{}) {

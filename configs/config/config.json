@@ -16,59 +16,43 @@
     },
     "CommonServers": [
 		{
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/center.json",
             "serverType":2,
             "serverID":0
         },
         {
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/gateway-100.json",
             "serverType":4,
             "serverID":100
         },
         {
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/lobby.json",
             "serverType":5,
             "serverID":0
         },
         {
-            "appID":"",
-            "cluster":"",
-            "namespaceName":"configs/config/list.json",
+            "namespaceName":"configs/config/property.json",
             "serverType":6,
             "serverID":0
         },
         {
-            "appID":"",
-            "cluster":"",
-            "namespaceName":"configs/config/property.json",
-            "serverType":7,
+            "namespaceName":"configs/config/list.json",
+            "serverType":10,
             "serverID":0
         },
         {
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/table-1000.json",
-            "serverType":8,
+            "serverType":11,
             "serverID":1000
         },
         {
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/room-2000.json",
-            "serverType":9,
+            "serverType":12,
             "serverID":2000
         },
         {
-            "appID":"",
-            "cluster":"",
             "namespaceName":"configs/config/robot-3000.json",
-            "serverType":10,
+            "serverType":9,
             "serverID":3000
         }
     ]

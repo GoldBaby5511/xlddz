@@ -6,22 +6,24 @@ import (
 	g "github.com/GoldBaby5511/go-mango-core/gate"
 	"github.com/GoldBaby5511/go-mango-core/log"
 	"mango/cmd/robot/business/player"
+	"strconv"
 )
 
 var (
-	userList          = make([]*player.Player, 0)
-	curWorkMode int64 = 0
+	userList = make([]*player.Player, 0)
 )
 
 func init() {
-	g.EventRegister(g.CbConfigChangeNotify, configChangeNotify)
+	g.CallBackRegister(g.CbConfigChangeNotify, configChangeNotify)
 }
 
 func configChangeNotify(args []interface{}) {
-	mode := apollo.GetConfigAsInt64("工作模式", 0)
-	if mode != 0 && curWorkMode == 0 {
-		curWorkMode = mode
-		robotCount := apollo.GetConfigAsInt64("机器人数量", 10000)
+	key := args[apollo.KeyIndex].(apollo.ConfKey)
+	value := args[apollo.ValueIndex].(apollo.ConfValue)
+
+	switch key.Key {
+	case "机器人数量":
+		robotCount, _ := strconv.Atoi(value.Value)
 		log.Debug("", "开始创建,robotCount=%v", robotCount)
 		for i := 0; i < int(robotCount); i++ {
 			pl := player.NewPlayer(fmt.Sprintf("robot%05d", i), "", 666)
@@ -29,5 +31,7 @@ func configChangeNotify(args []interface{}) {
 				userList = append(userList, pl)
 			}
 		}
+	default:
+		break
 	}
 }
