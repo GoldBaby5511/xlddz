@@ -16,6 +16,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/GoldBaby5511/go-mango-core v0.0.6 h1:c/kIDX7wxcV+Z4ANVweVIIE032dP5gXVibBWhvWquDI=
 github.com/GoldBaby5511/go-mango-core v0.0.6/go.mod h1:oUsuYWgh+7YZ8KKWJgZFXQV+gCCwCp62WT/v0reeOIw=
+github.com/GoldBaby5511/go-mango-core v0.0.7 h1:SMEptmGIgFrVB61OzQhVk2QnqX+YYIBbtPi8ohbdmUs=
+github.com/GoldBaby5511/go-mango-core v0.0.7/go.mod h1:dEigxSxLyjDwUTDttUdMioH8H2jDtIq9rG5en9Iqm4U=
 github.com/GoldBaby5511/go-simplejson v0.5.0 h1:xWKIT6QMS7thdFNdy0M1GxOVaZhkZh9PMFyWPHCEllk=
 github.com/GoldBaby5511/go-simplejson v0.5.0/go.mod h1:jb73QmfPNrxqgMXoveUs9mSRi8wb4NTkHxOh42VIxJw=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
@@ -222,6 +224,8 @@ github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/spf13/viper v1.7.1 h1:pM5oEahlgWv/WnHXpgbKz7iLIxRf65tye2Ci+XFK5sk=
 github.com/spf13/viper v1.7.1/go.mod h1:8WkrPz2fc9jxqZNCJI/76HCieCp4Q8HaLFoCha5qpdg=
+github.com/streadway/amqp v1.0.0 h1:kuuDrUJFZL1QYL9hUNuCxNObNzB0bV/ZG5jV3RWAQgo=
+github.com/streadway/amqp v1.0.0/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
