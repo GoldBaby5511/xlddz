@@ -1,12 +1,12 @@
 package business
 
 import (
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/golang/protobuf/proto"
 	"mango/api/property"
 	"mango/api/types"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 var (

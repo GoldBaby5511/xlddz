@@ -2,7 +2,7 @@ package business
 
 import (
 	"fmt"
-	"github.com/GoldBaby5511/go-mango-core/log"
+	"mango/pkg/log"
 )
 
 type DefaultLogger struct {

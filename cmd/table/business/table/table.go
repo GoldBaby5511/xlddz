@@ -4,9 +4,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 )
 
 const (

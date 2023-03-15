@@ -1,11 +1,11 @@
 package business
 
 import (
-	"github.com/GoldBaby5511/go-mango-core/api/gateway"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
-	"github.com/GoldBaby5511/go-mango-core/util"
+	"mango/pkg/api/gateway"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
+	"mango/pkg/util"
 	"mango/api/list"
 	"mango/api/types"
 )

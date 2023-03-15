@@ -2,12 +2,12 @@ package business
 
 import (
 	"fmt"
-	"github.com/GoldBaby5511/go-mango-core/api/center"
-	lconf "github.com/GoldBaby5511/go-mango-core/conf"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
 	"github.com/golang/protobuf/proto"
+	"mango/pkg/api/center"
+	lconf "mango/pkg/conf"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 	"math/rand"
 	"time"
 )

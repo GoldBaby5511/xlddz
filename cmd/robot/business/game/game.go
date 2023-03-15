@@ -1,7 +1,7 @@
 package game
 
 import (
-	n "github.com/GoldBaby5511/go-mango-core/network"
+	n "mango/pkg/network"
 	"time"
 )
 

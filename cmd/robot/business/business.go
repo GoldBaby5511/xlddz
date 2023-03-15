@@ -2,9 +2,9 @@ package business
 
 import (
 	"fmt"
-	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
 	"mango/cmd/robot/business/player"
 	"strconv"
 )

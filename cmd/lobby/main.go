@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/GoldBaby5511/go-mango-core/gate"
 	_ "mango/cmd/lobby/business"
+	"mango/pkg/gate"
 )
 
 func main() {

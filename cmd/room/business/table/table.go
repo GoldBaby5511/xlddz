@@ -1,10 +1,10 @@
 package table
 
 import (
-	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 	"github.com/golang/protobuf/proto"
 	tCMD "mango/api/table"
 	"mango/cmd/room/business/player"

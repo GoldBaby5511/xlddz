@@ -2,9 +2,9 @@ package conf
 
 import (
 	"encoding/json"
-	"github.com/GoldBaby5511/go-mango-core/log"
 	aConfig "github.com/apolloconfig/agollo/v4/env/config"
 	"io/ioutil"
+	"mango/pkg/log"
 )
 
 const (

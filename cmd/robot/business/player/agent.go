@@ -1,10 +1,10 @@
 package player
 
 import (
-	"github.com/GoldBaby5511/go-mango-core/api/gateway"
-	"github.com/GoldBaby5511/go-mango-core/conf"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
+	"mango/pkg/api/gateway"
+	"mango/pkg/conf"
+	"mango/pkg/log"
+	n "mango/pkg/network"
 	"github.com/golang/protobuf/proto"
 	"reflect"
 )
