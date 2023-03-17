@@ -4,7 +4,7 @@
 
 ## 概述
 
-站在巨人肩膀，核心部分基于[leaf](https://github.com/name5566/leaf)，一个经典开源游戏服务。但leaf为单进程多模块模型，无法进行分布式部署。本项目即在此基础上做了扩展，实现了多进程分布式部署，业务模型为本人之前做过的一个项目，兴隆斗地主。定义为分布式框架，适用所有分区、分房间类游戏。
+站在巨人肩膀，核心部分基于[leaf](https://github.com/name5566/leaf)，一个经典开源游戏服务。但leaf为单进程多模块模型，无法进行分布式部署。本项目即在此基础上做了扩展，实现了多进程分布式部署，业务模型为本人之前做过的一个项目。定义为分布式框架，适用所有分区、分房间类游戏。
 
 ----
 
@@ -30,16 +30,15 @@
 ### 脚本
 
 * windows
-
 1. 启动：右键scripts\windows目录下Startup.bat已管理员身份运行，若无权限问题会依次编译并运行各个服务
+
 2. 创建：右键scripts\windows目录下CreateNewService.bat已管理员身份运行，输入新服务名，将会在cmd目录下创建对应新服务目录及模板源文件
+
 3. 清理：右键scripts\windows目录下Cleanup.bat已管理员身份运行，将删除cmd内各服务内生成的中间及log文件
-
 * linux
-
 1. 执行权限检查，转到scripts\linux目录，查看三个脚本是否有执行权限若没有则执行以下命令赋权
 
-``` bash
+```bash
 chmod +x Cleanup.sh
 chmod +x CreateNewService.sh
 chmod +x Shutdown.sh
@@ -48,7 +47,7 @@ chmod +x Startup.sh
 
 2. 启动：转到scripts\linux目录下执行./Startup.sh ，依次编译并后台运行各个服务
 
-``` bash
+```bash
 #执行命令，验证服务是否启动成功
 ps -aux
 
@@ -165,6 +164,3 @@ mango(二)：架构：https://blog.csdn.net/weixin_42780662/article/details/1221
 ## 交流群
 
 * QQ交流群：781335145
-
-
-
