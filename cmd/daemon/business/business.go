@@ -3,14 +3,14 @@ package business
 import (
 	"bytes"
 	"fmt"
-	"github.com/GoldBaby5511/go-mango-core/api/center"
-	"github.com/GoldBaby5511/go-mango-core/conf"
-	"github.com/GoldBaby5511/go-mango-core/conf/apollo"
-	g "github.com/GoldBaby5511/go-mango-core/gate"
-	"github.com/GoldBaby5511/go-mango-core/log"
-	n "github.com/GoldBaby5511/go-mango-core/network"
-	"github.com/GoldBaby5511/go-mango-core/util"
 	"github.com/golang/protobuf/proto"
+	"mango/pkg/api/center"
+	"mango/pkg/conf"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
+	"mango/pkg/util"
 	"os"
 	"os/exec"
 	"runtime"
@@ -115,11 +115,10 @@ func appControlNotify(args []interface{}) {
 
 	errInfo := ""
 	var errCode int32 = 0
-	workDir := ""
-	if v, ok := util.ParseArgsString("-Path", os.Args); ok {
-		workDir = v
-	} else {
-		workDir = apollo.GetConfig("服务路径", "/home/ankots/ankotsServerBin/")
+	workDir := getWorkDir()
+	if workDir == "" {
+		log.Error("", "异常,服务路径为空")
+		return
 	}
 
 	switch m.GetCtlId() {
@@ -230,4 +229,15 @@ func appControlNotify(args []interface{}) {
 		log.Warning("", "不支持的操作类型,ctlId=%v", m.GetCtlId())
 	}
 	msgRespond(errCode, errInfo)
+}
+
+func getWorkDir() string {
+	workDir := ""
+	if v, ok := util.ParseArgsString("-Path", os.Args); ok {
+		workDir = v
+	} else {
+		workDir = apollo.GetConfig("服务路径", "")
+	}
+
+	return workDir
 }

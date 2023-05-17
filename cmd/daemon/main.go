@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "baseServer/cmd/daemon/business"
-	"github.com/GoldBaby5511/go-mango-core/gate"
+	_ "mango/cmd/daemon/business"
+	"mango/pkg/gate"
 )
 
 func main() {
