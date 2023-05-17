@@ -1,8 +1,4 @@
 {
-    "appId": "common-server",
-    "cluster": "default",
-    "namespaceName": "router",
-    "releaseKey": "20211125144134-b9ac8ee6517284e1",
     "configurations": {
         "LogScreenPrint": "1",
         "title": "路由服务",

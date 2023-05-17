@@ -1,8 +1,4 @@
 {
-    "appId": "common-server",
-    "cluster": "default",
-    "namespaceName": "login",
-    "releaseKey": "20211122134543-11cc8ee6517284d7",
     "configurations": {
         "LogScreenPrint": "1",
         "title": "登录服务",

@@ -1,8 +1,4 @@
 {
-    "appId": "",
-    "cluster": "",
-    "namespaceName": "robot",
-    "releaseKey": "",
     "configurations": {
         "LogScreenPrint": "1",
         "title": "机器人服务",
