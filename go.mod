@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/GoldBaby5511/go-simplejson v0.5.0
-	github.com/apolloconfig/agollo/v4 v4.3.0
+	github.com/apolloconfig/agollo/v4 v4.2.0
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d
