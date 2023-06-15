@@ -1,11 +1,11 @@
 package network
 
 import (
+	"encoding/json"
+	"fmt"
 	"mango/pkg/log"
 	"mango/pkg/util"
 	"mango/pkg/util/errorhelper"
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/pprof"
 	"sync"
@@ -52,7 +52,7 @@ func (hs *HttpServer) run() {
 
 	hs.isStart = true
 
-	log.Info("", fmt.Sprintf("listening http on %d,route=%v", hs.Port, len(hs.route)))
+	log.Info("", fmt.Sprintf("http服务器启动,Port=%d,route=%v", hs.Port, len(hs.route)))
 
 	if err := http.ListenAndServe(":"+fmt.Sprintf("%d", hs.Port), hs.mux); err != nil {
 		log.Fatal("", "异常,http服务启动失败,port=%v,err=%v", hs.Port, err)

@@ -3,6 +3,12 @@ package business
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/GoldBaby5511/go-simplejson"
+	"github.com/apolloconfig/agollo/v4"
+	aConfig "github.com/apolloconfig/agollo/v4/env/config"
+	"github.com/apolloconfig/agollo/v4/storage"
+	"io/ioutil"
+	"mango/cmd/config/conf"
 	"mango/pkg/api/config"
 	mconf "mango/pkg/conf"
 	"mango/pkg/conf/apollo"
@@ -11,12 +17,6 @@ import (
 	n "mango/pkg/network"
 	"mango/pkg/timer"
 	"mango/pkg/util"
-	"github.com/GoldBaby5511/go-simplejson"
-	"github.com/apolloconfig/agollo/v4"
-	aConfig "github.com/apolloconfig/agollo/v4/env/config"
-	"github.com/apolloconfig/agollo/v4/storage"
-	"io/ioutil"
-	"mango/cmd/config/conf"
 	"path"
 	"time"
 
@@ -283,8 +283,8 @@ func createChangeListener() {
 		l.listenChange()
 		listenerList[key] = l
 
-		log.Debug("创建", "文件模式创建,file=%v,appType=%v,appId=%v",
-			l.fileName, l.appType, l.appId)
+		log.Debug("创建", "文件模式创建,file=%v,appType=%v,appId=%v,key=%v",
+			l.fileName, l.appType, l.appId, key)
 	}
 
 	//定时检测
@@ -538,8 +538,9 @@ func handleApolloCfgReq(args []interface{}) {
 
 	l := getListener(m.GetSubAppType(), m.GetSubAppId())
 	if l == nil {
-		log.Warning("配置", "配置不存在,AppType=%v,AppId=%v,KeyName=%v,SubAppType=%v,SubAppId=%v,Subscribe=%v",
-			m.GetAppType(), m.GetAppId(), m.GetKey(), m.GetSubAppType(), m.GetSubAppId(), m.GetSubscribe())
+		key := util.MakeUint64FromUint32(m.GetSubAppType(), m.GetSubAppId())
+		log.Warning("配置", "配置不存在,AppType=%v,AppId=%v,KeyName=%v,SubAppType=%v,SubAppId=%v,Subscribe=%v,key=%v,len=%v",
+			m.GetAppType(), m.GetAppId(), m.GetKey(), m.GetSubAppType(), m.GetSubAppId(), m.GetSubscribe(), key, len(listenerList))
 
 		return
 	}

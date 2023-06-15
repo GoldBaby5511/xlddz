@@ -41,6 +41,11 @@
             "serverID":0
         },
         {
+            "namespaceName":"configs/config/daemon-300.json",
+            "serverType":100,
+            "serverID":0
+        },
+        {
             "namespaceName":"configs/config/table-1000.json",
             "serverType":11,
             "serverID":1000

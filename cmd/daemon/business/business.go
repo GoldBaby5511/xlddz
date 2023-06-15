@@ -101,11 +101,6 @@ func appControlNotify(args []interface{}) {
 		rsp.Info = proto.String(errInfo)
 		g.SendData2App(n.AppCenter, srcAgent.AppId, n.AppCenter, uint32(center.CMDCenter_IDAppControlRsp), &rsp)
 	}
-	osType := runtime.GOOS
-	if osType != "linux" {
-		msgRespond(int32(ParamError), fmt.Sprintf("不支持的操作系统,osType=%v", osType))
-		return
-	}
 
 	//来源判断
 	if srcAgent.AppType != n.AppCenter {
@@ -120,7 +115,7 @@ func appControlNotify(args []interface{}) {
 		log.Error("", "异常,服务路径为空")
 		return
 	}
-
+	osType := runtime.GOOS
 	switch m.GetCtlId() {
 	case int32(center.CtlId_StartService):
 		for _, item := range m.GetCtlServers() {
@@ -140,43 +135,46 @@ func appControlNotify(args []interface{}) {
 					return
 				}
 
-				//TODO Windows下的命令
-				//a := make([]string, 0, len(args)+1)
-				//a = append(a, "/C")
-				//a = append(a, args...)
-				//cmd = exec.Command("cmd", a...)
+				lInfo := ""
+				if osType == "linux" {
+					if err := os.Chmod(workDir+args[0], 0777); err != nil {
+						log.Warning("", "修改文件权限失败,file=%v,err=%v", workDir+args[0], err)
+					}
+					cmd := exec.Command("./"+args[0], args[1:]...)
+					fName := fmt.Sprintf("%v_%v_%v_%v.log", bInfo.GetName(), bInfo.GetType(), bInfo.GetId(), time.Now().Format("2006-01-02_15-04-05"))
+					var err error
+					cmd.Stdout, err = os.Create(conf.ApplogDir + "stdout_" + fName)
+					if err != nil {
+						log.Error("", "创建stdout文件失败,err=%v", err)
+						return
+					}
 
-				if err := os.Chmod(workDir+args[0], 0777); err != nil {
-					log.Warning("", "修改文件权限失败,file=%v,err=%v", workDir+args[0], err)
-				}
-				cmd := exec.Command("./"+args[0], args[1:]...)
-				fName := fmt.Sprintf("%v_%v_%v_%v.log", bInfo.GetName(), bInfo.GetType(), bInfo.GetId(), time.Now().Format("2006-01-02_15-04-05"))
-				var err error
-				cmd.Stdout, err = os.Create(conf.ApplogDir + "stdout_" + fName)
-				if err != nil {
-					log.Error("", "创建stdout文件失败,err=%v", err)
-					return
+					cmd.Stderr, err = os.Create(conf.ApplogDir + "stderr_" + fName)
+					if err != nil {
+						log.Error("", "创建stderr文件失败,err=%v", err)
+						return
+					}
+
+					cmd.Dir = workDir
+					log.Debug("", "cmd=%v", cmd.String())
+					err = cmd.Start()
+					if err != nil {
+						errInfo += err.Error()
+						errCode = 1
+						log.Warning("", "执行Start失败,err=%v,dir=%v,args=%v", err, workDir, cmd.Args)
+						return
+					}
+					err = cmd.Wait()
+					lInfo = fmt.Sprintf("结束执行,name=%v,type=%v,Id=%v,err=%v,dir=%v,args=%v",
+						bInfo.GetName(), bInfo.GetType(), bInfo.GetId(), err, workDir, cmd.Args)
+				} else if osType == "windows" {
+					//TODO Windows下的命令
+					//a := make([]string, 0, len(args)+1)
+					//a = append(a, "/C")
+					//a = append(a, args...)
+					//cmd = exec.Command("cmd", a...)
 				}
 
-				cmd.Stderr, err = os.Create(conf.ApplogDir + "stderr_" + fName)
-				if err != nil {
-					log.Error("", "创建stderr文件失败,err=%v", err)
-					return
-				}
-
-				cmd.Dir = workDir
-				log.Debug("", "cmd=%v", cmd.String())
-				err = cmd.Start()
-				if err != nil {
-					errInfo += err.Error()
-					errCode = 1
-					log.Warning("", "执行Start失败,err=%v,dir=%v,args=%v", err, workDir, cmd.Args)
-					return
-				}
-
-				err = cmd.Wait()
-				lInfo := fmt.Sprintf("结束执行,name=%v,type=%v,Id=%v,err=%v,dir=%v,args=%v",
-					bInfo.GetName(), bInfo.GetType(), bInfo.GetId(), err, workDir, cmd.Args)
 				mxDaemonServiceList.Lock()
 				_, ok := daemonServiceList[util.MakeUint64FromUint32(bInfo.GetType(), bInfo.GetId())]
 				mxDaemonServiceList.Unlock()
@@ -204,6 +202,11 @@ func appControlNotify(args []interface{}) {
 		}
 		mxDaemonServiceList.Unlock()
 	case int32(center.CtlId_UpdateService):
+		//TODO 当前只支持linux
+		if osType != "linux" {
+			msgRespond(int32(ParamError), fmt.Sprintf("不支持的操作系统,osType=%v", osType))
+			return
+		}
 		if len(m.GetArgs()) != 3 {
 			log.Warning("", "参数错误,args=%v", m.GetArgs())
 			return
