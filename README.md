@@ -6,6 +6,16 @@
 
 站在巨人肩膀，核心部分基于[leaf](https://github.com/name5566/leaf)，一个经典开源游戏服务。但leaf为单进程多模块模型，无法进行分布式部署。本项目即在此基础上做了扩展，实现了多进程分布式部署，业务模型为本人之前做过的一个项目。定义为分布式框架，适用所有分区、分房间类游戏。
 
+---
+
+## 相关组成
+
+mango:https://github.com/GoldBaby5511/mango.git
+mango-client:https://github.com/GoldBaby5511/mango-client.git
+mango-user-center:https://github.com/GoldBaby5511/mango-user-center.git
+mango-admin:https://github.com/GoldBaby5511/mango-admin.git
+mango-admin-ui:https://github.com/GoldBaby5511/mango-admin-ui.git 
+
 ----
 
 ## 架构
@@ -87,7 +97,7 @@ windows下可能存在权限问题，导致脚本运行失败，若出现该类�
 .\property -Type=7 -Id=90
 .\table -Type=8 -Id=1000
 .\room -Type=9 -Id=2000
-.\robot.exe -Type=10 -Id=3000
+.\robot -Type=10 -Id=3000
 ```
 
 服务启动完成后，robot会默认创建1000用户模拟客户端行为，连接网关-->登录-->报名-->举手-->游戏。起始用户数量可配，robot-3000.json 文件 "机器人数量"字段
