@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/golang/protobuf/proto"
-	"mango/pkg/api/center"
+	"mango/api/center"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"

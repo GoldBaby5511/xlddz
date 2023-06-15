@@ -1,15 +1,8 @@
 package business
 
 import (
-	"mango/pkg/api/gateway"
-	"mango/pkg/conf"
-	"mango/pkg/conf/apollo"
-	g "mango/pkg/gate"
-	"mango/pkg/log"
-	n "mango/pkg/network"
-	"mango/pkg/timer"
-	"mango/pkg/util"
 	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/property"
 	rCMD "mango/api/room"
@@ -17,6 +10,13 @@ import (
 	"mango/api/types"
 	"mango/cmd/room/business/player"
 	"mango/cmd/room/business/table"
+	"mango/pkg/conf"
+	"mango/pkg/conf/apollo"
+	g "mango/pkg/gate"
+	"mango/pkg/log"
+	n "mango/pkg/network"
+	"mango/pkg/timer"
+	"mango/pkg/util"
 	"time"
 )
 

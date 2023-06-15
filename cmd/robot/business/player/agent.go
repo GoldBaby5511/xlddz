@@ -1,11 +1,11 @@
 package player
 
 import (
-	"mango/pkg/api/gateway"
+	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	n "mango/pkg/network"
-	"github.com/golang/protobuf/proto"
 	"reflect"
 )
 

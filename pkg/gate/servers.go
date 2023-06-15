@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"time"
 
-	"mango/pkg/api/center"
+	"mango/api/center"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	"mango/pkg/log"

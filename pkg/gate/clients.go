@@ -4,8 +4,8 @@ import (
 	"net"
 	"reflect"
 
-	"mango/pkg/api/center"
-	"mango/pkg/api/gateway"
+	"mango/api/center"
+	"mango/api/gateway"
 	"mango/pkg/conf"
 	"mango/pkg/log"
 	n "mango/pkg/network"

@@ -2,11 +2,11 @@ package business
 
 import (
 	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
 	tCMD "mango/api/table"
 	"mango/cmd/table/business/player"
 	"mango/cmd/table/business/table"
 	"mango/cmd/table/business/table/ddz"
-	"mango/pkg/api/gateway"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"

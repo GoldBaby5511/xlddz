@@ -2,7 +2,9 @@ package business
 
 import (
 	"errors"
-	"mango/pkg/api/gateway"
+	"github.com/golang/protobuf/proto"
+	"mango/api/gateway"
+	"mango/api/lobby"
 	"mango/pkg/conf"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
@@ -10,8 +12,6 @@ import (
 	n "mango/pkg/network"
 	"mango/pkg/timer"
 	"mango/pkg/util"
-	"github.com/golang/protobuf/proto"
-	"mango/api/lobby"
 	"time"
 )
 

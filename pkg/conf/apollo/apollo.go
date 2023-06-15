@@ -1,7 +1,7 @@
 package apollo
 
 import (
-	"mango/pkg/api/config"
+	"mango/api/config"
 	"mango/pkg/chanrpc"
 	"mango/pkg/conf"
 	"mango/pkg/log"
