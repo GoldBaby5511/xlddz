@@ -10,11 +10,11 @@
 
 ## 相关组成
 
-mango:https://github.com/GoldBaby5511/mango.git
-mango-client:https://github.com/GoldBaby5511/mango-client.git
-mango-user-center:https://github.com/GoldBaby5511/mango-user-center.git
-mango-admin:https://github.com/GoldBaby5511/mango-admin.git
-mango-admin-ui:https://github.com/GoldBaby5511/mango-admin-ui.git 
+* mango:https://github.com/GoldBaby5511/mango.git
+* mango-client:https://github.com/GoldBaby5511/mango-client.git
+* mango-user-center:https://github.com/GoldBaby5511/mango-user-center.git
+* mango-admin:https://github.com/GoldBaby5511/mango-admin.git
+* mango-admin-ui:https://github.com/GoldBaby5511/mango-admin-ui.git 
 
 ----
 
@@ -90,14 +90,15 @@ windows下可能存在权限问题，导致脚本运行失败，若出现该类�
 ```bash
 .\logger -Type=1 -Id=1
 .\center -Type=2 -Id=50
-.\config -Type=3 -Id=60
+.\config -Type=3 -Id=55
 .\gateway -Type=4 -Id=100
-.\lobby -Type=5 -Id=70
-.\list -Type=6 -Id=80
-.\property -Type=7 -Id=90
-.\table -Type=8 -Id=1000
-.\room -Type=9 -Id=2000
-.\robot -Type=10 -Id=3000
+.\lobby -Type=5 -Id=60
+.\property -Type=6 -Id=65
+.\list -Type=10 -Id=70
+.\table -Type=11 -Id=1000
+.\room -Type=12 -Id=2000
+.\robot -Type=9 -Id=3000
+.\daemon -Type=100 -Id=300
 ```
 
 服务启动完成后，robot会默认创建1000用户模拟客户端行为，连接网关-->登录-->报名-->举手-->游戏。起始用户数量可配，robot-3000.json 文件 "机器人数量"字段
