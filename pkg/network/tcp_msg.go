@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"mango/pkg/util/errorhelper"
 	"io"
+	"mango/pkg/util/errorhelper"
 )
 
 const (
@@ -45,13 +45,15 @@ const (
 type (
 	//网络命令
 	TCPCommand struct {
-		AppType uint16
-		CmdId   uint16
+		MainCmdID uint16
+		SubCmdID  uint16
 	}
 
 	MessageHeader struct {
-		version    uint8
-		encrypt    uint8
+		version    uint16
+		encrypt    uint16
+		AppType    uint32
+		AppId      uint32
 		TCPCommand        //命令
 		Other      []byte // 0xFF字节以内
 	}
@@ -99,8 +101,8 @@ func (p *MsgParser) SetMsgLen(minMsgLen uint32, maxMsgLen uint32) {
 	}
 }
 
-// |	msgSize	 |	headSize		| 						header 												| msgData
-// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
+// |	msgSize	 |	headSize		| 						header 																				   | msgData
+// |4bit(msgSize)| 2bit(headSize) 	| 2bit(version) + 2bit(encrypt) + 4bit(AppType) + 4bit(AppId) + 2bit(MainCmdID) + 2bit(SubCmdID) + Xbit(other) | msgData
 func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	defer errorhelper.Recover()
 	msgSizeBuf := make([]byte, msgSizeLen)
@@ -114,7 +116,7 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	}
 
 	if msgSize < p.minMsgLen || msgSize > p.maxMsgLen {
-		return BaseMessage{}, nil, fmt.Errorf("消息长度有问题,msgSize=%v,minMsgLen=%d,maxMsgLen=%d", msgSize, p.minMsgLen, p.maxMsgLen)
+		return BaseMessage{}, nil, fmt.Errorf("消息长度有问题,msgSize=%v,minMsgLen=%d,maxMsgLen=%d,msgSizeBuf=[%d,%d,%d,%d]", msgSize, p.minMsgLen, p.maxMsgLen, msgSizeBuf[0], msgSizeBuf[1], msgSizeBuf[2], msgSizeBuf[3])
 	}
 
 	// data
@@ -125,7 +127,7 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 
 	var headSize uint16 = 0
 	_ = binary.Read(bytes.NewBuffer(allData[0:headerSizeLen]), binary.BigEndian, &headSize)
-	if headSize > (1 + 1 + 2 + 2 + 0xFF) {
+	if headSize > (2 + 2 + 4 + 4 + 2 + 2 + 0xFF) {
 		return BaseMessage{}, nil, fmt.Errorf("消息头长度异常,headSize=%v", headSize)
 	}
 
@@ -134,7 +136,9 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.version)
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.encrypt)
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.AppType)
-	_ = binary.Read(dataBuf, binary.BigEndian, &header.CmdId)
+	_ = binary.Read(dataBuf, binary.BigEndian, &header.AppId)
+	_ = binary.Read(dataBuf, binary.BigEndian, &header.MainCmdID)
+	_ = binary.Read(dataBuf, binary.BigEndian, &header.SubCmdID)
 
 	//获取traceId，不做通用按字节去读，前8个字节是固定的，第9位如果等于1则紧跟在后边的16位就是traceId
 	traceId := ""
@@ -148,31 +152,58 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	}
 
 	//构造参数
-	headCmd := &TCPCommand{AppType: header.AppType, CmdId: header.CmdId}
+	headCmd := &TCPCommand{MainCmdID: header.MainCmdID, SubCmdID: header.SubCmdID}
 	msgData := allData[headSize+headerSizeLen:]
 	bm := BaseMessage{Cmd: *headCmd, TraceId: traceId}
 	return bm, msgData, nil
 }
 
-// |	msgSize	 |	headSize		| 						header 												| msgData
-// |4bit(msgSize)| 2bit(headSize) 	| 1bit(version) + 1bit(encrypt) + 2bit(AppType) + 2bit(CmdId) + Xbit(other) | msgData
-func (p *MsgParser) Write(appType, cmdId uint16, conn *TCPConn, msgData, otherData []byte) error {
+// |	msgSize	 |	headSize		| 						header 																				   | msgData
+// |4bit(msgSize)| 2bit(headSize) 	| 2bit(version) + 2bit(encrypt) + 4bit(AppType) + 4bit(AppId) + 2bit(MainCmdID) + 2bit(SubCmdID) + Xbit(other) | msgData
+func (p *MsgParser) Write(bm BaseMessage, conn *TCPConn, msgData, otherData []byte) error {
 	defer errorhelper.Recover()
-	var headSize uint16 = 1 + 1 + 2 + 2 + uint16(len(otherData))
+	var headSize uint16 = 2 + 2 + 4 + 4 + 2 + 2 + uint16(len(otherData))
 	var msgSize uint32 = headerSizeLen + uint32(headSize) + uint32(len(msgData))
 
-	header := MessageHeader{0, 0, TCPCommand{appType, cmdId}, otherData}
+	header := MessageHeader{
+		version:    0,
+		encrypt:    0,
+		AppType:    bm.AgentInfo.AppType,
+		AppId:      bm.AgentInfo.AppId,
+		TCPCommand: TCPCommand{MainCmdID: bm.Cmd.MainCmdID, SubCmdID: bm.Cmd.SubCmdID},
+		Other:      otherData,
+	}
+
+	//fmt.Println("消息q,bm=", bm)
+	//fmt.Println("消息q,bm=", bm.AgentInfo.AppType, bm.AgentInfo.AppId)
+	//fmt.Println("消息q,header=", header.AppType, header.AppId)
+
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.BigEndian, msgSize)
 	_ = binary.Write(buf, binary.BigEndian, headSize)
 	_ = binary.Write(buf, binary.BigEndian, header.version)
 	_ = binary.Write(buf, binary.BigEndian, header.encrypt)
 	_ = binary.Write(buf, binary.BigEndian, header.AppType)
-	_ = binary.Write(buf, binary.BigEndian, header.CmdId)
+	_ = binary.Write(buf, binary.BigEndian, header.AppId)
+	_ = binary.Write(buf, binary.BigEndian, header.MainCmdID)
+	_ = binary.Write(buf, binary.BigEndian, header.SubCmdID)
 	if len(otherData) > 0 {
 		_ = binary.Write(buf, binary.BigEndian, otherData)
 	}
 	_ = binary.Write(buf, binary.BigEndian, msgData)
+
+	//TODO TEST
+	//if header.MainCmdID != uint16(AppLogger) && header.SubCmdID != 4 {
+	//	msgSizeBuf := buf.Bytes()
+	//	fmt.Println("消息,msgSizeBuf=", msgSizeBuf[0], msgSizeBuf[1], msgSizeBuf[2], msgSizeBuf[3])
+	//	fmt.Println("消息,msgSize=", msgSize)
+	//	fmt.Println("消息,headSize=", headSize)
+	//	fmt.Println("消息,header=", header)
+	//	fmt.Println("消息,msgData=", msgData[0], msgData[1], msgData[2], msgData[3])
+	//	offSet := 8
+	//	fmt.Println("消息,msgData=", msgSizeBuf[0+offSet], msgSizeBuf[1+offSet], msgSizeBuf[2+offSet], msgSizeBuf[3+offSet])
+	//	fmt.Println("-----------------------------------------------------")
+	//}
 
 	conn.Write(buf.Bytes())
 

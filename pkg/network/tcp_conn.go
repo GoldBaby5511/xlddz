@@ -101,6 +101,6 @@ func (tcpConn *TCPConn) ReadMsg() (BaseMessage, []byte, error) {
 	return tcpConn.msgParser.Read(tcpConn)
 }
 
-func (tcpConn *TCPConn) WriteMsg(appType, cmdId uint16, msgData, otherData []byte) error {
-	return tcpConn.msgParser.Write(appType, cmdId, tcpConn, msgData, otherData)
+func (tcpConn *TCPConn) WriteMsg(bm BaseMessage, msgData, otherData []byte) error {
+	return tcpConn.msgParser.Write(bm, tcpConn, msgData, otherData)
 }

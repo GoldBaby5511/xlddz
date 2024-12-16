@@ -38,7 +38,7 @@ func (p *Processor) SetByteOrder(littleEndian bool) {
 	p.littleEndian = littleEndian
 }
 
-//异步rpc
+// 异步rpc
 func (p *Processor) Register(msg proto.Message, appType uint32, cmdId uint16, msgRouter *chanrpc.Server) {
 	msgType := reflect.TypeOf(msg)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
@@ -49,7 +49,7 @@ func (p *Processor) Register(msg proto.Message, appType uint32, cmdId uint16, ms
 	}
 
 	//协议命令
-	command := network.TCPCommand{AppType: uint16(appType), CmdId: cmdId}
+	command := network.TCPCommand{MainCmdID: uint16(appType), SubCmdID: cmdId}
 	if _, ok := p.msgInfo[command]; ok {
 		log.Fatal("proto", "message %s,cmd=%v is already registered", msgType, command)
 	}
@@ -87,7 +87,7 @@ func (p *Processor) Route(args ...interface{}) error {
 
 // goroutine safe
 func (p *Processor) Unmarshal(appType, cmdId uint16, data []byte) (interface{}, interface{}, error) {
-	id := network.TCPCommand{AppType: appType, CmdId: cmdId}
+	id := network.TCPCommand{MainCmdID: appType, SubCmdID: cmdId}
 	if _, ok := p.msgInfo[id]; !ok {
 		return &id, nil, fmt.Errorf("protobuf Unmarshal木有找到ID=%v", id)
 	}

@@ -103,7 +103,7 @@ func (wsConn *WSConn) WriteCMD(appType, cmdId uint16) {
 }
 
 // args must not be modified by the others goroutines
-func (wsConn *WSConn) WriteMsg(appType, cmdId uint16, msgData, otherData []byte) error {
+func (wsConn *WSConn) WriteMsg(bm BaseMessage, msgData, otherData []byte) error {
 	wsConn.Lock()
 	defer wsConn.Unlock()
 	if wsConn.closeFlag {
