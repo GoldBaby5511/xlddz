@@ -46,9 +46,9 @@ func NewTable(id uint64, sink FrameSink) *Table {
 
 func (t *Table) SendTableData(seatId uint32, bm n.BaseMessage) {
 	var gameMessage tCMD.GameMessage
-	gameMessage.SubCmdid = proto.Uint32(uint32(bm.Cmd.CmdId))
+	gameMessage.SubCmdid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
 	gameMessage.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
-	bm.Cmd.CmdId = uint16(tCMD.CMDTable_IDGameMessage)
+	bm.Cmd.SubCmdID = uint16(tCMD.CMDTable_IDGameMessage)
 	bm.MyMessage = &gameMessage
 
 	if seatId == InvalidSeadID {

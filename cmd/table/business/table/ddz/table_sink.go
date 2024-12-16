@@ -42,7 +42,7 @@ func (s *TableSink) StartGame(f table.Frame) {
 		start.HandCard = make([][]byte, playerCount)
 		start.HandCard[i] = s.userHandCards[0]
 		bm := n.BaseMessage{MyMessage: &start, TraceId: ""}
-		bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDGameStart)}
+		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameStart)}
 		s.frame.SendTableData(uint32(i), bm)
 	}
 }
@@ -70,7 +70,7 @@ func (s *TableSink) CallLandReq(seatId uint32, data []byte) {
 
 	var rsp gameddz.CallLandRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDCallLandRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppTable), SubCmdID: uint16(gameddz.CMDGameddz_IDCallLandRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
 	log.Debug("", "叫地主消息,seatId=%d", seatId)
@@ -88,7 +88,7 @@ func (s *TableSink) OutCardReq(seatId uint32, data []byte) {
 
 	var rsp gameddz.OutCardRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDOutCardRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppTable), SubCmdID: uint16(gameddz.CMDGameddz_IDOutCardRsp)}
 	s.frame.SendTableData(seatId, bm)
 
 	log.Debug("", "出牌消息,seatId=%d,len=%v", seatId, len(s.userHandCards[seatId]))
@@ -98,7 +98,7 @@ func (s *TableSink) OutCardReq(seatId uint32, data []byte) {
 
 		var over gameddz.GameOver
 		bm := n.BaseMessage{MyMessage: &over, TraceId: ""}
-		bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDGameOver)}
+		bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameOver)}
 		s.frame.SendTableData(table.InvalidSeadID, bm)
 
 		s.frame.WriteGameScore()
@@ -112,7 +112,7 @@ func (s *TableSink) GameDataReq(seatId uint32, data []byte) {
 
 	var rsp gameddz.GameDataRsp
 	bm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	bm.Cmd = n.TCPCommand{AppType: uint16(n.AppTable), CmdId: uint16(gameddz.CMDGameddz_IDGameDataRsp)}
+	bm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppTable), SubCmdID: uint16(gameddz.CMDGameddz_IDGameDataRsp)}
 	s.frame.SendTableData(table.InvalidSeadID, bm)
 
 	log.Debug("", "数据消息,seatId=%d", seatId)

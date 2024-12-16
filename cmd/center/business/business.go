@@ -20,7 +20,7 @@ var (
 	appRegData  = make(map[uint64]*connectionData)
 )
 
-//连接数据
+// 连接数据
 type connectionData struct {
 	a                  n.AgentClient
 	appInfo            lconf.BaseInfo
@@ -124,8 +124,8 @@ func handleRegisterAppReq(args []interface{}) {
 	appRegData[regKey].regToken = token
 	appRegData[regKey].appState = lconf.AppStateRunning
 
-	log.Debug("注册", "服务注册,appType=%v,appId=%v,regKey=%v,addr=%v",
-		m.GetAppType(), m.GetAppId(), regKey, m.GetMyAddress())
+	log.Debug("注册", "服务注册,Name=%s,appType=%v,appId=%v,regKey=%v,addr=%v",
+		m.GetAppName(), m.GetAppType(), m.GetAppId(), regKey, m.GetMyAddress())
 
 	sendRsp := func(a n.AgentClient, i lconf.BaseInfo) {
 		var rsp center.RegisterAppRsp
@@ -136,6 +136,7 @@ func handleRegisterAppReq(args []interface{}) {
 		rsp.AppType = proto.Uint32(i.Type)
 		rsp.AppId = proto.Uint32(i.Id)
 		rsp.AppAddress = proto.String(i.ListenOnAddr)
+		log.Debug("注册", "发送注册回复,appInfo=%v", i)
 		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 	}
 
@@ -188,9 +189,10 @@ func handleHeartBeatReq(args []interface{}) {
 	app.httpAddr = m.GetHttpAddress()
 	app.rpcAddr = m.GetRpcAddress()
 
-	var rsp center.HeartBeatRsp
-	rsp.PulseTime = proto.Int64(time.Now().Unix())
-	a.SendData(n.AppCenter, uint32(center.CMDCenter_IDHeartBeatRsp), &rsp)
+	//TODO 心跳回复,暂时无用
+	//var rsp center.HeartBeatRsp
+	//rsp.PulseTime = proto.Int64(time.Now().Unix())
+	//a.SendData(n.AppCenter, uint32(center.CMDCenter_IDHeartBeatRsp), &rsp)
 }
 
 func broadcastAppState(appType, appId uint32, state int32) {

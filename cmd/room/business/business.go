@@ -111,7 +111,7 @@ func handleJoinReq(args []interface{}) {
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-		rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(rCMD.CMDRoom_IDJoinRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -139,7 +139,7 @@ func handleUserActionReq(args []interface{}) {
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
-		rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(rCMD.CMDRoom_IDUserActionRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -165,7 +165,7 @@ func handleExitReq(args []interface{}) {
 		rsp.ErrInfo = new(types.ErrorInfo)
 		rsp.ErrInfo.Code = proto.Int32(errCode)
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
-		rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(rCMD.CMDRoom_IDUserActionRsp)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -247,7 +247,7 @@ func setUserState(p *player.Player, s uint32) {
 		state.SeatId = proto.Uint32(p.SeatId)
 
 		rspBm := n.BaseMessage{MyMessage: &state, TraceId: ""}
-		rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppRoom), CmdId: uint16(rCMD.CMDRoom_IDUserStateChange)}
+		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserStateChange)}
 		g.SendMessage2Client(rspBm, p.GateConnId, 0)
 	}
 }

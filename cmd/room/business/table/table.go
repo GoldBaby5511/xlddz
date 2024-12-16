@@ -1,13 +1,13 @@
 package table
 
 import (
+	"github.com/golang/protobuf/proto"
+	tCMD "mango/api/table"
+	"mango/cmd/room/business/player"
 	"mango/pkg/conf/apollo"
 	g "mango/pkg/gate"
 	"mango/pkg/log"
 	n "mango/pkg/network"
-	"github.com/golang/protobuf/proto"
-	tCMD "mango/api/table"
-	"mango/cmd/room/business/player"
 )
 
 const (
@@ -45,7 +45,7 @@ func CheckApplyTable() {
 
 	if GetTableCount(Free) == 0 && GetTableCount(All) <= maxCount {
 		var req tCMD.ApplyReq
-		req.ApplyCount = proto.Uint32(uint32(apollo.GetConfigAsInt64("申请桌子数", 1000)))
+		req.ApplyCount = proto.Uint32(uint32(apollo.GetConfigAsInt64("申请桌子数", 10)))
 		g.SendData2App(n.AppTable, uint32(tableAppID), n.AppTable, uint32(tCMD.CMDTable_IDApplyReq), &req)
 	}
 }
