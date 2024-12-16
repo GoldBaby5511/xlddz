@@ -35,7 +35,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 		a := &agentServer{tcpClient: tcpClient, conn: conn, info: info}
 		log.Debug("agentServer", "连接成功,info=%v", a.info)
 		sendRegAppReq(a)
-		timeInterval := 30 * time.Second
+		timeInterval := 20 * time.Second
 		timerHeartbeat := time.NewTimer(timeInterval)
 		go func(t *time.Timer) {
 			for {
@@ -76,13 +76,13 @@ func (a *agentServer) Run() {
 			break
 		}
 
-		if bm.Cmd.AppType != uint16(n.AppCenter) {
+		if bm.Cmd.MainCmdID != uint16(n.AppCenter) {
 			log.Warning("agentServer", "不可能出现非center消息,cmd=%v", bm.Cmd)
 			break
 		}
 
 		bm.AgentInfo = a.info
-		switch bm.Cmd.CmdId {
+		switch bm.Cmd.SubCmdID {
 		case uint16(center.CMDCenter_IDAppRegRsp):
 			var m center.RegisterAppRsp
 			_ = proto.Unmarshal(msgData, &m)
@@ -94,7 +94,7 @@ func (a *agentServer) Run() {
 				mxServers.Lock()
 				_, ok := servers[util.MakeUint64FromUint32(m.GetAppType(), m.GetAppId())]
 				if conf.AppInfo.Type == m.GetAppType() && conf.AppInfo.Id == m.GetAppId() {
-					//更新center信息
+					//更新center信息,就一个不更新也没啥问题
 					if _, ok := servers[util.MakeUint64FromUint32(n.AppCenter, 0)]; ok {
 						servers[util.MakeUint64FromUint32(n.AppCenter, m.GetCenterId())] = servers[util.MakeUint64FromUint32(n.AppCenter, 0)]
 						servers[util.MakeUint64FromUint32(n.AppCenter, m.GetCenterId())].info.AppId = m.GetCenterId()
@@ -129,8 +129,10 @@ func (a *agentServer) Run() {
 				mxServers.Unlock()
 			}
 		case uint16(center.CMDCenter_IDHeartBeatRsp):
+			//TODO 测试消息
+			log.Trace("agentServer", "暂时是个检测消息")
 		default:
-			cmd, msg, err := processor.Unmarshal(bm.Cmd.AppType, bm.Cmd.CmdId, msgData)
+			cmd, msg, err := processor.Unmarshal(bm.Cmd.MainCmdID, bm.Cmd.SubCmdID, msgData)
 			if err != nil {
 				log.Error("agentServer", "异常,agentServer反序列化,headCmd=%v,error: %v", bm.Cmd, err)
 				continue
@@ -183,13 +185,15 @@ func (a *agentServer) SendMessage(bm n.BaseMessage) {
 		return
 	}
 
-	err = a.conn.WriteMsg(bm.Cmd.AppType, bm.Cmd.CmdId, data, otherData)
+	bm.AgentInfo.AppType = conf.AppInfo.Type
+	bm.AgentInfo.AppId = conf.AppInfo.Id
+	err = a.conn.WriteMsg(bm, data, otherData)
 	if err != nil {
 		log.Error("agentServer", "写信息失败,type=%v,cmd=%v,err=%v", reflect.TypeOf(m), bm.Cmd, err)
 	}
 }
 
-func (a *agentServer) SendData(appType, cmdId uint32, m proto.Message) {
+func (a *agentServer) SendData(mainCmdID, subCmdID uint32, m proto.Message) {
 	data, err := proto.Marshal(m)
 	if err != nil {
 		log.Error("agentServer", "异常,proto.Marshal %v error: %v", reflect.TypeOf(m), err)
@@ -198,11 +202,19 @@ func (a *agentServer) SendData(appType, cmdId uint32, m proto.Message) {
 
 	//超长判断
 	if len(data) > int(MaxMsgLen-1024) {
-		log.Error("agentServer", "异常,消息体超长,type=%v,appType=%v,cmdId=%v,len=%v,max=%v", reflect.TypeOf(m), appType, cmdId, len(data), int(MaxMsgLen-1024))
+		log.Error("agentServer", "异常,消息体超长,type=%v,mainCmdID=%v,subCmdID=%v,len=%v,max=%v", reflect.TypeOf(m), mainCmdID, subCmdID, len(data), int(MaxMsgLen-1024))
 		return
 	}
 
-	err = a.conn.WriteMsg(uint16(appType), uint16(cmdId), data, nil)
+	bm := n.BaseMessage{}
+	bm.AgentInfo.AppType = conf.AppInfo.Type
+	bm.AgentInfo.AppId = conf.AppInfo.Id
+	bm.Cmd.MainCmdID = uint16(mainCmdID)
+	bm.Cmd.SubCmdID = uint16(subCmdID)
+
+	//fmt.Println("SendData,bm=", bm)
+
+	err = a.conn.WriteMsg(bm, data, nil)
 	if err != nil {
 		log.Error("agentServer", "write message %v error: %v", reflect.TypeOf(m), err)
 	}

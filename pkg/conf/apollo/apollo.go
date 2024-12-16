@@ -248,7 +248,7 @@ func sendSubscribeReq(k ConfKey, cancel bool) {
 
 	log.Info("Apollo", "发送订阅,k=%v,subscribe=%v", k, subscribe)
 
-	cmd := n.TCPCommand{AppType: uint16(n.AppConfig), CmdId: uint16(config.CMDConfig_IDConfigReq)}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.AppConfig), SubCmdID: uint16(config.CMDConfig_IDConfigReq)}
 	bm := n.BaseMessage{MyMessage: &req, Cmd: cmd}
 	netAgent.SendMessage(bm)
 }

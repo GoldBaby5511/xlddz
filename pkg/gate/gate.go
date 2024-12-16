@@ -358,7 +358,7 @@ func ConnectLogServer(logAddr string) {
 				logReq.LogLevel = proto.Uint32(uint32(i.Level))
 				logReq.TimeNs = proto.Int64(i.TimeNs)
 				logReq.SrcAppname = proto.String(conf.AppInfo.Name)
-				cmd := n.TCPCommand{AppType: uint16(n.AppLogger), CmdId: uint16(logger.CMDLogger_IDLogReq)}
+				cmd := n.TCPCommand{MainCmdID: uint16(n.AppLogger), SubCmdID: uint16(logger.CMDLogger_IDLogReq)}
 				bm := n.BaseMessage{MyMessage: &logReq, Cmd: cmd}
 				a.SendMessage(bm)
 			})
@@ -397,8 +397,8 @@ func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
 	return SendMessage2Client(bm, util.MakeUint64FromUint32(dataSrc.AppType, dataSrc.AppId), 0)
 }
 
-func SendData2App(destAppType, destAppid, appType, cmdId uint32, m proto.Message) error {
-	cmd := n.TCPCommand{AppType: uint16(appType), CmdId: uint16(cmdId)}
+func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Message) error {
+	cmd := n.TCPCommand{MainCmdID: uint16(MainCmdID), SubCmdID: uint16(SubCmdID)}
 	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
 	return sendData(bm, destAppType, destAppid)
 }
@@ -407,12 +407,12 @@ func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
 	var dataReq gateway.TransferDataReq
 	dataReq.DestApptype = proto.Uint32(n.AppGate)
 	dataReq.DestAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
-	dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.AppType))
-	dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.CmdId))
+	dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.MainCmdID))
+	dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
 	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq.Gateconnid = proto.Uint64(gateConnID)
 	dataReq.AttSessionid = proto.Uint64(sessionID)
-	cmd := n.TCPCommand{AppType: uint16(n.AppGate), CmdId: uint16(gateway.CMDGateway_IDTransferDataReq)}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.AppGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	return sendData(transBM, n.AppGate, util.GetLUint32FromUint64(gateConnID))
 }
@@ -453,7 +453,7 @@ func sendData(bm n.BaseMessage, destAppType, destAppid uint32) error {
 				//			otherData = append(otherData, n.FlagOtherTraceId)
 				//			otherData = append(otherData, []byte(v.TraceId)...)
 				//		}
-				//		err = a.conn.WriteMsg(v.Cmd.AppType, v.Cmd.CmdId, v.Data, otherData)
+				//		err = a.conn.WriteMsg(v.Cmd.AppType, v.Cmd.SubCmdID, v.Data, otherData)
 				//		if err != nil {
 				//			log.Error("agentServer", "写信息失败 %v error: %v", reflect.TypeOf(m), err)
 				//		}

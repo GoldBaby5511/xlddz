@@ -37,8 +37,8 @@ func (a *agentClient) Run() {
 			break
 		}
 
-		if conf.AppInfo.Type != n.AppCenter && bm.Cmd.AppType == uint16(n.AppCenter) {
-			if bm.Cmd.CmdId == uint16(center.CMDCenter_IDAppRegReq) {
+		if conf.AppInfo.Type != n.AppCenter && bm.Cmd.MainCmdID == uint16(n.AppCenter) {
+			if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDAppRegReq) {
 				var m center.RegisterAppReq
 				_ = proto.Unmarshal(msgData, &m)
 				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppId: m.GetAppId()}
@@ -50,7 +50,7 @@ func (a *agentClient) Run() {
 				clients[util.MakeUint64FromUint32(a.info.AppType, a.info.AppId)] = a
 				mxClients.Unlock()
 				continue
-			} else if bm.Cmd.CmdId == uint16(center.CMDCenter_IDHeartBeatReq) {
+			} else if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDHeartBeatReq) {
 				//TODO  其他服务传来的心跳暂不处理
 				continue
 			}
@@ -58,10 +58,10 @@ func (a *agentClient) Run() {
 
 		unmarshalCmd := bm.Cmd
 		var cmd, msg, dataReq interface{}
-		if bm.Cmd.AppType == uint16(n.AppGate) && bm.Cmd.CmdId == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
+		if bm.Cmd.MainCmdID == uint16(n.AppGate) && bm.Cmd.SubCmdID == uint16(gateway.CMDGateway_IDTransferDataReq) && conf.AppInfo.Type != n.AppGate {
 			var m gateway.TransferDataReq
 			_ = proto.Unmarshal(msgData, &m)
-			unmarshalCmd = n.TCPCommand{AppType: uint16(m.GetDataApptype()), CmdId: uint16(m.GetDataCmdid())}
+			unmarshalCmd = n.TCPCommand{MainCmdID: uint16(m.GetDataApptype()), SubCmdID: uint16(m.GetDataCmdid())}
 			msgData = m.GetData()
 			dataReq = &m
 			bm.AgentInfo = n.BaseAgentInfo{AgentType: n.NormalUser, AppName: "NormalUser", AppType: util.GetHUint32FromUint64(m.GetGateconnid()), AppId: util.GetLUint32FromUint64(m.GetGateconnid())}
@@ -70,7 +70,7 @@ func (a *agentClient) Run() {
 			dataReq = a.info
 		}
 
-		cmd, msg, err = processor.Unmarshal(unmarshalCmd.AppType, unmarshalCmd.CmdId, msgData)
+		cmd, msg, err = processor.Unmarshal(unmarshalCmd.MainCmdID, unmarshalCmd.SubCmdID, msgData)
 		if err != nil {
 			log.Warning("agentClient", "异常,agentClient反序列化,headCmd=%v,error: %v", bm.Cmd, err)
 			continue
@@ -125,7 +125,12 @@ func (a *agentClient) SendData(appType, cmdId uint32, m proto.Message) {
 		return
 	}
 
-	err = a.conn.WriteMsg(uint16(appType), uint16(cmdId), data, nil)
+	bm := n.BaseMessage{}
+	bm.AgentInfo.AppType = conf.AppInfo.Type
+	bm.AgentInfo.AppId = conf.AppInfo.Id
+	bm.Cmd.MainCmdID = uint16(appType)
+	bm.Cmd.SubCmdID = uint16(cmdId)
+	err = a.conn.WriteMsg(bm, data, nil)
 	if err != nil {
 		log.Error("agentClient", "write message %v error: %v", reflect.TypeOf(m), err)
 	}
