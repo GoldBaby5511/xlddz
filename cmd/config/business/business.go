@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/golang/protobuf/proto"
 )
 
 var (
@@ -394,15 +393,24 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string, reqType,
 			}
 		}
 
-		var rsp config.ConfigRsp
-		rsp.RegKey = proto.String(sub.Key)
-		rsp.SubAppType = proto.Uint32(sub.AppType)
-		rsp.SubAppId = proto.Uint32(sub.AppId)
+		//var rsp config.ConfigRsp
+		//rsp.RegKey = proto.String(sub.Key)
+		//rsp.SubAppType = proto.Uint32(sub.AppType)
+		//rsp.SubAppId = proto.Uint32(sub.AppId)
+		rsp := config.ConfigRsp{
+			RegKey:     sub.Key,
+			SubAppType: sub.AppType,
+			SubAppId:   sub.AppId,
+		}
 
 		makeItem := func(k, v string) *config.ConfigItem {
-			i := new(config.ConfigItem)
-			i.Key = proto.String(k)
-			i.Value = proto.String(v)
+			//i := new(config.ConfigItem)
+			//i.Key = proto.String(k)
+			//i.Value = proto.String(v)
+			i := &config.ConfigItem{
+				Key:   k,
+				Value: v,
+			}
 			return i
 		}
 		msgRespond := func() {
@@ -415,11 +423,17 @@ func (c *configChangeListener) notifySubscriptionList(changeKey string, reqType,
 		sendLargeState := func(subAppType, subAppId uint32, k string, state uint32) {
 			log.Debug("通知", "下发大数据通知,appType=%v,appId=%v,subKey=%v,SubAppType=%v,SubAppId=%v,changeKey=%v,len=%v,state=%v",
 				appType, appId, sub.Key, subAppType, subAppId, changeKey, len(rsp.GetItem()), state)
-			var rsp config.ItemRspState
-			rsp.Key = proto.String(k)
-			rsp.SubAppType = proto.Uint32(subAppType)
-			rsp.SubAppId = proto.Uint32(subAppId)
-			rsp.State = proto.Uint32(state)
+			//var rsp config.ItemRspState
+			//rsp.Key = proto.String(k)
+			//rsp.SubAppType = proto.Uint32(subAppType)
+			//rsp.SubAppId = proto.Uint32(subAppId)
+			//rsp.State = proto.Uint32(state)
+			rsp := config.ItemRspState{
+				Key:        k,
+				SubAppType: subAppType,
+				SubAppId:   subAppId,
+				State:      state,
+			}
 			g.SendData2App(appType, appId, n.AppConfig, uint32(config.CMDConfig_IDItemRspState), &rsp)
 		}
 

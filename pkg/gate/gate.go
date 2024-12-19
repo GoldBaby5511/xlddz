@@ -227,6 +227,7 @@ func Run() {
 		}
 	}
 
+	//开局除了中心、日志服务其他都连接中心
 	if conf.AppInfo.CenterAddr != "" && conf.AppInfo.Type != n.AppCenter && conf.AppInfo.Type != n.AppLogger {
 		newServerItem(n.BaseAgentInfo{AgentType: n.CommonServer, AppName: "center", AppType: n.AppCenter, ListenOnAddr: conf.AppInfo.CenterAddr}, true, PendingWriteNum)
 	}
@@ -348,16 +349,27 @@ func ConnectLogServer(logAddr string) {
 			log.Info("gate", "日志服务器连接成功")
 
 			log.SetCallback(func(i log.LogInfo) {
-				var logReq logger.LogReq
-				logReq.FileName = proto.String(i.File)
-				logReq.LineNo = proto.Uint32(uint32(i.Line))
-				logReq.SrcApptype = proto.Uint32(conf.AppInfo.Type)
-				logReq.SrcAppid = proto.Uint32(conf.AppInfo.Id)
-				logReq.Content = []byte(i.LogStr)
-				logReq.ClassName = []byte(i.Classname)
-				logReq.LogLevel = proto.Uint32(uint32(i.Level))
-				logReq.TimeNs = proto.Int64(i.TimeNs)
-				logReq.SrcAppname = proto.String(conf.AppInfo.Name)
+				//var logReq logger.LogReq
+				//logReq.FileName = *proto.String(i.File)
+				//logReq.LineNo = *proto.Uint32(uint32(i.Line))
+				//logReq.SrcApptype = *proto.Uint32(conf.AppInfo.Type)
+				//logReq.SrcAppid = *proto.Uint32(conf.AppInfo.Id)
+				//logReq.Content = []byte(i.LogStr)
+				//logReq.ClassName = []byte(i.Classname)
+				//logReq.LogLevel = *proto.Uint32(uint32(i.Level))
+				//logReq.TimeNs = *proto.Int64(i.TimeNs)
+				//logReq.SrcAppname = *proto.String(conf.AppInfo.Name)
+				logReq := logger.LogReq{
+					FileName:   i.File,
+					LineNo:     uint32(i.Line),
+					SrcApptype: conf.AppInfo.Type,
+					SrcAppid:   conf.AppInfo.Id,
+					Content:    []byte(i.LogStr),
+					ClassName:  []byte(i.Classname),
+					LogLevel:   uint32(i.Level),
+					TimeNs:     i.TimeNs,
+					SrcAppname: conf.AppInfo.Name,
+				}
 				cmd := n.TCPCommand{MainCmdID: uint16(n.AppLogger), SubCmdID: uint16(logger.CMDLogger_IDLogReq)}
 				bm := n.BaseMessage{MyMessage: &logReq, Cmd: cmd}
 				a.SendMessage(bm)
@@ -371,16 +383,23 @@ func ConnectLogServer(logAddr string) {
 }
 
 func sendRegAppReq(a *agentServer) {
-	var registerReq center.RegisterAppReq
-	registerReq.AuthKey = proto.String("GoldBaby")
-	registerReq.AppName = proto.String(conf.AppInfo.Name)
-	registerReq.AppType = proto.Uint32(conf.AppInfo.Type)
-	registerReq.AppId = proto.Uint32(conf.AppInfo.Id)
 	myAddress := conf.AppInfo.ListenOnAddr
 	if conf.RunInLocalDocker() {
 		myAddress = conf.AppInfo.Name + ":" + strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
 	}
-	registerReq.MyAddress = proto.String(myAddress)
+	//var registerReq center.RegisterAppReq
+	//registerReq.AuthKey = *proto.String("GoldBaby")
+	//registerReq.AppName = *proto.String(conf.AppInfo.Name)
+	//registerReq.AppType = *proto.Uint32(conf.AppInfo.Type)
+	//registerReq.AppId = *proto.Uint32(conf.AppInfo.Id)
+	//registerReq.MyAddress = *proto.String(myAddress)
+	registerReq := center.RegisterAppReq{
+		AuthKey:   "GoldBaby",
+		AppName:   conf.AppInfo.Name,
+		AppType:   conf.AppInfo.Type,
+		AppId:     conf.AppInfo.Id,
+		MyAddress: myAddress,
+	}
 	a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegReq), &registerReq)
 }
 

@@ -86,6 +86,6 @@ func handleQueryPropertyRsp(args []interface{}) {
 	rsp.BaseInfo = new(types.BaseUserInfo)
 	rsp.BaseInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppLobby), CmdId: uint16(lobby.CMDLobby_IDLoginRsp)}
+	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDLoginRsp)}
 	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid(), 0)
 }

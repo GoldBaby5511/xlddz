@@ -21,7 +21,8 @@ import (
 )
 
 var (
-	userList = make(map[uint64]*player.Player)
+	userList                 = make(map[uint64]*player.Player)
+	listRegisterSuccess bool = false
 )
 
 func init() {
@@ -46,18 +47,21 @@ func handleApplyRsp(args []interface{}) {
 	for _, v := range m.GetTableIds() {
 		table.NewTable(v)
 	}
-	log.Debug("", "收到桌子,ApplyCount=%d,AttAppid=%d,len=%d",
-		m.GetApplyCount(), srcApp.AppId, table.GetTableCount(table.All))
 
-	var req list.RoomRegisterReq
-	req.Info = new(types.RoomInfo)
-	req.Info.AppInfo = new(types.BaseAppInfo)
-	req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
-	req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
-	req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
-	req.Info.Kind = proto.Uint32(200)
-	req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
-	g.SendData2App(n.AppList, n.Send2AnyOne, n.AppList, uint32(list.CMDList_IDRoomRegisterReq), &req)
+	log.Debug("", "收到桌子,ApplyCount=%d,tableCount=%d,AppId=%d,Free=%d,All=%d,listRegisterSuccess=%v",
+		m.GetApplyCount(), len(m.TableIds), srcApp.AppId, table.GetTableCount(table.Free), table.GetTableCount(table.All), listRegisterSuccess)
+
+	if !listRegisterSuccess {
+		var req list.RoomRegisterReq
+		req.Info = new(types.RoomInfo)
+		req.Info.AppInfo = new(types.BaseAppInfo)
+		req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
+		req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
+		req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
+		req.Info.Kind = proto.Uint32(200)
+		req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
+		g.SendData2App(n.AppList, n.Send2AnyOne, n.AppList, uint32(list.CMDList_IDRoomRegisterReq), &req)
+	}
 }
 
 func handleWriteGameScore(args []interface{}) {
@@ -95,7 +99,11 @@ func handleGameOver(args []interface{}) {
 
 func handleRoomRegisterRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
-	log.Debug("", "注册返回,AttAppid=%d", b.AgentInfo.AppId)
+	m := (b.MyMessage).(*list.RoomRegisterRsp)
+	log.Debug("", "注册返回,AttAppid=%d,Code=%d", b.AgentInfo.AppId, m.GetErrInfo().GetCode())
+	if m.GetErrInfo().GetCode() == int32(list.RoomRegisterRsp_SUCCESS) {
+		listRegisterSuccess = true
+	}
 }
 
 func handleJoinReq(args []interface{}) {

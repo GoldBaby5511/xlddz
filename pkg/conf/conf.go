@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"mango/pkg/log"
 	n "mango/pkg/network"
 	"mango/pkg/util"
-	"io/ioutil"
 	"os"
 	"strconv"
 )
@@ -118,7 +118,7 @@ func RunInLocalDocker() bool {
 func makeAppLogDir() error {
 	curPath, err := util.GetCurrentPath()
 	if err != nil {
-		return errors.New("获取当前路径失败")
+		return err
 	}
 	pathName := fmt.Sprintf("%slog/%s%d/", curPath, AppInfo.Name, AppInfo.Id)
 	err = os.MkdirAll(pathName, os.ModePerm)

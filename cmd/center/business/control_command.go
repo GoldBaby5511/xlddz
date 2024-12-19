@@ -2,7 +2,6 @@ package business
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"mango/api/center"
 	"mango/pkg/conf"
 	"mango/pkg/console"
@@ -132,10 +131,15 @@ func controlServer(appType, appId uint32, ctlId int32) error {
 			appRegData[key].appState = conf.AppStateMaintenanceFinish
 		}
 
-		var req center.AppControlReq
-		req.CtlId = proto.Int32(ctlId)
-		req.AppType = proto.Uint32(regInfo.Type)
-		req.AppId = proto.Uint32(regInfo.Id)
+		//var req center.AppControlReq
+		//req.CtlId = proto.Int32(ctlId)
+		//req.AppType = proto.Uint32(regInfo.Type)
+		//req.AppId = proto.Uint32(regInfo.Id)
+		req := center.AppControlReq{
+			CtlId:   ctlId,
+			AppType: regInfo.Type,
+			AppId:   regInfo.Id,
+		}
 		//是否配置中
 		s := getBaseInfoFromConfigList(appType, appId)
 		if s != nil {
@@ -161,14 +165,23 @@ func controlServer(appType, appId uint32, ctlId int32) error {
 			return fmt.Errorf("can not found app key=%v,type=%v,id=%v", key, n.AppDaemon, s.DaemonId)
 		}
 
-		var req center.AppControlReq
-		req.CtlId = proto.Int32(ctlId)
-		req.AppType = proto.Uint32(appRegData[key].appInfo.Type)
-		req.AppId = proto.Uint32(appRegData[key].appInfo.Id)
-		ss := &center.ControlItem{}
-		ss.Name = proto.String(s.Name)
-		ss.Type = proto.Uint32(appType)
-		ss.Id = proto.Uint32(appId)
+		//var req center.AppControlReq
+		//req.CtlId = proto.Int32(ctlId)
+		//req.AppType = proto.Uint32(appRegData[key].appInfo.Type)
+		//req.AppId = proto.Uint32(appRegData[key].appInfo.Id)
+		req := center.AppControlReq{
+			CtlId:   ctlId,
+			AppType: appRegData[key].appInfo.Type,
+			AppId:   appRegData[key].appInfo.Id,
+		}
+		ss := &center.ControlItem{
+			Name: s.Name,
+			Type: appType,
+			Id:   appId,
+		}
+		//ss.Name = proto.String(s.Name)
+		//ss.Type = proto.Uint32(appType)
+		//ss.Id = proto.Uint32(appId)
 		if ctlId == int32(center.CtlId_StartService) {
 			//是否已经启动
 			key := util.MakeUint64FromUint32(appType, appId)

@@ -1,6 +1,7 @@
 package business
 
 import (
+	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/types"
@@ -27,6 +28,12 @@ func handleRoomRegisterReq(args []interface{}) {
 	regKey := util.MakeUint64FromUint32(m.GetInfo().GetAppInfo().GetType(), m.GetInfo().GetAppInfo().GetId())
 	roomList[regKey] = m.GetInfo()
 	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppId, m.GetInfo().GetAppInfo().GetId())
+
+	var rsp list.RoomRegisterRsp
+	rsp.ErrInfo = new(types.ErrorInfo)
+	rsp.ErrInfo.Info = proto.String("成功")
+	rsp.ErrInfo.Code = proto.Int32(int32(list.RoomRegisterRsp_SUCCESS))
+	g.SendData2App(srcApp.AppType, srcApp.AppId, n.AppList, uint32(list.CMDList_IDRoomRegisterRsp), &rsp)
 }
 
 func handleRoomListReq(args []interface{}) {
@@ -43,6 +50,6 @@ func handleRoomListReq(args []interface{}) {
 		rsp.Rooms = append(rsp.Rooms, room)
 	}
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{AppType: uint16(n.AppList), CmdId: uint16(list.CMDList_IDRoomListRsp)}
+	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppList), SubCmdID: uint16(list.CMDList_IDRoomListRsp)}
 	g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 }

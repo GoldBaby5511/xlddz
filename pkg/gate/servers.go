@@ -41,11 +41,11 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 			for {
 				<-t.C
 				var req center.HeartBeatReq
-				req.PulseTime = proto.Int64(time.Now().Unix())
-				req.ServiceState = proto.Int32(int32(ServiceState))
-				req.StateDescription = proto.String(GetStateDescription())
-				req.HttpAddress = proto.String(apollo.GetConfig("http监听地址", ""))
-				req.RpcAddress = proto.String(apollo.GetConfig("rpc监听地址", ""))
+				req.PulseTime = *proto.Int64(time.Now().Unix())
+				req.ServiceState = *proto.Int32(int32(ServiceState))
+				req.StateDescription = *proto.String(GetStateDescription())
+				req.HttpAddress = *proto.String(apollo.GetConfig("http监听地址", ""))
+				req.RpcAddress = *proto.String(apollo.GetConfig("rpc监听地址", ""))
 				a.SendData(n.AppCenter, uint32(center.CMDCenter_IDHeartBeatReq), &req)
 
 				t.Reset(timeInterval)
@@ -130,7 +130,7 @@ func (a *agentServer) Run() {
 			}
 		case uint16(center.CMDCenter_IDHeartBeatRsp):
 			//TODO 测试消息
-			log.Trace("agentServer", "暂时是个检测消息")
+			//log.Trace("agentServer", "暂时是个检测消息")
 		default:
 			cmd, msg, err := processor.Unmarshal(bm.Cmd.MainCmdID, bm.Cmd.SubCmdID, msgData)
 			if err != nil {

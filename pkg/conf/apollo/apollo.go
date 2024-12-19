@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/golang/protobuf/proto"
 )
 
 const (
@@ -231,12 +229,6 @@ func sendSubscribeReq(k ConfKey, cancel bool) {
 		return
 	}
 
-	var req config.ConfigReq
-	req.AppType = proto.Uint32(conf.AppInfo.Type)
-	req.AppId = proto.Uint32(conf.AppInfo.Id)
-	req.SubAppType = proto.Uint32(k.AppType)
-	req.SubAppId = proto.Uint32(k.AppId)
-	req.Key = proto.String(k.Key)
 	subscribe := config.ConfigReq_SUBSCRIBE
 	if regSubList[k].RspCount == 0 {
 		subscribe = subscribe | config.ConfigReq_NEED_RSP
@@ -244,7 +236,23 @@ func sendSubscribeReq(k ConfKey, cancel bool) {
 	if cancel {
 		subscribe = config.ConfigReq_UNSUBSCRIBE
 	}
-	req.Subscribe = proto.Uint32(uint32(subscribe))
+
+	//var req config.ConfigReq
+	//req.AppType = proto.Uint32(conf.AppInfo.Type)
+	//req.AppId = proto.Uint32(conf.AppInfo.Id)
+	//req.SubAppType = proto.Uint32(k.AppType)
+	//req.SubAppId = proto.Uint32(k.AppId)
+	//req.Key = proto.String(k.Key)
+	//req.Subscribe = proto.Uint32(uint32(subscribe))
+
+	req := config.ConfigReq{
+		AppType:    conf.AppInfo.Type,
+		AppId:      conf.AppInfo.Id,
+		SubAppType: k.AppType,
+		SubAppId:   k.AppId,
+		Key:        k.Key,
+		Subscribe:  uint32(subscribe),
+	}
 
 	log.Info("Apollo", "发送订阅,k=%v,subscribe=%v", k, subscribe)
 

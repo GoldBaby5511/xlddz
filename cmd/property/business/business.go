@@ -43,7 +43,7 @@ func handleQueryPropertyReq(args []interface{}) {
 	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
 	p.PropCount = proto.Int64(userList[m.GetUserId()])
 	rsp.UserProps = append(rsp.UserProps, p)
-	cmd := n.TCPCommand{AppType: uint16(n.AppProperty), CmdId: uint16(property.CMDProperty_IDQueryPropertyRsp)}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDQueryPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
 	g.SendData(srcApp, bm)
 }
@@ -71,7 +71,7 @@ func handleModifyPropertyReq(args []interface{}) {
 	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
 	p.PropCount = proto.Int64(100)
 	rsp.UserProps = append(rsp.UserProps, p)
-	cmd := n.TCPCommand{AppType: uint16(n.AppProperty), CmdId: uint16(property.CMDProperty_IDModifyPropertyRsp)}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDModifyPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
 	g.SendData(b.AgentInfo, bm)
 }

@@ -3,7 +3,6 @@ package business
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"mango/api/center"
 	lconf "mango/pkg/conf"
 	"mango/pkg/conf/apollo"
@@ -98,10 +97,16 @@ func handleRegisterAppReq(args []interface{}) {
 				m.GetAppType(), m.GetAppId(), regKey)
 			log.Warning("连接", resultMsg)
 
-			var rsp center.RegisterAppRsp
-			rsp.RegResult = proto.Uint32(1)
-			rsp.ReregToken = proto.String(resultMsg)
-			rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
+			//var rsp center.RegisterAppRsp
+			//rsp.RegResult = proto.Uint32(1)
+			//rsp.ReregToken = proto.String(resultMsg)
+			//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
+			rsp := center.RegisterAppRsp{
+				RegResult:  1,
+				ReregToken: resultMsg,
+				CenterId:   lconf.AppInfo.Id,
+			}
+
 			a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 
 			a.Close()
@@ -128,14 +133,23 @@ func handleRegisterAppReq(args []interface{}) {
 		m.GetAppName(), m.GetAppType(), m.GetAppId(), regKey, m.GetMyAddress())
 
 	sendRsp := func(a n.AgentClient, i lconf.BaseInfo) {
-		var rsp center.RegisterAppRsp
-		rsp.RegResult = proto.Uint32(0)
-		rsp.ReregToken = proto.String(token)
-		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
-		rsp.AppName = proto.String(i.Name)
-		rsp.AppType = proto.Uint32(i.Type)
-		rsp.AppId = proto.Uint32(i.Id)
-		rsp.AppAddress = proto.String(i.ListenOnAddr)
+		//var rsp center.RegisterAppRsp
+		//rsp.RegResult = proto.Uint32(0)
+		//rsp.ReregToken = proto.String(token)
+		//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
+		//rsp.AppName = proto.String(i.Name)
+		//rsp.AppType = proto.Uint32(i.Type)
+		//rsp.AppId = proto.Uint32(i.Id)
+		//rsp.AppAddress = proto.String(i.ListenOnAddr)
+		rsp := center.RegisterAppRsp{
+			RegResult:  0,
+			ReregToken: token,
+			CenterId:   lconf.AppInfo.Id,
+			AppName:    i.Name,
+			AppType:    i.Type,
+			AppId:      i.Id,
+			AppAddress: i.ListenOnAddr,
+		}
 		log.Debug("注册", "发送注册回复,appInfo=%v", i)
 		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppRegRsp), &rsp)
 	}
@@ -200,11 +214,17 @@ func broadcastAppState(appType, appId uint32, state int32) {
 		if v.appInfo.Type == appType && v.appInfo.Id == appId {
 			continue
 		}
-		var rsp center.AppStateNotify
-		rsp.AppState = proto.Int32(state)
-		rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
-		rsp.AppType = proto.Uint32(appType)
-		rsp.AppId = proto.Uint32(appId)
+		//var rsp center.AppStateNotify
+		//rsp.AppState = proto.Int32(state)
+		//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
+		//rsp.AppType = proto.Uint32(appType)
+		//rsp.AppId = proto.Uint32(appId)
+		rsp := center.AppStateNotify{
+			AppState: state,
+			CenterId: lconf.AppInfo.Id,
+			AppType:  appType,
+			AppId:    appId,
+		}
 		a.SendData(n.AppCenter, uint32(center.CMDCenter_IDAppState), &rsp)
 	}
 }
