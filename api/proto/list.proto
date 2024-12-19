@@ -1,9 +1,10 @@
-syntax = "proto2";
+syntax = "proto3";
 import "types.proto";
 package bs.list;
 option go_package ="/list";
 
 enum CMDList {
+	IDRoomNone			= 0;
 	IDRoomRegisterReq	= 1;			//房间注册
 	IDRoomRegisterRsp	= 2;			//房间注册
 	IDRoomListReq		= 3;			//列表请求
@@ -11,16 +12,19 @@ enum CMDList {
 }
 
 message RoomRegisterReq{
-	optional types.RoomInfo					info = 1;
+	types.RoomInfo					info = 1;
 }
 
 message RoomRegisterRsp{
-	optional types.ErrorInfo				err_info = 99;
+	enum Result {
+		SUCCESS = 0;					//成功
+	}
+	types.ErrorInfo				err_info = 99;
 }
 
 //房间列表
 message RoomListReq{
-	optional uint32							list_id = 1;
+	uint32							list_id = 1;
 }
 
 //房间列表

@@ -1,8 +1,9 @@
-syntax = "proto2";
+syntax = "proto3";
 package bs.config;
 option go_package ="/config";
 
 enum CMDConfig {
+	IDNone						= 0;
 	IDConfigReq               	= 1;       // 请求配置
 	IDConfigRsp               	= 2;       // 配置响应
 	IDItemRspState            	= 3;       // 配置响应状态
@@ -17,35 +18,35 @@ message ConfigReq {
 		NEED_RSP		= 4;		// 要求回复，下发配置
 		NO_RSP			= 8;		// 不要回复，不下发配置
 	}
-	optional string name_space		= 1;		// 要读取的配置的命名空间
-	optional string key				= 2;		// 键名 空表示命名空间下的所有键
-	optional uint32 subscribe		= 3;		// 是否订阅配置的更新 见EnumSubscribe
-	optional uint32 app_type		= 4;		// AppType
-	optional uint32 app_id			= 5;		// AppId
-	optional uint32 sub_app_type	= 6;		// AppType
-	optional uint32 sub_app_id		= 7;		// AppId
+	string name_space		= 1;		// 要读取的配置的命名空间
+	string key				= 2;		// 键名 空表示命名空间下的所有键
+	uint32 subscribe		= 3;		// 是否订阅配置的更新 见EnumSubscribe
+	uint32 app_type		= 4;		// AppType
+	uint32 app_id			= 5;		// AppId
+	uint32 sub_app_type	= 6;		// AppType
+	uint32 sub_app_id		= 7;		// AppId
 }
 
 //配置条目
 message ConfigItem{
-	optional string key			= 1;		//
-	optional string value		= 2;		//
+	string key			= 1;		//
+	string value		= 2;		//
 }
 
 //配置响应
 message ConfigRsp {
-	optional string 		name_space		= 1;		// 要读取的配置的命名空间
-	optional string 		reg_key				= 2;		// 订阅的key
+	string 		name_space		= 1;		// 要读取的配置的命名空间
+	string 		reg_key				= 2;		// 订阅的key
 	repeated ConfigItem item					= 3;		// 键值
-	optional uint32 		sub_app_type	= 4;		// AppType
-	optional uint32 		sub_app_id		= 5;		// AppId
+	uint32 		sub_app_type	= 4;		// AppType
+	uint32 		sub_app_id		= 5;		// AppId
 }
 
 //配置响应完成
 message ItemRspState {
-	optional string name_space		= 1;		// 要读取的配置的命名空间
-	optional string key				= 2;		// 键名
-	optional uint32 sub_app_type	= 3;		// AppType 
-	optional uint32 sub_app_id		= 4;		//
-	optional uint32 state			= 5;		// 发送状态 0完成、1开始发送、2发送中
+	string name_space		= 1;		// 要读取的配置的命名空间
+	string key				= 2;		// 键名
+	uint32 sub_app_type	= 3;		// AppType 
+	uint32 sub_app_id		= 4;		//
+	uint32 state			= 5;		// 发送状态 0完成、1开始发送、2发送中
 }
