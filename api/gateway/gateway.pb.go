@@ -23,6 +23,7 @@ const (
 type CMDGateway int32
 
 const (
+	CMDGateway_IDNone            CMDGateway = 0
 	CMDGateway_IDPulseReq        CMDGateway = 1 //测速请求
 	CMDGateway_IDPulseRsp        CMDGateway = 2 //测速回复
 	CMDGateway_IDTransferDataReq CMDGateway = 3 //数据转发请求
@@ -35,6 +36,7 @@ const (
 // Enum value maps for CMDGateway.
 var (
 	CMDGateway_name = map[int32]string{
+		0: "IDNone",
 		1: "IDPulseReq",
 		2: "IDPulseRsp",
 		3: "IDTransferDataReq",
@@ -44,6 +46,7 @@ var (
 		7: "IDHelloRsp",
 	}
 	CMDGateway_value = map[string]int32{
+		"IDNone":            0,
 		"IDPulseReq":        1,
 		"IDPulseRsp":        2,
 		"IDTransferDataReq": 3,
@@ -74,16 +77,6 @@ func (CMDGateway) Type() protoreflect.EnumType {
 
 func (x CMDGateway) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Do not use.
-func (x *CMDGateway) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = CMDGateway(num)
-	return nil
 }
 
 // Deprecated: Use CMDGateway.Descriptor instead.
@@ -130,16 +123,6 @@ func (AuthInfo_OpType) Type() protoreflect.EnumType {
 
 func (x AuthInfo_OpType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Do not use.
-func (x *AuthInfo_OpType) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = AuthInfo_OpType(num)
-	return nil
 }
 
 // Deprecated: Use AuthInfo_OpType.Descriptor instead.
@@ -194,16 +177,6 @@ func (x HelloRsp_RspFlag) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Do not use.
-func (x *HelloRsp_RspFlag) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = HelloRsp_RspFlag(num)
-	return nil
-}
-
 // Deprecated: Use HelloRsp_RspFlag.Descriptor instead.
 func (HelloRsp_RspFlag) EnumDescriptor() ([]byte, []int) {
 	return file_gateway_proto_rawDescGZIP(), []int{6, 0}
@@ -215,9 +188,9 @@ type PulseReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	MySpeed      *uint32 `protobuf:"varint,1,opt,name=my_speed,json=mySpeed" json:"my_speed,omitempty"`
-	SpeedData    *uint32 `protobuf:"varint,2,opt,name=speed_data,json=speedData" json:"speed_data,omitempty"`
-	AttachedData []byte  `protobuf:"bytes,3,opt,name=attached_data,json=attachedData" json:"attached_data,omitempty"`
+	MySpeed      uint32 `protobuf:"varint,1,opt,name=my_speed,json=mySpeed,proto3" json:"my_speed,omitempty"`
+	SpeedData    uint32 `protobuf:"varint,2,opt,name=speed_data,json=speedData,proto3" json:"speed_data,omitempty"`
+	AttachedData []byte `protobuf:"bytes,3,opt,name=attached_data,json=attachedData,proto3" json:"attached_data,omitempty"`
 }
 
 func (x *PulseReq) Reset() {
@@ -251,15 +224,15 @@ func (*PulseReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *PulseReq) GetMySpeed() uint32 {
-	if x != nil && x.MySpeed != nil {
-		return *x.MySpeed
+	if x != nil {
+		return x.MySpeed
 	}
 	return 0
 }
 
 func (x *PulseReq) GetSpeedData() uint32 {
-	if x != nil && x.SpeedData != nil {
-		return *x.SpeedData
+	if x != nil {
+		return x.SpeedData
 	}
 	return 0
 }
@@ -277,9 +250,9 @@ type PulseRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	SpeedData   *uint32 `protobuf:"varint,1,opt,name=speed_data,json=speedData" json:"speed_data,omitempty"`
-	AttachdData []byte  `protobuf:"bytes,2,opt,name=attachd_data,json=attachdData" json:"attachd_data,omitempty"`
-	Timestamp   *int64  `protobuf:"varint,3,opt,name=timestamp" json:"timestamp,omitempty"`
+	SpeedData   uint32 `protobuf:"varint,1,opt,name=speed_data,json=speedData,proto3" json:"speed_data,omitempty"`
+	AttachdData []byte `protobuf:"bytes,2,opt,name=attachd_data,json=attachdData,proto3" json:"attachd_data,omitempty"`
+	Timestamp   int64  `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (x *PulseRsp) Reset() {
@@ -313,8 +286,8 @@ func (*PulseRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *PulseRsp) GetSpeedData() uint32 {
-	if x != nil && x.SpeedData != nil {
-		return *x.SpeedData
+	if x != nil {
+		return x.SpeedData
 	}
 	return 0
 }
@@ -327,8 +300,8 @@ func (x *PulseRsp) GetAttachdData() []byte {
 }
 
 func (x *PulseRsp) GetTimestamp() int64 {
-	if x != nil && x.Timestamp != nil {
-		return *x.Timestamp
+	if x != nil {
+		return x.Timestamp
 	}
 	return 0
 }
@@ -339,17 +312,17 @@ type TransferDataReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DestApptype  *uint32 `protobuf:"varint,1,opt,name=dest_apptype,json=destApptype" json:"dest_apptype,omitempty"` //目标或源apptype
-	DestAppid    *uint32 `protobuf:"varint,2,opt,name=dest_appid,json=destAppid" json:"dest_appid,omitempty"`       //目标或源appid
-	DataApptype  *uint32 `protobuf:"varint,3,opt,name=data_apptype,json=dataApptype" json:"data_apptype,omitempty"`
-	DataCmdid    *uint32 `protobuf:"varint,4,opt,name=data_cmdid,json=dataCmdid" json:"data_cmdid,omitempty"`
-	Data         []byte  `protobuf:"bytes,5,opt,name=data" json:"data,omitempty"`
-	ReqId        *uint32 `protobuf:"varint,6,opt,name=req_id,json=reqId" json:"req_id,omitempty"`
-	ClientIpV4   *uint32 `protobuf:"varint,7,opt,name=client_ip_v4,json=clientIpV4" json:"client_ip_v4,omitempty"`     //客户端的ip
-	AttSessionid *uint64 `protobuf:"varint,8,opt,name=att_sessionid,json=attSessionid" json:"att_sessionid,omitempty"` //联联的session id ，目前只由gate->client
-	Gateconnid   *uint64 `protobuf:"varint,9,opt,name=gateconnid" json:"gateconnid,omitempty"`                         //关联的gate连接id
-	Gateid       *uint32 `protobuf:"varint,10,opt,name=gateid" json:"gateid,omitempty"`                                //关联的gate_id
-	UserId       *uint64 `protobuf:"varint,11,opt,name=user_id,json=userId" json:"user_id,omitempty"`                  //用户ID
+	DestApptype  uint32 `protobuf:"varint,1,opt,name=dest_apptype,json=destApptype,proto3" json:"dest_apptype,omitempty"` //目标或源apptype
+	DestAppid    uint32 `protobuf:"varint,2,opt,name=dest_appid,json=destAppid,proto3" json:"dest_appid,omitempty"`       //目标或源appid
+	DataApptype  uint32 `protobuf:"varint,3,opt,name=data_apptype,json=dataApptype,proto3" json:"data_apptype,omitempty"`
+	DataCmdid    uint32 `protobuf:"varint,4,opt,name=data_cmdid,json=dataCmdid,proto3" json:"data_cmdid,omitempty"`
+	Data         []byte `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+	ReqId        uint32 `protobuf:"varint,6,opt,name=req_id,json=reqId,proto3" json:"req_id,omitempty"`
+	ClientIpV4   uint32 `protobuf:"varint,7,opt,name=client_ip_v4,json=clientIpV4,proto3" json:"client_ip_v4,omitempty"`     //客户端的ip
+	AttSessionid uint64 `protobuf:"varint,8,opt,name=att_sessionid,json=attSessionid,proto3" json:"att_sessionid,omitempty"` //联联的session id ，目前只由gate->client
+	Gateconnid   uint64 `protobuf:"varint,9,opt,name=gateconnid,proto3" json:"gateconnid,omitempty"`                         //关联的gate连接id
+	Gateid       uint32 `protobuf:"varint,10,opt,name=gateid,proto3" json:"gateid,omitempty"`                                //关联的gate_id
+	UserId       uint64 `protobuf:"varint,11,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                  //用户ID
 }
 
 func (x *TransferDataReq) Reset() {
@@ -383,29 +356,29 @@ func (*TransferDataReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *TransferDataReq) GetDestApptype() uint32 {
-	if x != nil && x.DestApptype != nil {
-		return *x.DestApptype
+	if x != nil {
+		return x.DestApptype
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetDestAppid() uint32 {
-	if x != nil && x.DestAppid != nil {
-		return *x.DestAppid
+	if x != nil {
+		return x.DestAppid
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetDataApptype() uint32 {
-	if x != nil && x.DataApptype != nil {
-		return *x.DataApptype
+	if x != nil {
+		return x.DataApptype
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetDataCmdid() uint32 {
-	if x != nil && x.DataCmdid != nil {
-		return *x.DataCmdid
+	if x != nil {
+		return x.DataCmdid
 	}
 	return 0
 }
@@ -418,43 +391,43 @@ func (x *TransferDataReq) GetData() []byte {
 }
 
 func (x *TransferDataReq) GetReqId() uint32 {
-	if x != nil && x.ReqId != nil {
-		return *x.ReqId
+	if x != nil {
+		return x.ReqId
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetClientIpV4() uint32 {
-	if x != nil && x.ClientIpV4 != nil {
-		return *x.ClientIpV4
+	if x != nil {
+		return x.ClientIpV4
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetAttSessionid() uint64 {
-	if x != nil && x.AttSessionid != nil {
-		return *x.AttSessionid
+	if x != nil {
+		return x.AttSessionid
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetGateconnid() uint64 {
-	if x != nil && x.Gateconnid != nil {
-		return *x.Gateconnid
+	if x != nil {
+		return x.Gateconnid
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetGateid() uint32 {
-	if x != nil && x.Gateid != nil {
-		return *x.Gateid
+	if x != nil {
+		return x.Gateid
 	}
 	return 0
 }
 
 func (x *TransferDataReq) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
@@ -465,8 +438,8 @@ type TransferDataRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Result *uint32 `protobuf:"varint,1,opt,name=result" json:"result,omitempty"`
-	ReqId  *uint32 `protobuf:"varint,6,opt,name=req_id,json=reqId" json:"req_id,omitempty"`
+	Result uint32 `protobuf:"varint,1,opt,name=result,proto3" json:"result,omitempty"`
+	ReqId  uint32 `protobuf:"varint,6,opt,name=req_id,json=reqId,proto3" json:"req_id,omitempty"`
 }
 
 func (x *TransferDataRsp) Reset() {
@@ -500,15 +473,15 @@ func (*TransferDataRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *TransferDataRsp) GetResult() uint32 {
-	if x != nil && x.Result != nil {
-		return *x.Result
+	if x != nil {
+		return x.Result
 	}
 	return 0
 }
 
 func (x *TransferDataRsp) GetReqId() uint32 {
-	if x != nil && x.ReqId != nil {
-		return *x.ReqId
+	if x != nil {
+		return x.ReqId
 	}
 	return 0
 }
@@ -519,11 +492,11 @@ type AuthInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId     *uint64          `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`                                 //用户id
-	Gateconnid *uint64          `protobuf:"varint,2,opt,name=gateconnid" json:"gateconnid,omitempty"`                                       //关联的gate连接id
-	Result     *uint32          `protobuf:"varint,3,opt,name=result" json:"result,omitempty"`                                               //结果 0成功
-	Info       *string          `protobuf:"bytes,4,opt,name=info" json:"info,omitempty"`                                                    //描述信息
-	OpType     *AuthInfo_OpType `protobuf:"varint,5,opt,name=op_type,json=opType,enum=bs.gateway.AuthInfo_OpType" json:"op_type,omitempty"` //操作类型
+	UserId     uint64          `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                 //用户id
+	Gateconnid uint64          `protobuf:"varint,2,opt,name=gateconnid,proto3" json:"gateconnid,omitempty"`                                       //关联的gate连接id
+	Result     uint32          `protobuf:"varint,3,opt,name=result,proto3" json:"result,omitempty"`                                               //结果 0成功
+	Info       string          `protobuf:"bytes,4,opt,name=info,proto3" json:"info,omitempty"`                                                    //描述信息
+	OpType     AuthInfo_OpType `protobuf:"varint,5,opt,name=op_type,json=opType,proto3,enum=bs.gateway.AuthInfo_OpType" json:"op_type,omitempty"` //操作类型
 }
 
 func (x *AuthInfo) Reset() {
@@ -557,36 +530,36 @@ func (*AuthInfo) Descriptor() ([]byte, []int) {
 }
 
 func (x *AuthInfo) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
 
 func (x *AuthInfo) GetGateconnid() uint64 {
-	if x != nil && x.Gateconnid != nil {
-		return *x.Gateconnid
+	if x != nil {
+		return x.Gateconnid
 	}
 	return 0
 }
 
 func (x *AuthInfo) GetResult() uint32 {
-	if x != nil && x.Result != nil {
-		return *x.Result
+	if x != nil {
+		return x.Result
 	}
 	return 0
 }
 
 func (x *AuthInfo) GetInfo() string {
-	if x != nil && x.Info != nil {
-		return *x.Info
+	if x != nil {
+		return x.Info
 	}
 	return ""
 }
 
 func (x *AuthInfo) GetOpType() AuthInfo_OpType {
-	if x != nil && x.OpType != nil {
-		return *x.OpType
+	if x != nil {
+		return x.OpType
 	}
 	return AuthInfo_Bind
 }
@@ -597,15 +570,15 @@ type HelloReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AdId          *uint32 `protobuf:"varint,2,opt,name=ad_id,json=adId" json:"ad_id,omitempty"`
-	Others        *string `protobuf:"bytes,3,opt,name=others" json:"others,omitempty"`
-	BuilderNo     *uint32 `protobuf:"varint,4,opt,name=builder_no,json=builderNo" json:"builder_no,omitempty"`
-	GameKind      *uint32 `protobuf:"varint,5,opt,name=game_kind,json=gameKind" json:"game_kind,omitempty"`
-	ClientVersion *string `protobuf:"bytes,6,opt,name=client_version,json=clientVersion" json:"client_version,omitempty"`
-	ClientType    *uint32 `protobuf:"varint,7,opt,name=client_type,json=clientType" json:"client_type,omitempty"`
-	PublicKey     *string `protobuf:"bytes,8,opt,name=public_key,json=publicKey" json:"public_key,omitempty"`
-	EncryptKey    *string `protobuf:"bytes,9,opt,name=encrypt_key,json=encryptKey" json:"encrypt_key,omitempty"` //加密key
-	Guid          *string `protobuf:"bytes,10,opt,name=guid" json:"guid,omitempty"`
+	AdId          uint32 `protobuf:"varint,2,opt,name=ad_id,json=adId,proto3" json:"ad_id,omitempty"`
+	Others        string `protobuf:"bytes,3,opt,name=others,proto3" json:"others,omitempty"`
+	BuilderNo     uint32 `protobuf:"varint,4,opt,name=builder_no,json=builderNo,proto3" json:"builder_no,omitempty"`
+	GameKind      uint32 `protobuf:"varint,5,opt,name=game_kind,json=gameKind,proto3" json:"game_kind,omitempty"`
+	ClientVersion string `protobuf:"bytes,6,opt,name=client_version,json=clientVersion,proto3" json:"client_version,omitempty"`
+	ClientType    uint32 `protobuf:"varint,7,opt,name=client_type,json=clientType,proto3" json:"client_type,omitempty"`
+	PublicKey     string `protobuf:"bytes,8,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	EncryptKey    string `protobuf:"bytes,9,opt,name=encrypt_key,json=encryptKey,proto3" json:"encrypt_key,omitempty"` //加密key
+	Guid          string `protobuf:"bytes,10,opt,name=guid,proto3" json:"guid,omitempty"`
 }
 
 func (x *HelloReq) Reset() {
@@ -639,64 +612,64 @@ func (*HelloReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *HelloReq) GetAdId() uint32 {
-	if x != nil && x.AdId != nil {
-		return *x.AdId
+	if x != nil {
+		return x.AdId
 	}
 	return 0
 }
 
 func (x *HelloReq) GetOthers() string {
-	if x != nil && x.Others != nil {
-		return *x.Others
+	if x != nil {
+		return x.Others
 	}
 	return ""
 }
 
 func (x *HelloReq) GetBuilderNo() uint32 {
-	if x != nil && x.BuilderNo != nil {
-		return *x.BuilderNo
+	if x != nil {
+		return x.BuilderNo
 	}
 	return 0
 }
 
 func (x *HelloReq) GetGameKind() uint32 {
-	if x != nil && x.GameKind != nil {
-		return *x.GameKind
+	if x != nil {
+		return x.GameKind
 	}
 	return 0
 }
 
 func (x *HelloReq) GetClientVersion() string {
-	if x != nil && x.ClientVersion != nil {
-		return *x.ClientVersion
+	if x != nil {
+		return x.ClientVersion
 	}
 	return ""
 }
 
 func (x *HelloReq) GetClientType() uint32 {
-	if x != nil && x.ClientType != nil {
-		return *x.ClientType
+	if x != nil {
+		return x.ClientType
 	}
 	return 0
 }
 
 func (x *HelloReq) GetPublicKey() string {
-	if x != nil && x.PublicKey != nil {
-		return *x.PublicKey
+	if x != nil {
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *HelloReq) GetEncryptKey() string {
-	if x != nil && x.EncryptKey != nil {
-		return *x.EncryptKey
+	if x != nil {
+		return x.EncryptKey
 	}
 	return ""
 }
 
 func (x *HelloReq) GetGuid() string {
-	if x != nil && x.Guid != nil {
-		return *x.Guid
+	if x != nil {
+		return x.Guid
 	}
 	return ""
 }
@@ -707,19 +680,19 @@ type HelloRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RspFlag     *uint32  `protobuf:"varint,1,opt,name=rsp_flag,json=rspFlag" json:"rsp_flag,omitempty"`            //通知的消息内容
-	GateAddress []string `protobuf:"bytes,2,rep,name=gate_address,json=gateAddress" json:"gate_address,omitempty"` //当前最新的gate地址
-	LoginToken  *uint32  `protobuf:"varint,4,opt,name=login_token,json=loginToken" json:"login_token,omitempty"`   //登录令牌
-	PublicKey   *string  `protobuf:"bytes,8,opt,name=public_key,json=publicKey" json:"public_key,omitempty"`
-	EncryptKey  *string  `protobuf:"bytes,3,opt,name=encrypt_key,json=encryptKey" json:"encrypt_key,omitempty"` //加密key
+	RspFlag     uint32   `protobuf:"varint,1,opt,name=rsp_flag,json=rspFlag,proto3" json:"rsp_flag,omitempty"`            //通知的消息内容
+	GateAddress []string `protobuf:"bytes,2,rep,name=gate_address,json=gateAddress,proto3" json:"gate_address,omitempty"` //当前最新的gate地址
+	LoginToken  uint32   `protobuf:"varint,4,opt,name=login_token,json=loginToken,proto3" json:"login_token,omitempty"`   //登录令牌
+	PublicKey   string   `protobuf:"bytes,8,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	EncryptKey  string   `protobuf:"bytes,3,opt,name=encrypt_key,json=encryptKey,proto3" json:"encrypt_key,omitempty"` //加密key
 	// =0 表示是最新版本
 	// =1 表示有新版本,但当前版本还可以用
 	// =2 表示老版本必须更新了,当前连接会被断开的
-	VersionResult *uint32 `protobuf:"varint,5,opt,name=version_result,json=versionResult" json:"version_result,omitempty"`
+	VersionResult uint32 `protobuf:"varint,5,opt,name=version_result,json=versionResult,proto3" json:"version_result,omitempty"`
 	// 如果有新的版本,下载地址(一般用于手机)
-	DownUrl *string `protobuf:"bytes,6,opt,name=down_url,json=downUrl" json:"down_url,omitempty"`
+	DownUrl string `protobuf:"bytes,6,opt,name=down_url,json=downUrl,proto3" json:"down_url,omitempty"`
 	// 如果Req的guid为空，则这里为其创建一个guid
-	Guid *string `protobuf:"bytes,7,opt,name=guid" json:"guid,omitempty"`
+	Guid string `protobuf:"bytes,7,opt,name=guid,proto3" json:"guid,omitempty"`
 }
 
 func (x *HelloRsp) Reset() {
@@ -753,8 +726,8 @@ func (*HelloRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *HelloRsp) GetRspFlag() uint32 {
-	if x != nil && x.RspFlag != nil {
-		return *x.RspFlag
+	if x != nil {
+		return x.RspFlag
 	}
 	return 0
 }
@@ -767,43 +740,43 @@ func (x *HelloRsp) GetGateAddress() []string {
 }
 
 func (x *HelloRsp) GetLoginToken() uint32 {
-	if x != nil && x.LoginToken != nil {
-		return *x.LoginToken
+	if x != nil {
+		return x.LoginToken
 	}
 	return 0
 }
 
 func (x *HelloRsp) GetPublicKey() string {
-	if x != nil && x.PublicKey != nil {
-		return *x.PublicKey
+	if x != nil {
+		return x.PublicKey
 	}
 	return ""
 }
 
 func (x *HelloRsp) GetEncryptKey() string {
-	if x != nil && x.EncryptKey != nil {
-		return *x.EncryptKey
+	if x != nil {
+		return x.EncryptKey
 	}
 	return ""
 }
 
 func (x *HelloRsp) GetVersionResult() uint32 {
-	if x != nil && x.VersionResult != nil {
-		return *x.VersionResult
+	if x != nil {
+		return x.VersionResult
 	}
 	return 0
 }
 
 func (x *HelloRsp) GetDownUrl() string {
-	if x != nil && x.DownUrl != nil {
-		return *x.DownUrl
+	if x != nil {
+		return x.DownUrl
 	}
 	return ""
 }
 
 func (x *HelloRsp) GetGuid() string {
-	if x != nil && x.Guid != nil {
-		return *x.Guid
+	if x != nil {
+		return x.Guid
 	}
 	return ""
 }
@@ -902,17 +875,18 @@ var file_gateway_proto_rawDesc = []byte{
 	0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0f, 0x0a, 0x0b, 0x45, 0x6e, 0x63, 0x72, 0x79,
 	0x70, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x10, 0x01, 0x12, 0x11, 0x0a, 0x0d, 0x41, 0x64, 0x76, 0x69,
 	0x63, 0x65, 0x4e, 0x65, 0x77, 0x47, 0x61, 0x74, 0x65, 0x10, 0x02, 0x12, 0x0e, 0x0a, 0x0a, 0x4c,
-	0x6f, 0x67, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x10, 0x04, 0x2a, 0x8a, 0x01, 0x0a, 0x0a,
-	0x43, 0x4d, 0x44, 0x47, 0x61, 0x74, 0x65, 0x77, 0x61, 0x79, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44,
-	0x50, 0x75, 0x6c, 0x73, 0x65, 0x52, 0x65, 0x71, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44,
-	0x50, 0x75, 0x6c, 0x73, 0x65, 0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x44,
-	0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x10,
-	0x03, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x44, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x44,
-	0x61, 0x74, 0x61, 0x52, 0x73, 0x70, 0x10, 0x04, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x41, 0x75,
-	0x74, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x10, 0x05, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x48, 0x65,
-	0x6c, 0x6c, 0x6f, 0x52, 0x65, 0x71, 0x10, 0x06, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x48, 0x65,
-	0x6c, 0x6c, 0x6f, 0x52, 0x73, 0x70, 0x10, 0x07, 0x42, 0x0a, 0x5a, 0x08, 0x2f, 0x67, 0x61, 0x74,
-	0x65, 0x77, 0x61, 0x79,
+	0x6f, 0x67, 0x69, 0x6e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x10, 0x04, 0x2a, 0x96, 0x01, 0x0a, 0x0a,
+	0x43, 0x4d, 0x44, 0x47, 0x61, 0x74, 0x65, 0x77, 0x61, 0x79, 0x12, 0x0a, 0x0a, 0x06, 0x49, 0x44,
+	0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x50, 0x75, 0x6c, 0x73,
+	0x65, 0x52, 0x65, 0x71, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x50, 0x75, 0x6c, 0x73,
+	0x65, 0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x44, 0x54, 0x72, 0x61, 0x6e,
+	0x73, 0x66, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x15, 0x0a,
+	0x11, 0x49, 0x44, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x52,
+	0x73, 0x70, 0x10, 0x04, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x41, 0x75, 0x74, 0x68, 0x49, 0x6e,
+	0x66, 0x6f, 0x10, 0x05, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x52,
+	0x65, 0x71, 0x10, 0x06, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x52,
+	0x73, 0x70, 0x10, 0x07, 0x42, 0x0a, 0x5a, 0x08, 0x2f, 0x67, 0x61, 0x74, 0x65, 0x77, 0x61, 0x79,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

@@ -2,8 +2,10 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"net"
+	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
@@ -114,4 +116,25 @@ func RandByte(length int) []byte {
 
 	}
 	return buffer.Bytes()
+}
+
+func PrintStructFields[T any](s T) string {
+	str := ""
+	v := reflect.ValueOf(s)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	if v.Kind() != reflect.Struct {
+		//fmt.Println("输入的参数不是结构体类型")
+		return str
+	}
+
+	t := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldType := t.Field(i)
+		str += fmt.Sprintf("%s=%v,", fieldType.Name, field.Interface())
+		//fmt.Printf("字段名: %s, 值: %v\n", fieldType.Name, field.Interface())
+	}
+	return str
 }

@@ -24,6 +24,7 @@ const (
 type CMDRoom int32
 
 const (
+	CMDRoom_IDNone            CMDRoom = 0
 	CMDRoom_IDJoinReq         CMDRoom = 1 //进入房间
 	CMDRoom_IDJoinRsp         CMDRoom = 2 //进入房间
 	CMDRoom_IDUserActionReq   CMDRoom = 3 //用户动作
@@ -36,6 +37,7 @@ const (
 // Enum value maps for CMDRoom.
 var (
 	CMDRoom_name = map[int32]string{
+		0: "IDNone",
 		1: "IDJoinReq",
 		2: "IDJoinRsp",
 		3: "IDUserActionReq",
@@ -45,6 +47,7 @@ var (
 		7: "IDUserStateChange",
 	}
 	CMDRoom_value = map[string]int32{
+		"IDNone":            0,
 		"IDJoinReq":         1,
 		"IDJoinRsp":         2,
 		"IDUserActionReq":   3,
@@ -77,16 +80,6 @@ func (x CMDRoom) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Do not use.
-func (x *CMDRoom) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = CMDRoom(num)
-	return nil
-}
-
 // Deprecated: Use CMDRoom.Descriptor instead.
 func (CMDRoom) EnumDescriptor() ([]byte, []int) {
 	return file_room_proto_rawDescGZIP(), []int{0}
@@ -95,6 +88,7 @@ func (CMDRoom) EnumDescriptor() ([]byte, []int) {
 type ActionType int32
 
 const (
+	ActionType_None   ActionType = 0
 	ActionType_Ready  ActionType = 1
 	ActionType_Cancel ActionType = 2
 )
@@ -102,10 +96,12 @@ const (
 // Enum value maps for ActionType.
 var (
 	ActionType_name = map[int32]string{
+		0: "None",
 		1: "Ready",
 		2: "Cancel",
 	}
 	ActionType_value = map[string]int32{
+		"None":   0,
 		"Ready":  1,
 		"Cancel": 2,
 	}
@@ -131,16 +127,6 @@ func (ActionType) Type() protoreflect.EnumType {
 
 func (x ActionType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Do not use.
-func (x *ActionType) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = ActionType(num)
-	return nil
 }
 
 // Deprecated: Use ActionType.Descriptor instead.
@@ -189,8 +175,8 @@ type JoinRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AppId   *uint32          `protobuf:"varint,1,opt,name=app_id,json=appId" json:"app_id,omitempty"`
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
+	AppId   uint32           `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo,proto3" json:"err_info,omitempty"`
 }
 
 func (x *JoinRsp) Reset() {
@@ -224,8 +210,8 @@ func (*JoinRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *JoinRsp) GetAppId() uint32 {
-	if x != nil && x.AppId != nil {
-		return *x.AppId
+	if x != nil {
+		return x.AppId
 	}
 	return 0
 }
@@ -242,7 +228,7 @@ type UserActionReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Action *ActionType `protobuf:"varint,1,opt,name=action,enum=bs.room.ActionType" json:"action,omitempty"`
+	Action ActionType `protobuf:"varint,1,opt,name=action,proto3,enum=bs.room.ActionType" json:"action,omitempty"`
 }
 
 func (x *UserActionReq) Reset() {
@@ -276,10 +262,10 @@ func (*UserActionReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *UserActionReq) GetAction() ActionType {
-	if x != nil && x.Action != nil {
-		return *x.Action
+	if x != nil {
+		return x.Action
 	}
-	return ActionType_Ready
+	return ActionType_None
 }
 
 type UserActionRsp struct {
@@ -287,8 +273,8 @@ type UserActionRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Action  *ActionType      `protobuf:"varint,1,opt,name=action,enum=bs.room.ActionType" json:"action,omitempty"`
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
+	Action  ActionType       `protobuf:"varint,1,opt,name=action,proto3,enum=bs.room.ActionType" json:"action,omitempty"`
+	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo,proto3" json:"err_info,omitempty"`
 }
 
 func (x *UserActionRsp) Reset() {
@@ -322,10 +308,10 @@ func (*UserActionRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *UserActionRsp) GetAction() ActionType {
-	if x != nil && x.Action != nil {
-		return *x.Action
+	if x != nil {
+		return x.Action
 	}
-	return ActionType_Ready
+	return ActionType_None
 }
 
 func (x *UserActionRsp) GetErrInfo() *types.ErrorInfo {
@@ -376,7 +362,7 @@ type ExitRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
+	ErrInfo *types.ErrorInfo `protobuf:"bytes,99,opt,name=err_info,json=errInfo,proto3" json:"err_info,omitempty"`
 }
 
 func (x *ExitRsp) Reset() {
@@ -421,11 +407,11 @@ type UserStateChange struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId         *uint64 `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`                           //用户ID
-	UserState      *uint32 `protobuf:"varint,2,opt,name=user_state,json=userState" json:"user_state,omitempty"`                  //用户状态
-	TableServiceId *uint32 `protobuf:"varint,3,opt,name=table_service_id,json=tableServiceId" json:"table_service_id,omitempty"` //
-	TableId        *uint64 `protobuf:"varint,4,opt,name=table_id,json=tableId" json:"table_id,omitempty"`                        //
-	SeatId         *uint32 `protobuf:"varint,5,opt,name=seat_id,json=seatId" json:"seat_id,omitempty"`                           //
+	UserId         uint64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                           //用户ID
+	UserState      uint32 `protobuf:"varint,2,opt,name=user_state,json=userState,proto3" json:"user_state,omitempty"`                  //用户状态
+	TableServiceId uint32 `protobuf:"varint,3,opt,name=table_service_id,json=tableServiceId,proto3" json:"table_service_id,omitempty"` //
+	TableId        uint64 `protobuf:"varint,4,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`                        //
+	SeatId         uint32 `protobuf:"varint,5,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`                           //
 }
 
 func (x *UserStateChange) Reset() {
@@ -459,36 +445,36 @@ func (*UserStateChange) Descriptor() ([]byte, []int) {
 }
 
 func (x *UserStateChange) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
 
 func (x *UserStateChange) GetUserState() uint32 {
-	if x != nil && x.UserState != nil {
-		return *x.UserState
+	if x != nil {
+		return x.UserState
 	}
 	return 0
 }
 
 func (x *UserStateChange) GetTableServiceId() uint32 {
-	if x != nil && x.TableServiceId != nil {
-		return *x.TableServiceId
+	if x != nil {
+		return x.TableServiceId
 	}
 	return 0
 }
 
 func (x *UserStateChange) GetTableId() uint64 {
-	if x != nil && x.TableId != nil {
-		return *x.TableId
+	if x != nil {
+		return x.TableId
 	}
 	return 0
 }
 
 func (x *UserStateChange) GetSeatId() uint32 {
-	if x != nil && x.SeatId != nil {
-		return *x.SeatId
+	if x != nil {
+		return x.SeatId
 	}
 	return 0
 }
@@ -529,19 +515,20 @@ var file_room_proto_rawDesc = []byte{
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x74, 0x61, 0x62, 0x6c, 0x65,
 	0x5f, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x74, 0x61, 0x62, 0x6c, 0x65,
 	0x49, 0x64, 0x12, 0x17, 0x0a, 0x07, 0x73, 0x65, 0x61, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x20,
-	0x01, 0x28, 0x0d, 0x52, 0x06, 0x73, 0x65, 0x61, 0x74, 0x49, 0x64, 0x2a, 0x86, 0x01, 0x0a, 0x07,
-	0x43, 0x4d, 0x44, 0x52, 0x6f, 0x6f, 0x6d, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x44, 0x4a, 0x6f, 0x69,
-	0x6e, 0x52, 0x65, 0x71, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x44, 0x4a, 0x6f, 0x69, 0x6e,
-	0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x55, 0x73, 0x65, 0x72, 0x41,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44,
-	0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x10, 0x04, 0x12,
-	0x0d, 0x0a, 0x09, 0x49, 0x44, 0x45, 0x78, 0x69, 0x74, 0x52, 0x65, 0x71, 0x10, 0x05, 0x12, 0x0d,
-	0x0a, 0x09, 0x49, 0x44, 0x45, 0x78, 0x69, 0x74, 0x52, 0x73, 0x70, 0x10, 0x06, 0x12, 0x15, 0x0a,
-	0x11, 0x49, 0x44, 0x55, 0x73, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e,
-	0x67, 0x65, 0x10, 0x07, 0x2a, 0x23, 0x0a, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
-	0x70, 0x65, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x10, 0x01, 0x12, 0x0a, 0x0a,
-	0x06, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x10, 0x02, 0x42, 0x07, 0x5a, 0x05, 0x2f, 0x72, 0x6f,
-	0x6f, 0x6d,
+	0x01, 0x28, 0x0d, 0x52, 0x06, 0x73, 0x65, 0x61, 0x74, 0x49, 0x64, 0x2a, 0x92, 0x01, 0x0a, 0x07,
+	0x43, 0x4d, 0x44, 0x52, 0x6f, 0x6f, 0x6d, 0x12, 0x0a, 0x0a, 0x06, 0x49, 0x44, 0x4e, 0x6f, 0x6e,
+	0x65, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x44, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x71,
+	0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x44, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x73, 0x70, 0x10,
+	0x02, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x55, 0x73, 0x65, 0x72, 0x41, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x55, 0x73, 0x65, 0x72,
+	0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x10, 0x04, 0x12, 0x0d, 0x0a, 0x09, 0x49,
+	0x44, 0x45, 0x78, 0x69, 0x74, 0x52, 0x65, 0x71, 0x10, 0x05, 0x12, 0x0d, 0x0a, 0x09, 0x49, 0x44,
+	0x45, 0x78, 0x69, 0x74, 0x52, 0x73, 0x70, 0x10, 0x06, 0x12, 0x15, 0x0a, 0x11, 0x49, 0x44, 0x55,
+	0x73, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x10, 0x07,
+	0x2a, 0x2d, 0x0a, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x08,
+	0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x09, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64,
+	0x79, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x10, 0x02, 0x42,
+	0x07, 0x5a, 0x05, 0x2f, 0x72, 0x6f, 0x6f, 0x6d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

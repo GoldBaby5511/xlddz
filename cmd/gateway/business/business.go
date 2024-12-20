@@ -97,6 +97,7 @@ func handleTransferDataReq(args []interface{}) {
 	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,gateConnId=%v,AgentType=%v",
 		m.GetDestApptype(), m.GetDestAppid(), m.GetDataApptype(), m.GetDataCmdid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
 
+	//App->Client 消息
 	if m.GetGateconnid() != 0 && a.AgentInfo().AgentType == n.CommonServer {
 		a, err := getUserAgent(m.GetGateconnid())
 		if err != nil {
@@ -108,9 +109,10 @@ func handleTransferDataReq(args []interface{}) {
 		}
 		a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	} else {
-		m.Gateid = proto.Uint32(conf.AppInfo.Id)
-		m.Gateconnid = proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
-		m.UserId = proto.Uint64(connData.userId)
+		//Client->App 消息
+		m.Gateid = *proto.Uint32(conf.AppInfo.Id)
+		m.Gateconnid = *proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
+		m.UserId = *proto.Uint64(connData.userId)
 		g.SendData2App(m.GetDestApptype(), m.GetDestAppid(), n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	}
 }
@@ -144,12 +146,11 @@ func handleHelloReq(args []interface{}) {
 	log.Debug("hello", "收到hello消息,connId=%d", connData.connId)
 
 	//加密方式暂不考虑
-	var rsp gateway.HelloRsp
-	flag := gateway.HelloRsp_LoginToken
-	rsp.RspFlag = proto.Uint32(uint32(flag))
-	if m.GetGuid() != "" {
-		rsp.Guid = proto.String(m.GetGuid())
+	rsp := gateway.HelloRsp{
+		RspFlag: uint32(gateway.HelloRsp_LoginToken),
+		Guid:    m.GetGuid(),
 	}
+
 	a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDHelloRsp), &rsp)
 }
 

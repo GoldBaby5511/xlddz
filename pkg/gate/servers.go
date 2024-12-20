@@ -33,19 +33,20 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 	tcpClient.AutoReconnect = autoReconnect
 	tcpClient.NewAgent = func(conn *n.TCPConn) n.AgentServer {
 		a := &agentServer{tcpClient: tcpClient, conn: conn, info: info}
-		log.Debug("agentServer", "连接成功,info=%v", a.info)
+		log.Debug("agentServer", "连接成功,%v", util.PrintStructFields(a.info))
 		sendRegAppReq(a)
 		timeInterval := 20 * time.Second
 		timerHeartbeat := time.NewTimer(timeInterval)
 		go func(t *time.Timer) {
 			for {
 				<-t.C
-				var req center.HeartBeatReq
-				req.PulseTime = *proto.Int64(time.Now().Unix())
-				req.ServiceState = *proto.Int32(int32(ServiceState))
-				req.StateDescription = *proto.String(GetStateDescription())
-				req.HttpAddress = *proto.String(apollo.GetConfig("http监听地址", ""))
-				req.RpcAddress = *proto.String(apollo.GetConfig("rpc监听地址", ""))
+				req := center.HeartBeatReq{
+					PulseTime:        time.Now().Unix(),
+					ServiceState:     int32(ServiceState),
+					StateDescription: GetStateDescription(),
+					HttpAddress:      apollo.GetConfig("http监听地址", ""),
+					RpcAddress:       apollo.GetConfig("rpc监听地址", ""),
+				}
 				a.SendData(n.AppCenter, uint32(center.CMDCenter_IDHeartBeatReq), &req)
 
 				t.Reset(timeInterval)
@@ -63,7 +64,7 @@ func newServerItem(info n.BaseAgentInfo, autoReconnect bool, pendingWriteNum int
 		return a
 	}
 
-	log.Debug("agentServer", "开始连接,info=%v", info)
+	log.Debug("agentServer", "开始连接,%v", util.PrintStructFields(info))
 
 	tcpClient.Start()
 }
@@ -154,7 +155,7 @@ func (a *agentServer) OnClose() {
 		break
 	}
 
-	log.Debug("", "服务间连接断开了,info=%v", a.info)
+	log.Debug("agentServer", "服务间连接断开了,%v", util.PrintStructFields(a.info))
 
 	if a.tcpClient != nil && !a.tcpClient.AutoReconnect {
 		a.tcpClient.Close()

@@ -25,6 +25,7 @@ const (
 type CMDTable int32
 
 const (
+	CMDTable_IDNone                CMDTable = 0
 	CMDTable_IDApplyReq            CMDTable = 1  //
 	CMDTable_IDApplyRsp            CMDTable = 2  //
 	CMDTable_IDReleaseReq          CMDTable = 3  //
@@ -41,6 +42,7 @@ const (
 // Enum value maps for CMDTable.
 var (
 	CMDTable_name = map[int32]string{
+		0:  "IDNone",
 		1:  "IDApplyReq",
 		2:  "IDApplyRsp",
 		3:  "IDReleaseReq",
@@ -54,6 +56,7 @@ var (
 		11: "IDGameOver",
 	}
 	CMDTable_value = map[string]int32{
+		"IDNone":                0,
 		"IDApplyReq":            1,
 		"IDApplyRsp":            2,
 		"IDReleaseReq":          3,
@@ -90,16 +93,6 @@ func (x CMDTable) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Do not use.
-func (x *CMDTable) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = CMDTable(num)
-	return nil
-}
-
 // Deprecated: Use CMDTable.Descriptor instead.
 func (CMDTable) EnumDescriptor() ([]byte, []int) {
 	return file_table_proto_rawDescGZIP(), []int{0}
@@ -110,7 +103,7 @@ type ApplyReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ApplyCount *uint32 `protobuf:"varint,1,opt,name=apply_count,json=applyCount" json:"apply_count,omitempty"`
+	ApplyCount uint32 `protobuf:"varint,1,opt,name=apply_count,json=applyCount,proto3" json:"apply_count,omitempty"`
 }
 
 func (x *ApplyReq) Reset() {
@@ -144,8 +137,8 @@ func (*ApplyReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *ApplyReq) GetApplyCount() uint32 {
-	if x != nil && x.ApplyCount != nil {
-		return *x.ApplyCount
+	if x != nil {
+		return x.ApplyCount
 	}
 	return 0
 }
@@ -155,8 +148,8 @@ type ApplyRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ApplyCount *uint32  `protobuf:"varint,1,opt,name=apply_count,json=applyCount" json:"apply_count,omitempty"`
-	TableIds   []uint64 `protobuf:"varint,2,rep,name=table_ids,json=tableIds" json:"table_ids,omitempty"`
+	ApplyCount uint32   `protobuf:"varint,1,opt,name=apply_count,json=applyCount,proto3" json:"apply_count,omitempty"`
+	TableIds   []uint64 `protobuf:"varint,2,rep,packed,name=table_ids,json=tableIds,proto3" json:"table_ids,omitempty"`
 }
 
 func (x *ApplyRsp) Reset() {
@@ -190,8 +183,8 @@ func (*ApplyRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *ApplyRsp) GetApplyCount() uint32 {
-	if x != nil && x.ApplyCount != nil {
-		return *x.ApplyCount
+	if x != nil {
+		return x.ApplyCount
 	}
 	return 0
 }
@@ -208,8 +201,8 @@ type ReleaseReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ReleaseCount *uint32  `protobuf:"varint,1,opt,name=release_count,json=releaseCount" json:"release_count,omitempty"`
-	TableIds     []uint64 `protobuf:"varint,2,rep,name=table_ids,json=tableIds" json:"table_ids,omitempty"`
+	ReleaseCount uint32   `protobuf:"varint,1,opt,name=release_count,json=releaseCount,proto3" json:"release_count,omitempty"`
+	TableIds     []uint64 `protobuf:"varint,2,rep,packed,name=table_ids,json=tableIds,proto3" json:"table_ids,omitempty"`
 }
 
 func (x *ReleaseReq) Reset() {
@@ -243,8 +236,8 @@ func (*ReleaseReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *ReleaseReq) GetReleaseCount() uint32 {
-	if x != nil && x.ReleaseCount != nil {
-		return *x.ReleaseCount
+	if x != nil {
+		return x.ReleaseCount
 	}
 	return 0
 }
@@ -297,10 +290,10 @@ type SetPlayerToTableReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TableId    *uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id,omitempty"`
-	UserId     *uint64 `protobuf:"varint,2,opt,name=user_id,json=userId" json:"user_id,omitempty"`
-	SeatId     *uint32 `protobuf:"varint,3,opt,name=seat_id,json=seatId" json:"seat_id,omitempty"`
-	Gateconnid *uint64 `protobuf:"varint,4,opt,name=gateconnid" json:"gateconnid,omitempty"`
+	TableId    uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
+	UserId     uint64 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SeatId     uint32 `protobuf:"varint,3,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	Gateconnid uint64 `protobuf:"varint,4,opt,name=gateconnid,proto3" json:"gateconnid,omitempty"`
 }
 
 func (x *SetPlayerToTableReq) Reset() {
@@ -334,29 +327,29 @@ func (*SetPlayerToTableReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *SetPlayerToTableReq) GetTableId() uint64 {
-	if x != nil && x.TableId != nil {
-		return *x.TableId
+	if x != nil {
+		return x.TableId
 	}
 	return 0
 }
 
 func (x *SetPlayerToTableReq) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
 
 func (x *SetPlayerToTableReq) GetSeatId() uint32 {
-	if x != nil && x.SeatId != nil {
-		return *x.SeatId
+	if x != nil {
+		return x.SeatId
 	}
 	return 0
 }
 
 func (x *SetPlayerToTableReq) GetGateconnid() uint64 {
-	if x != nil && x.Gateconnid != nil {
-		return *x.Gateconnid
+	if x != nil {
+		return x.Gateconnid
 	}
 	return 0
 }
@@ -402,8 +395,8 @@ type MatchTableReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TableId *uint64  `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id,omitempty"`
-	Players []uint64 `protobuf:"varint,2,rep,name=players" json:"players,omitempty"`
+	TableId uint64   `protobuf:"varint,1,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
+	Players []uint64 `protobuf:"varint,2,rep,packed,name=players,proto3" json:"players,omitempty"`
 }
 
 func (x *MatchTableReq) Reset() {
@@ -437,8 +430,8 @@ func (*MatchTableReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *MatchTableReq) GetTableId() uint64 {
-	if x != nil && x.TableId != nil {
-		return *x.TableId
+	if x != nil {
+		return x.TableId
 	}
 	return 0
 }
@@ -491,8 +484,8 @@ type GameMessage struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	SubCmdid *uint32 `protobuf:"varint,1,opt,name=sub_cmdid,json=subCmdid" json:"sub_cmdid,omitempty"`
-	Data     []byte  `protobuf:"bytes,2,opt,name=data" json:"data,omitempty"`
+	SubCmdid uint32 `protobuf:"varint,1,opt,name=sub_cmdid,json=subCmdid,proto3" json:"sub_cmdid,omitempty"`
+	Data     []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (x *GameMessage) Reset() {
@@ -526,8 +519,8 @@ func (*GameMessage) Descriptor() ([]byte, []int) {
 }
 
 func (x *GameMessage) GetSubCmdid() uint32 {
-	if x != nil && x.SubCmdid != nil {
-		return *x.SubCmdid
+	if x != nil {
+		return x.SubCmdid
 	}
 	return 0
 }
@@ -544,7 +537,7 @@ type WriteGameScore struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TableId *uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id,omitempty"`
+	TableId uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
 }
 
 func (x *WriteGameScore) Reset() {
@@ -578,8 +571,8 @@ func (*WriteGameScore) Descriptor() ([]byte, []int) {
 }
 
 func (x *WriteGameScore) GetTableId() uint64 {
-	if x != nil && x.TableId != nil {
-		return *x.TableId
+	if x != nil {
+		return x.TableId
 	}
 	return 0
 }
@@ -589,7 +582,7 @@ type GameOver struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TableId *uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId" json:"table_id,omitempty"`
+	TableId uint64 `protobuf:"varint,1,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
 }
 
 func (x *GameOver) Reset() {
@@ -623,8 +616,8 @@ func (*GameOver) Descriptor() ([]byte, []int) {
 }
 
 func (x *GameOver) GetTableId() uint64 {
-	if x != nil && x.TableId != nil {
-		return *x.TableId
+	if x != nil {
+		return x.TableId
 	}
 	return 0
 }
@@ -671,22 +664,23 @@ var file_table_proto_rawDesc = []byte{
 	0x01, 0x28, 0x04, 0x52, 0x07, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x64, 0x22, 0x25, 0x0a, 0x08,
 	0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x74, 0x61, 0x62, 0x6c,
 	0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x74, 0x61, 0x62, 0x6c,
-	0x65, 0x49, 0x64, 0x2a, 0xe7, 0x01, 0x0a, 0x08, 0x43, 0x4d, 0x44, 0x54, 0x61, 0x62, 0x6c, 0x65,
-	0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x10, 0x01,
-	0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x73, 0x70, 0x10, 0x02,
-	0x12, 0x10, 0x0a, 0x0c, 0x49, 0x44, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x65, 0x71,
-	0x10, 0x03, 0x12, 0x10, 0x0a, 0x0c, 0x49, 0x44, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52,
-	0x73, 0x70, 0x10, 0x04, 0x12, 0x19, 0x0a, 0x15, 0x49, 0x44, 0x53, 0x65, 0x74, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x54, 0x6f, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x10, 0x05, 0x12,
-	0x19, 0x0a, 0x15, 0x49, 0x44, 0x53, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x54, 0x6f,
-	0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x73, 0x70, 0x10, 0x06, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44,
-	0x4d, 0x61, 0x74, 0x63, 0x68, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x10, 0x07, 0x12,
-	0x13, 0x0a, 0x0f, 0x49, 0x44, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52,
-	0x73, 0x70, 0x10, 0x08, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x47, 0x61, 0x6d, 0x65, 0x4d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x10, 0x09, 0x12, 0x14, 0x0a, 0x10, 0x49, 0x44, 0x57, 0x72, 0x69,
-	0x74, 0x65, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x10, 0x0a, 0x12, 0x0e, 0x0a,
-	0x0a, 0x49, 0x44, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x10, 0x0b, 0x42, 0x08, 0x5a,
-	0x06, 0x2f, 0x74, 0x61, 0x62, 0x6c, 0x65,
+	0x65, 0x49, 0x64, 0x2a, 0xf3, 0x01, 0x0a, 0x08, 0x43, 0x4d, 0x44, 0x54, 0x61, 0x62, 0x6c, 0x65,
+	0x12, 0x0a, 0x0a, 0x06, 0x49, 0x44, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a,
+	0x49, 0x44, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a,
+	0x49, 0x44, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x10, 0x0a, 0x0c,
+	0x49, 0x44, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x10,
+	0x0a, 0x0c, 0x49, 0x44, 0x52, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x52, 0x73, 0x70, 0x10, 0x04,
+	0x12, 0x19, 0x0a, 0x15, 0x49, 0x44, 0x53, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x54,
+	0x6f, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x10, 0x05, 0x12, 0x19, 0x0a, 0x15, 0x49,
+	0x44, 0x53, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x54, 0x6f, 0x54, 0x61, 0x62, 0x6c,
+	0x65, 0x52, 0x73, 0x70, 0x10, 0x06, 0x12, 0x13, 0x0a, 0x0f, 0x49, 0x44, 0x4d, 0x61, 0x74, 0x63,
+	0x68, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x10, 0x07, 0x12, 0x13, 0x0a, 0x0f, 0x49,
+	0x44, 0x4d, 0x61, 0x74, 0x63, 0x68, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x73, 0x70, 0x10, 0x08,
+	0x12, 0x11, 0x0a, 0x0d, 0x49, 0x44, 0x47, 0x61, 0x6d, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x10, 0x09, 0x12, 0x14, 0x0a, 0x10, 0x49, 0x44, 0x57, 0x72, 0x69, 0x74, 0x65, 0x47, 0x61,
+	0x6d, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x10, 0x0a, 0x12, 0x0e, 0x0a, 0x0a, 0x49, 0x44, 0x47,
+	0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x10, 0x0b, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x74, 0x61,
+	0x62, 0x6c, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

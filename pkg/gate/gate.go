@@ -423,14 +423,25 @@ func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Me
 }
 
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
-	var dataReq gateway.TransferDataReq
-	dataReq.DestApptype = proto.Uint32(n.AppGate)
-	dataReq.DestAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
-	dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.MainCmdID))
-	dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
-	dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
-	dataReq.Gateconnid = proto.Uint64(gateConnID)
-	dataReq.AttSessionid = proto.Uint64(sessionID)
+	//var dataReq gateway.TransferDataReq
+	//dataReq.DestApptype = proto.Uint32(n.AppGate)
+	//dataReq.DestAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
+	//dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.MainCmdID))
+	//dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
+	//dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
+	//dataReq.Gateconnid = proto.Uint64(gateConnID)
+	//dataReq.AttSessionid = proto.Uint64(sessionID)
+
+	data, _ := proto.Marshal(bm.MyMessage.(proto.Message))
+	dataReq := gateway.TransferDataReq{
+		DestApptype:  n.AppGate,
+		DestAppid:    util.GetLUint32FromUint64(gateConnID),
+		DataApptype:  uint32(bm.Cmd.MainCmdID),
+		DataCmdid:    uint32(bm.Cmd.SubCmdID),
+		Data:         data,
+		Gateconnid:   gateConnID,
+		AttSessionid: sessionID,
+	}
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}
 	return sendData(transBM, n.AppGate, util.GetLUint32FromUint64(gateConnID))

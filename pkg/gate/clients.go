@@ -41,11 +41,11 @@ func (a *agentClient) Run() {
 			if bm.Cmd.SubCmdID == uint16(center.CMDCenter_IDAppRegReq) {
 				var m center.RegisterAppReq
 				_ = proto.Unmarshal(msgData, &m)
-				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppId: m.GetAppId()}
+				a.info = n.BaseAgentInfo{AgentType: n.CommonServer, AppName: m.GetAppName(), AppType: m.GetAppType(), AppId: m.GetAppId(), ListenOnAddr: m.GetMyAddress()}
 				if agentChanRPC != nil {
 					agentChanRPC.Call0(CommonServerReg, a, a.info)
 				}
-				log.Debug("", "相互注册,%v", a.info)
+				log.Debug("", "相互注册,%v", util.PrintStructFields(a.info))
 				mxClients.Lock()
 				clients[util.MakeUint64FromUint32(a.info.AppType, a.info.AppId)] = a
 				mxClients.Unlock()

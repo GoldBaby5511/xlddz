@@ -41,7 +41,7 @@ func handleRoomListReq(args []interface{}) {
 	m := (b.MyMessage).(*list.RoomListReq)
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
-	log.Debug("", "收到列表请求,listID=%d", m.GetListId())
+	log.Debug("", "收到列表请求,listID=%d,count=%d", m.GetListId(), len(roomList))
 
 	var rsp list.RoomListRsp
 	for _, r := range roomList {

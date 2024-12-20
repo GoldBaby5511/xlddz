@@ -1,7 +1,6 @@
 package business
 
 import (
-	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/property"
@@ -35,8 +34,19 @@ func init() {
 	g.MsgRegister(&rCMD.ExitReq{}, n.AppRoom, uint16(rCMD.CMDRoom_IDExitReq), handleExitReq)
 	g.MsgRegister(&property.ModifyPropertyRsp{}, n.AppProperty, uint16(property.CMDProperty_IDModifyPropertyRsp), handleModifyPropertyRsp)
 
+	g.EventRegister(g.ConnectSuccess, connectSuccess)
+	g.EventRegister(g.Disconnect, disconnect)
+
 	g.Skeleton.LoopFunc(1*time.Second, checkMatchTable, timer.LoopForever)
 	g.Skeleton.LoopFunc(3*time.Second, table.CheckApplyTable, timer.LoopForever)
+}
+
+func connectSuccess(args []interface{}) {
+}
+
+func disconnect(args []interface{}) {
+	a := args[g.AgentIndex].(n.AgentClient)
+	log.Debug("", "断开连接,AppType=%v,AppId=%v", a.AgentInfo().AppType, a.AgentInfo().AppId)
 }
 
 func handleApplyRsp(args []interface{}) {
@@ -52,14 +62,27 @@ func handleApplyRsp(args []interface{}) {
 		m.GetApplyCount(), len(m.TableIds), srcApp.AppId, table.GetTableCount(table.Free), table.GetTableCount(table.All), listRegisterSuccess)
 
 	if !listRegisterSuccess {
-		var req list.RoomRegisterReq
-		req.Info = new(types.RoomInfo)
-		req.Info.AppInfo = new(types.BaseAppInfo)
-		req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
-		req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
-		req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
-		req.Info.Kind = proto.Uint32(200)
-		req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
+		//var req list.RoomRegisterReq
+		//req.Info = new(types.RoomInfo)
+		//req.Info.AppInfo = new(types.BaseAppInfo)
+		//req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
+		//req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
+		//req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
+		//req.Info.Kind = proto.Uint32(200)
+		//req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
+
+		req := list.RoomRegisterReq{
+			Info: &types.RoomInfo{
+				AppInfo: &types.BaseAppInfo{
+					Name: conf.AppInfo.Name,
+					Type: conf.AppInfo.Type,
+					Id:   conf.AppInfo.Id,
+				},
+				Kind: 200,
+				Type: types.RoomInfo_Gold,
+			},
+		}
+
 		g.SendData2App(n.AppList, n.Send2AnyOne, n.AppList, uint32(list.CMDList_IDRoomRegisterReq), &req)
 	}
 }
@@ -72,12 +95,12 @@ func handleWriteGameScore(args []interface{}) {
 	log.Debug("", "收到写分,tableId=%d,AttAppid=%d,len=%d",
 		m.GetTableId(), srcApp.AppId, table.GetTableCount(table.Free))
 
-	var req property.ModifyPropertyReq
-	p := new(types.PropItem)
-	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
-	p.PropCount = proto.Int64(100)
-	req.UserProps = append(req.UserProps, p)
-	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.AppProperty, uint32(property.CMDProperty_IDModifyPropertyReq), &req)
+	//var req property.ModifyPropertyReq
+	//p := new(types.PropItem)
+	//p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
+	//p.PropCount = proto.Int64(100)
+	//req.UserProps = append(req.UserProps, p)
+	//g.SendData2App(n.AppProperty, n.Send2AnyOne, n.AppProperty, uint32(property.CMDProperty_IDModifyPropertyReq), &req)
 }
 
 func handleGameOver(args []interface{}) {
@@ -114,10 +137,16 @@ func handleJoinReq(args []interface{}) {
 		srcData.GetUserId(), srcData.GetGateconnid(), util.GetLUint32FromUint64(srcData.GetGateconnid()))
 
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.JoinRsp
-		rsp.AppId = proto.Uint32(conf.AppInfo.Id)
-		rsp.ErrInfo = new(types.ErrorInfo)
-		rsp.ErrInfo.Code = proto.Int32(errCode)
+		//var rsp rCMD.JoinRsp
+		//rsp.AppId = proto.Uint32(conf.AppInfo.Id)
+		//rsp.ErrInfo = new(types.ErrorInfo)
+		//rsp.ErrInfo.Code = proto.Int32(errCode)
+		rsp := rCMD.JoinRsp{
+			AppId: conf.AppInfo.Id,
+			ErrInfo: &types.ErrorInfo{
+				Code: errCode,
+			},
+		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
@@ -142,10 +171,16 @@ func handleUserActionReq(args []interface{}) {
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.UserActionRsp
-		rsp.Action = (*rCMD.ActionType)(proto.Int32(int32(m.GetAction())))
-		rsp.ErrInfo = new(types.ErrorInfo)
-		rsp.ErrInfo.Code = proto.Int32(errCode)
+		//var rsp rCMD.UserActionRsp
+		//rsp.Action = (*rCMD.ActionType)(proto.Int32(int32(m.GetAction())))
+		//rsp.ErrInfo = new(types.ErrorInfo)
+		//rsp.ErrInfo.Code = proto.Int32(errCode)
+		rsp := rCMD.UserActionRsp{
+			Action: m.GetAction(),
+			ErrInfo: &types.ErrorInfo{
+				Code: errCode,
+			},
+		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
@@ -169,9 +204,14 @@ func handleExitReq(args []interface{}) {
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		var rsp rCMD.ExitRsp
-		rsp.ErrInfo = new(types.ErrorInfo)
-		rsp.ErrInfo.Code = proto.Int32(errCode)
+		//var rsp rCMD.ExitRsp
+		//rsp.ErrInfo = new(types.ErrorInfo)
+		//rsp.ErrInfo.Code = proto.Int32(errCode)
+		rsp := rCMD.ExitRsp{
+			ErrInfo: &types.ErrorInfo{
+				Code: errCode,
+			},
+		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
@@ -216,7 +256,7 @@ func checkMatchTable() {
 		tableID := t.Id
 		tableAppID := apollo.GetConfigAsInt64("桌子服务AppID", 1000)
 		var req tCMD.MatchTableReq
-		req.TableId = proto.Uint64(tableID)
+		req.TableId = tableID
 		for i := 0; i < int(seatCount); i++ {
 			log.Debug("", "设置用户,userId=%v,tableID=%v", tablePlayers[i].UserID, tableID)
 			req.Players = append(req.Players, tablePlayers[i].UserID)
@@ -233,11 +273,17 @@ func checkMatchTable() {
 }
 
 func setPlayerToTable(pl *player.Player, tableAppID uint32) {
-	var req tCMD.SetPlayerToTableReq
-	req.UserId = proto.Uint64(pl.UserID)
-	req.TableId = proto.Uint64(pl.TableId)
-	req.SeatId = proto.Uint32(pl.SeatId)
-	req.Gateconnid = proto.Uint64(pl.GateConnId)
+	//var req tCMD.SetPlayerToTableReq
+	//req.UserId = proto.Uint64(pl.UserID)
+	//req.TableId = proto.Uint64(pl.TableId)
+	//req.SeatId = proto.Uint32(pl.SeatId)
+	//req.Gateconnid = proto.Uint64(pl.GateConnId)
+	req := tCMD.SetPlayerToTableReq{
+		UserId:     pl.UserID,
+		TableId:    pl.TableId,
+		SeatId:     pl.SeatId,
+		Gateconnid: pl.GateConnId,
+	}
 	g.SendData2App(n.AppTable, tableAppID, n.AppTable, uint32(tCMD.CMDTable_IDSetPlayerToTableReq), &req)
 }
 
@@ -248,11 +294,18 @@ func setUserState(p *player.Player, s uint32) {
 	oldState := p.State
 	p.State = s
 	if s != oldState {
-		var state rCMD.UserStateChange
-		state.UserId = proto.Uint64(p.UserID)
-		state.TableServiceId = proto.Uint32(p.TableServiceId)
-		state.TableId = proto.Uint64(p.TableId)
-		state.SeatId = proto.Uint32(p.SeatId)
+		//var state rCMD.UserStateChange
+		//state.UserId = proto.Uint64(p.UserID)
+		//state.TableServiceId = proto.Uint32(p.TableServiceId)
+		//state.TableId = proto.Uint64(p.TableId)
+		//state.SeatId = proto.Uint32(p.SeatId)
+
+		state := rCMD.UserStateChange{
+			UserId:         p.UserID,
+			TableServiceId: p.TableServiceId,
+			TableId:        p.TableId,
+			SeatId:         p.SeatId,
+		}
 
 		rspBm := n.BaseMessage{MyMessage: &state, TraceId: ""}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserStateChange)}
