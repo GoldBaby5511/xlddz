@@ -140,16 +140,16 @@ func (p *MsgParser) Read(conn *TCPConn) (BaseMessage, []byte, error) {
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.MainCmdID)
 	_ = binary.Read(dataBuf, binary.BigEndian, &header.SubCmdID)
 
-	//获取traceId，不做通用按字节去读，前8个字节是固定的，第9位如果等于1则紧跟在后边的16位就是traceId
+	//TODO 暂时不用了,获取traceId，不做通用按字节去读，前8个字节是固定的，第9位如果等于1则紧跟在后边的16位就是traceId
 	traceId := ""
-	if len(allData) >= 8+1+TraceIdLen {
-		//获取traceId == 1为具体标识
-		var traceIdFlag uint8 = 0
-		_ = binary.Read(bytes.NewBuffer(allData[8:8+1]), binary.BigEndian, &traceIdFlag)
-		if traceIdFlag == FlagOtherTraceId {
-			traceId = string(allData[8+1 : 8+1+TraceIdLen])
-		}
-	}
+	//if len(allData) >= 8+1+TraceIdLen {
+	//	//获取traceId == 1为具体标识
+	//	var traceIdFlag uint8 = 0
+	//	_ = binary.Read(bytes.NewBuffer(allData[8:8+1]), binary.BigEndian, &traceIdFlag)
+	//	if traceIdFlag == FlagOtherTraceId {
+	//		traceId = string(allData[8+1 : 8+1+TraceIdLen])
+	//	}
+	//}
 
 	//构造参数
 	headCmd := &TCPCommand{MainCmdID: header.MainCmdID, SubCmdID: header.SubCmdID}

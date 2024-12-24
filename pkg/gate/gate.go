@@ -387,12 +387,6 @@ func sendRegAppReq(a *agentServer) {
 	if conf.RunInLocalDocker() {
 		myAddress = conf.AppInfo.Name + ":" + strconv.Itoa(util.GetPortFromIPAddress(conf.AppInfo.ListenOnAddr))
 	}
-	//var registerReq center.RegisterAppReq
-	//registerReq.AuthKey = *proto.String("GoldBaby")
-	//registerReq.AppName = *proto.String(conf.AppInfo.Name)
-	//registerReq.AppType = *proto.Uint32(conf.AppInfo.Type)
-	//registerReq.AppId = *proto.Uint32(conf.AppInfo.Id)
-	//registerReq.MyAddress = *proto.String(myAddress)
 	registerReq := center.RegisterAppReq{
 		AuthKey:   "GoldBaby",
 		AppName:   conf.AppInfo.Name,
@@ -423,15 +417,6 @@ func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Me
 }
 
 func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
-	//var dataReq gateway.TransferDataReq
-	//dataReq.DestApptype = proto.Uint32(n.AppGate)
-	//dataReq.DestAppid = proto.Uint32(util.GetLUint32FromUint64(gateConnID))
-	//dataReq.DataApptype = proto.Uint32(uint32(bm.Cmd.MainCmdID))
-	//dataReq.DataCmdid = proto.Uint32(uint32(bm.Cmd.SubCmdID))
-	//dataReq.Data, _ = proto.Marshal(bm.MyMessage.(proto.Message))
-	//dataReq.Gateconnid = proto.Uint64(gateConnID)
-	//dataReq.AttSessionid = proto.Uint64(sessionID)
-
 	data, _ := proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq := gateway.TransferDataReq{
 		DestApptype:  n.AppGate,

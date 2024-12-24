@@ -23,14 +23,8 @@ func (a *agentClient) Run() {
 	for {
 		bm, msgData, err := a.conn.ReadMsg()
 		if err != nil {
-			//服务间连接
-			if a.info.AppType == n.CommonServer {
-				log.Error("agentClient", "异常,网关读取消息失败,info=%v,err=%v", a.info, err)
-				continue
-			} else {
-				log.Warning("agentClient", "异常,网关读取消息失败,info=%v,err=%v", a.info, err)
-				break
-			}
+			log.Warning("agentClient", "Client取消息失败,err=%v,%v", err, util.PrintStructFields(a.info))
+			break
 		}
 		if processor == nil {
 			log.Error("agentClient", "异常,解析器为nil断开连接,cmd=%v", &bm.Cmd)

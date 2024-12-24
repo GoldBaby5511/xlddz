@@ -73,7 +73,7 @@ func (a *agentServer) Run() {
 	for {
 		bm, msgData, err := a.conn.ReadMsg()
 		if err != nil {
-			log.Warning("agentServer", "异常,网关读取消息失败,info=%v,err=%v", a.info, err)
+			log.Warning("agentServer", "Server读取消息失败,err=%v,%v", err, util.PrintStructFields(a.info))
 			break
 		}
 
@@ -83,8 +83,8 @@ func (a *agentServer) Run() {
 		}
 
 		bm.AgentInfo = a.info
-		switch bm.Cmd.SubCmdID {
-		case uint16(center.CMDCenter_IDAppRegRsp):
+		switch center.CMDCenter(bm.Cmd.SubCmdID) {
+		case center.CMDCenter_IDAppRegRsp:
 			var m center.RegisterAppRsp
 			_ = proto.Unmarshal(msgData, &m)
 
@@ -113,7 +113,7 @@ func (a *agentServer) Run() {
 			if agentChanRPC != nil {
 				agentChanRPC.Call0(CenterRegResult, m.GetRegResult(), m.GetCenterId(), conf.BaseInfo{Name: m.GetAppName(), Type: m.GetAppType(), Id: m.GetAppId()})
 			}
-		case uint16(center.CMDCenter_IDAppState): //app状态改变
+		case center.CMDCenter_IDAppState: //app状态改变
 			var m center.AppStateNotify
 			_ = proto.Unmarshal(msgData, &m)
 
@@ -129,7 +129,7 @@ func (a *agentServer) Run() {
 				}
 				mxServers.Unlock()
 			}
-		case uint16(center.CMDCenter_IDHeartBeatRsp):
+		case center.CMDCenter_IDHeartBeatRsp:
 			//TODO 测试消息
 			//log.Trace("agentServer", "暂时是个检测消息")
 		default:

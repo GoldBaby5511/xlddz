@@ -237,14 +237,6 @@ func sendSubscribeReq(k ConfKey, cancel bool) {
 		subscribe = config.ConfigReq_UNSUBSCRIBE
 	}
 
-	//var req config.ConfigReq
-	//req.AppType = proto.Uint32(conf.AppInfo.Type)
-	//req.AppId = proto.Uint32(conf.AppInfo.Id)
-	//req.SubAppType = proto.Uint32(k.AppType)
-	//req.SubAppId = proto.Uint32(k.AppId)
-	//req.Key = proto.String(k.Key)
-	//req.Subscribe = proto.Uint32(uint32(subscribe))
-
 	req := config.ConfigReq{
 		AppType:    conf.AppInfo.Type,
 		AppId:      conf.AppInfo.Id,
