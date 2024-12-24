@@ -1,7 +1,6 @@
 package business
 
 import (
-	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/list"
 	"mango/api/types"
@@ -27,12 +26,14 @@ func handleRoomRegisterReq(args []interface{}) {
 
 	regKey := util.MakeUint64FromUint32(m.GetInfo().GetAppInfo().GetType(), m.GetInfo().GetAppInfo().GetId())
 	roomList[regKey] = m.GetInfo()
-	log.Debug("", "收到注册,AttAppid=%d,len=%d", srcApp.AppId, m.GetInfo().GetAppInfo().GetId())
+	log.Debug("", "收到注册,srcAppid=%d,len=%d", srcApp.AppId, m.GetInfo().GetAppInfo().GetId())
 
-	var rsp list.RoomRegisterRsp
-	rsp.ErrInfo = new(types.ErrorInfo)
-	rsp.ErrInfo.Info = proto.String("成功")
-	rsp.ErrInfo.Code = proto.Int32(int32(list.RoomRegisterRsp_SUCCESS))
+	rsp := list.RoomRegisterRsp{
+		ErrInfo: &types.ErrorInfo{
+			Info: "成功",
+			Code: int32(list.RoomRegisterRsp_SUCCESS),
+		},
+	}
 	g.SendData2App(srcApp.AppType, srcApp.AppId, n.AppList, uint32(list.CMDList_IDRoomRegisterRsp), &rsp)
 }
 

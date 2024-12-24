@@ -40,16 +40,18 @@ func handleLoginReq(args []interface{}) {
 	for _, v := range userList {
 		if v.GetAccount() == m.GetAccount() {
 			userId = v.GetUserId()
-			v.GateConnid = proto.Uint64(gateConnId)
+			v.GateConnid = *proto.Uint64(gateConnId)
 		}
 	}
 	if userId == 0 {
 		userId = uint64(10000 + len(userList))
-		userList[userId] = new(types.BaseUserInfo)
-		userList[userId].Account = proto.String(m.GetAccount())
-		userList[userId].UserId = proto.Uint64(userId)
-		userList[userId].GameId = proto.Uint64(userId)
-		userList[userId].GateConnid = proto.Uint64(gateConnId)
+		u := &types.BaseUserInfo{
+			Account:    m.GetAccount(),
+			UserId:     userId,
+			GameId:     userId,
+			GateConnid: gateConnId,
+		}
+		userList[userId] = u
 	}
 	var req property.QueryPropertyReq
 	req.UserId = proto.Uint64(userId)
@@ -73,16 +75,19 @@ func handleQueryPropertyRsp(args []interface{}) {
 
 	log.Debug("", "财富查询,userId=%v,len=%v,gateConnId=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnid())
 
-	var authRsp gateway.AuthInfo
-	authRsp.UserId = proto.Uint64(m.GetUserId())
-	authRsp.Gateconnid = proto.Uint64(userList[m.GetUserId()].GetGateConnid())
-	authRsp.Result = proto.Uint32(uint32(lobby.LoginRsp_SUCCESS))
+	authRsp := gateway.AuthInfo{
+		UserId:     m.GetUserId(),
+		Gateconnid: userList[m.GetUserId()].GetGateConnid(),
+		Result:     uint32(lobby.LoginRsp_SUCCESS),
+	}
 	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
 
-	var rsp lobby.LoginRsp
-	rsp.ErrInfo = new(types.ErrorInfo)
-	rsp.ErrInfo.Info = proto.String("成功")
-	rsp.ErrInfo.Code = proto.Int32(int32(lobby.LoginRsp_SUCCESS))
+	rsp := lobby.LoginRsp{
+		ErrInfo: &types.ErrorInfo{
+			Info: "成功",
+			Code: int32(lobby.LoginRsp_SUCCESS),
+		},
+	}
 	rsp.BaseInfo = new(types.BaseUserInfo)
 	rsp.BaseInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}

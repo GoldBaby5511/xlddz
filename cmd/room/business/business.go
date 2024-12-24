@@ -62,15 +62,6 @@ func handleApplyRsp(args []interface{}) {
 		m.GetApplyCount(), len(m.TableIds), srcApp.AppId, table.GetTableCount(table.Free), table.GetTableCount(table.All), listRegisterSuccess)
 
 	if !listRegisterSuccess {
-		//var req list.RoomRegisterReq
-		//req.Info = new(types.RoomInfo)
-		//req.Info.AppInfo = new(types.BaseAppInfo)
-		//req.Info.AppInfo.Name = proto.String(conf.AppInfo.Name)
-		//req.Info.AppInfo.Type = proto.Uint32(conf.AppInfo.Type)
-		//req.Info.AppInfo.Id = proto.Uint32(conf.AppInfo.Id)
-		//req.Info.Kind = proto.Uint32(200)
-		//req.Info.Type = (*types.RoomInfo_RoomType)(proto.Int32(int32(types.RoomInfo_Gold)))
-
 		req := list.RoomRegisterReq{
 			Info: &types.RoomInfo{
 				AppInfo: &types.BaseAppInfo{
@@ -137,18 +128,14 @@ func handleJoinReq(args []interface{}) {
 		srcData.GetUserId(), srcData.GetGateconnid(), util.GetLUint32FromUint64(srcData.GetGateconnid()))
 
 	msgRespond := func(errCode int32) {
-		//var rsp rCMD.JoinRsp
-		//rsp.AppId = proto.Uint32(conf.AppInfo.Id)
-		//rsp.ErrInfo = new(types.ErrorInfo)
-		//rsp.ErrInfo.Code = proto.Int32(errCode)
 		rsp := rCMD.JoinRsp{
 			AppId: conf.AppInfo.Id,
 			ErrInfo: &types.ErrorInfo{
 				Code: errCode,
 			},
 		}
-		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}
+		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: "", Cmd: n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}}
+		//rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}
 		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
 	}
 
@@ -171,10 +158,6 @@ func handleUserActionReq(args []interface{}) {
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		//var rsp rCMD.UserActionRsp
-		//rsp.Action = (*rCMD.ActionType)(proto.Int32(int32(m.GetAction())))
-		//rsp.ErrInfo = new(types.ErrorInfo)
-		//rsp.ErrInfo.Code = proto.Int32(errCode)
 		rsp := rCMD.UserActionRsp{
 			Action: m.GetAction(),
 			ErrInfo: &types.ErrorInfo{

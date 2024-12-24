@@ -39,9 +39,11 @@ func handleQueryPropertyReq(args []interface{}) {
 
 	var rsp property.QueryPropertyRsp
 	rsp.UserId = proto.Uint64(m.GetUserId())
-	p := new(types.PropItem)
-	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
-	p.PropCount = proto.Int64(userList[m.GetUserId()])
+	p := &types.PropItem{
+		PropId:    types.PropType_Score,
+		PropCount: userList[m.GetUserId()],
+	}
+
 	rsp.UserProps = append(rsp.UserProps, p)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDQueryPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
@@ -67,9 +69,10 @@ func handleModifyPropertyReq(args []interface{}) {
 	var rsp property.ModifyPropertyRsp
 	rsp.UserId = proto.Uint64(m.GetUserId())
 	rsp.OpType = proto.Int32(m.GetOpType())
-	p := new(types.PropItem)
-	p.PropId = (*types.PropType)(proto.Int32(int32(types.PropType_Score)))
-	p.PropCount = proto.Int64(100)
+	p := &types.PropItem{
+		PropId:    types.PropType_Score,
+		PropCount: 100,
+	}
 	rsp.UserProps = append(rsp.UserProps, p)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDModifyPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
