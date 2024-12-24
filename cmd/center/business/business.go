@@ -97,10 +97,6 @@ func handleRegisterAppReq(args []interface{}) {
 				m.GetAppType(), m.GetAppId(), regKey)
 			log.Warning("连接", resultMsg)
 
-			//var rsp center.RegisterAppRsp
-			//rsp.RegResult = proto.Uint32(1)
-			//rsp.ReregToken = proto.String(resultMsg)
-			//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
 			rsp := center.RegisterAppRsp{
 				RegResult:  1,
 				ReregToken: resultMsg,
@@ -133,14 +129,6 @@ func handleRegisterAppReq(args []interface{}) {
 		m.GetAppName(), m.GetAppType(), m.GetAppId(), regKey, m.GetMyAddress())
 
 	sendRsp := func(a n.AgentClient, i lconf.BaseInfo) {
-		//var rsp center.RegisterAppRsp
-		//rsp.RegResult = proto.Uint32(0)
-		//rsp.ReregToken = proto.String(token)
-		//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
-		//rsp.AppName = proto.String(i.Name)
-		//rsp.AppType = proto.Uint32(i.Type)
-		//rsp.AppId = proto.Uint32(i.Id)
-		//rsp.AppAddress = proto.String(i.ListenOnAddr)
 		rsp := center.RegisterAppRsp{
 			RegResult:  0,
 			ReregToken: token,
@@ -157,25 +145,35 @@ func handleRegisterAppReq(args []interface{}) {
 	//自己注册成功
 	sendRsp(a, appRegData[regKey].appInfo)
 
-	//相互广播相互连接
+	//daemon判断,只与配置中心连接
+	if m.GetAppType() == n.AppDaemon {
+		for k, v := range appRegData {
+			if k == regKey || v.appInfo.Type != n.AppConfig {
+				continue
+			}
+			//daemon判断
+			sendRsp(a, v.appInfo)
+			sendRsp(v.a, appRegData[regKey].appInfo)
+		}
+		return
+	}
+
+	//先广播已注册连接
 	for k, v := range appRegData {
-		if k == regKey {
+		if k == regKey || v.appInfo.Type == n.AppDaemon {
 			continue
 		}
-		//daemon判断
-		if m.GetAppType() == n.AppDaemon {
-			if v.appInfo.Type != n.AppConfig {
-				continue
-			}
-			sendRsp(a, v.appInfo)
-			sendRsp(v.a, appRegData[regKey].appInfo)
-		} else {
-			if v.appInfo.Type == n.AppDaemon {
-				continue
-			}
-			sendRsp(a, v.appInfo)
-			sendRsp(v.a, appRegData[regKey].appInfo)
+		//sendRsp(a, v.appInfo)
+		sendRsp(v.a, appRegData[regKey].appInfo)
+	}
+
+	//再通知当前
+	for k, v := range appRegData {
+		if k == regKey || v.appInfo.Type == n.AppDaemon {
+			continue
 		}
+		sendRsp(a, v.appInfo)
+		//sendRsp(v.a, appRegData[regKey].appInfo)
 	}
 }
 
@@ -214,11 +212,6 @@ func broadcastAppState(appType, appId uint32, state int32) {
 		if v.appInfo.Type == appType && v.appInfo.Id == appId {
 			continue
 		}
-		//var rsp center.AppStateNotify
-		//rsp.AppState = proto.Int32(state)
-		//rsp.CenterId = proto.Uint32(lconf.AppInfo.Id)
-		//rsp.AppType = proto.Uint32(appType)
-		//rsp.AppId = proto.Uint32(appId)
 		rsp := center.AppStateNotify{
 			AppState: state,
 			CenterId: lconf.AppInfo.Id,
