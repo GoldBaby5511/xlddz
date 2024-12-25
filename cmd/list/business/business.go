@@ -52,5 +52,5 @@ func handleRoomListReq(args []interface{}) {
 	}
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppList), SubCmdID: uint16(list.CMDList_IDRoomListRsp)}
-	g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+	g.SendMessage2Client(rspBm, srcData.GetGateConnId())
 }

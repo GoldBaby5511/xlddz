@@ -349,16 +349,6 @@ func ConnectLogServer(logAddr string) {
 			log.Info("gate", "日志服务器连接成功")
 
 			log.SetCallback(func(i log.LogInfo) {
-				//var logReq logger.LogReq
-				//logReq.FileName = *proto.String(i.File)
-				//logReq.LineNo = *proto.Uint32(uint32(i.Line))
-				//logReq.SrcApptype = *proto.Uint32(conf.AppInfo.Type)
-				//logReq.SrcAppid = *proto.Uint32(conf.AppInfo.Id)
-				//logReq.Content = []byte(i.LogStr)
-				//logReq.ClassName = []byte(i.Classname)
-				//logReq.LogLevel = *proto.Uint32(uint32(i.Level))
-				//logReq.TimeNs = *proto.Int64(i.TimeNs)
-				//logReq.SrcAppname = *proto.String(conf.AppInfo.Name)
 				logReq := logger.LogReq{
 					FileName:   i.File,
 					LineNo:     uint32(i.Line),
@@ -407,7 +397,7 @@ func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
 	if dataSrc.AgentType == n.CommonServer {
 		return sendData(bm, dataSrc.AppType, dataSrc.AppId)
 	}
-	return SendMessage2Client(bm, util.MakeUint64FromUint32(dataSrc.AppType, dataSrc.AppId), 0)
+	return SendMessage2Client(bm, util.MakeUint64FromUint32(dataSrc.AppType, dataSrc.AppId))
 }
 
 func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Message) error {
@@ -416,16 +406,15 @@ func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Me
 	return sendData(bm, destAppType, destAppid)
 }
 
-func SendMessage2Client(bm n.BaseMessage, gateConnID, sessionID uint64) error {
+func SendMessage2Client(bm n.BaseMessage, gateConnID uint64) error {
 	data, _ := proto.Marshal(bm.MyMessage.(proto.Message))
 	dataReq := gateway.TransferDataReq{
-		DestApptype:  n.AppGate,
-		DestAppid:    util.GetLUint32FromUint64(gateConnID),
-		DataApptype:  uint32(bm.Cmd.MainCmdID),
-		DataCmdid:    uint32(bm.Cmd.SubCmdID),
-		Data:         data,
-		Gateconnid:   gateConnID,
-		AttSessionid: sessionID,
+		DestApptype: n.AppGate,
+		DestAppid:   util.GetLUint32FromUint64(gateConnID),
+		MainCmdId:   uint32(bm.Cmd.MainCmdID),
+		SubCmdId:    uint32(bm.Cmd.SubCmdID),
+		Data:        data,
+		GateConnId:  gateConnID,
 	}
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppGate), SubCmdID: uint16(gateway.CMDGateway_IDTransferDataReq)}
 	transBM := n.BaseMessage{MyMessage: &dataReq, Cmd: cmd, TraceId: bm.TraceId}

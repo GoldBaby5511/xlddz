@@ -77,7 +77,7 @@ func handleQueryPropertyRsp(args []interface{}) {
 
 	authRsp := gateway.AuthInfo{
 		UserId:     m.GetUserId(),
-		Gateconnid: userList[m.GetUserId()].GetGateConnid(),
+		GateConnId: userList[m.GetUserId()].GetGateConnid(),
 		Result:     uint32(lobby.LoginRsp_SUCCESS),
 	}
 	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
@@ -92,5 +92,5 @@ func handleQueryPropertyRsp(args []interface{}) {
 	rsp.BaseInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDLoginRsp)}
-	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid(), 0)
+	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid())
 }

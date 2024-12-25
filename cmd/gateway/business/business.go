@@ -95,23 +95,23 @@ func handleTransferDataReq(args []interface{}) {
 	}
 
 	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,gateConnId=%v,AgentType=%v",
-		m.GetDestApptype(), m.GetDestAppid(), m.GetDataApptype(), m.GetDataCmdid(), connData.connId, m.GetGateconnid(), a.AgentInfo().AgentType)
+		m.GetDestApptype(), m.GetDestAppid(), m.GetMainCmdId(), m.GetSubCmdId(), connData.connId, m.GetGateConnId(), a.AgentInfo().AgentType)
 
 	//App->Client 消息
-	if m.GetGateconnid() != 0 && a.AgentInfo().AgentType == n.CommonServer {
-		a, err := getUserAgent(m.GetGateconnid())
+	if m.GetGateConnId() != 0 && a.AgentInfo().AgentType == n.CommonServer {
+		a, err := getUserAgent(m.GetGateConnId())
 		if err != nil {
 			log.Warning("消息转发", "为找到可能已下线,"+
 				"AttGateconnid=%v,connId=%v",
-				m.GetGateconnid(),
-				util.GetHUint32FromUint64(m.GetGateconnid()))
+				m.GetGateConnId(),
+				util.GetHUint32FromUint64(m.GetGateConnId()))
 			return
 		}
 		a.SendData(n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	} else {
 		//Client->App 消息
-		m.Gateid = *proto.Uint32(conf.AppInfo.Id)
-		m.Gateconnid = *proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
+		//m.Gateid = *proto.Uint32(conf.AppInfo.Id)
+		m.GateConnId = *proto.Uint64(util.MakeUint64FromUint32(connData.connId, conf.AppInfo.Id))
 		m.UserId = *proto.Uint64(connData.userId)
 		g.SendData2App(m.GetDestApptype(), m.GetDestAppid(), n.AppGate, uint32(gateway.CMDGateway_IDTransferDataReq), m)
 	}
@@ -123,7 +123,7 @@ func handleAuthInfo(args []interface{}) {
 	srcApp := args[n.OtherIndex].(n.BaseAgentInfo)
 
 	log.Debug("", "认证消息,appID=%d,userID=%d", srcApp.AppId, m.GetUserId())
-	connData, ok := userConnData[util.GetHUint32FromUint64(m.GetGateconnid())]
+	connData, ok := userConnData[util.GetHUint32FromUint64(m.GetGateConnId())]
 	if !ok {
 		return
 	}

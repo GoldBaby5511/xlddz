@@ -125,7 +125,7 @@ func handleJoinReq(args []interface{}) {
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	log.Debug("", "进入房间,userId = %v,Gateconnid=%v,appID =%v",
-		srcData.GetUserId(), srcData.GetGateconnid(), util.GetLUint32FromUint64(srcData.GetGateconnid()))
+		srcData.GetUserId(), srcData.GetGateConnId(), util.GetLUint32FromUint64(srcData.GetGateConnId()))
 
 	msgRespond := func(errCode int32) {
 		rsp := rCMD.JoinRsp{
@@ -136,7 +136,7 @@ func handleJoinReq(args []interface{}) {
 		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: "", Cmd: n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}}
 		//rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDJoinRsp)}
-		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+		g.SendMessage2Client(rspBm, srcData.GetGateConnId())
 	}
 
 	userID := srcData.GetUserId()
@@ -166,7 +166,7 @@ func handleUserActionReq(args []interface{}) {
 		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
-		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+		g.SendMessage2Client(rspBm, srcData.GetGateConnId())
 	}
 
 	userID := srcData.GetUserId()
@@ -187,9 +187,6 @@ func handleExitReq(args []interface{}) {
 	srcData := args[n.OtherIndex].(*gateway.TransferDataReq)
 
 	msgRespond := func(errCode int32) {
-		//var rsp rCMD.ExitRsp
-		//rsp.ErrInfo = new(types.ErrorInfo)
-		//rsp.ErrInfo.Code = proto.Int32(errCode)
 		rsp := rCMD.ExitRsp{
 			ErrInfo: &types.ErrorInfo{
 				Code: errCode,
@@ -197,7 +194,7 @@ func handleExitReq(args []interface{}) {
 		}
 		rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: b.TraceId}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserActionRsp)}
-		g.SendMessage2Client(rspBm, srcData.GetGateconnid(), 0)
+		g.SendMessage2Client(rspBm, srcData.GetGateConnId())
 	}
 
 	userID := srcData.GetUserId()
@@ -256,11 +253,6 @@ func checkMatchTable() {
 }
 
 func setPlayerToTable(pl *player.Player, tableAppID uint32) {
-	//var req tCMD.SetPlayerToTableReq
-	//req.UserId = proto.Uint64(pl.UserID)
-	//req.TableId = proto.Uint64(pl.TableId)
-	//req.SeatId = proto.Uint32(pl.SeatId)
-	//req.Gateconnid = proto.Uint64(pl.GateConnId)
 	req := tCMD.SetPlayerToTableReq{
 		UserId:     pl.UserID,
 		TableId:    pl.TableId,
@@ -277,11 +269,6 @@ func setUserState(p *player.Player, s uint32) {
 	oldState := p.State
 	p.State = s
 	if s != oldState {
-		//var state rCMD.UserStateChange
-		//state.UserId = proto.Uint64(p.UserID)
-		//state.TableServiceId = proto.Uint32(p.TableServiceId)
-		//state.TableId = proto.Uint64(p.TableId)
-		//state.SeatId = proto.Uint32(p.SeatId)
 
 		state := rCMD.UserStateChange{
 			UserId:         p.UserID,
@@ -292,6 +279,6 @@ func setUserState(p *player.Player, s uint32) {
 
 		rspBm := n.BaseMessage{MyMessage: &state, TraceId: ""}
 		rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppRoom), SubCmdID: uint16(rCMD.CMDRoom_IDUserStateChange)}
-		g.SendMessage2Client(rspBm, p.GateConnId, 0)
+		g.SendMessage2Client(rspBm, p.GateConnId)
 	}
 }
