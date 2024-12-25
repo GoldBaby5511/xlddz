@@ -4,28 +4,32 @@ package bs.room;
 option go_package ="/room";
 
 enum CMDRoom {
-	IDNone				= 0;
-	IDJoinReq			= 1;			//进入房间
-	IDJoinRsp			= 2;			//进入房间
-	IDUserActionReq		= 3;			//用户动作
-	IDUserActionRsp		= 4;			//用户动作
-	IDExitReq			= 5;			//离开房间
-	IDExitRsp			= 6;			//离开房间
-	IDUserStateChange	= 7;			//状态变化
+	IDNone					= 0;
+	IDGetChairReq			= 1;			//进入房间
+	IDGetChairRsp			= 2;			//进入房间
+	IDUserActionReq			= 3;			//用户动作
+	IDUserActionRsp			= 4;			//用户动作
+	IDExitReq				= 5;			//离开房间
+	IDExitRsp				= 6;			//离开房间
+	IDUserStatus			= 7;			//状态变化
 }
 
-message JoinReq{
+message GetChairReq{
+	uint32			table_id = 1;
+	uint32			chair_id = 2;
+	string			password = 3;
 }
 
-message JoinRsp{
+message GetChairRsp{
 	uint32						app_id = 1;
 	types.ErrorInfo			err_info = 99;
 }
 
 enum ActionType {
-	None=0;
-	Ready=1;
-	Cancel=2;
+	None		= 0;
+	GetChair	= 2;
+	Ready		= 3;
+	Cancel		= 4;
 }
 	
 message UserActionReq{
@@ -44,10 +48,6 @@ message ExitRsp{
 	types.ErrorInfo	err_info = 99;
 }
 
-message UserStateChange{
-	uint64   				user_id = 1;         	//用户ID
-	uint32   				user_state = 2;         //用户状态
-	uint32   				table_service_id = 3;  	//
-	uint64   				table_id = 4;         	//
-	uint32   				seat_id = 5;         	//
+message UserStatus{
+	types.UserRoomInfo		user_info = 1;         	//用户信息
 }

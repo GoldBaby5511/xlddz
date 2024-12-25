@@ -15,31 +15,28 @@ enum CMDGateway{
 
 //测速请求
 message	PulseReq{
-	uint32 my_speed=1;
-	uint32 speed_data=2;
-	bytes  attached_data=3;
+	uint32 my_speed			=1;
+	uint32 speed_data		=2;
+	bytes  attached_data	=3;
 }
 
 //测速请求
 message	PulseRsp{
-	uint32 speed_data=1;
+	uint32	speed_data=1;
 	bytes 	attachd_data=2;
 	int64 	timestamp = 3;
 }
 
 //数据转发请求
 message TransferDataReq{
-	uint32 dest_apptype=1;   	//目标或源apptype
-	uint32 dest_appid=2;     	//目标或源appid
-	uint32 data_apptype=3;
-	uint32 data_cmdid=4;
-	bytes	data = 5;
-	uint32 req_id =6;
-	uint32 client_ip_v4=7;		//客户端的ip
-	uint64 att_sessionid=8; 	//联联的session id ，目前只由gate->client
-	uint64 gateconnid=9; 		//关联的gate连接id
-	uint32 gateid = 10;		//关联的gate_id
-	uint64 user_id = 11; 		//用户ID
+	uint32	dest_apptype		= 1;   		//目标或源apptype
+	uint32	dest_appid			= 2;     	//目标或源appid
+	uint32	main_cmd_id			= 3;		//主命令
+	uint32	sub_cmd_id			= 4;		//次命令
+	bytes	data				= 5;		//转发数据
+	uint32	client_ip_v4		= 6;		//客户端的ip
+	uint64	gate_conn_id		= 7; 		//gate连接id
+	uint64	user_id				= 8; 		//用户ID
 };
 
 //数据转发请求
@@ -55,7 +52,7 @@ message AuthInfo{
 		Disconnect = 1;//断开当前connId连接
 	}
 	uint64 user_id =1;   		//用户id
-	uint64 gateconnid=2; 		//关联的gate连接id
+	uint64 gate_conn_id=2; 		//gate连接id
 	uint32 result=3;     		//结果 0成功
 	string info=4;       		//描述信息
 	OpType op_type=5;       	//操作类型
@@ -63,15 +60,15 @@ message AuthInfo{
 
 //握手请求
 message HelloReq{
-   uint32  ad_id=2;
-   string  others=3;
-   uint32  builder_no =4;      
-   uint32  game_kind = 5;      
-   string  client_version=6;
-   uint32  client_type = 7;
-   string  public_key = 8;
-   string 	encrypt_key = 9;		//加密key
-   string  guid = 10;
+   uint32	ad_id			=2;
+   string	others			=3;
+   uint32	builder_no 		=4;      
+   uint32	game_kind 		=5;      
+   string	client_version	=6;
+   uint32	client_type 	=7;
+   string	public_key 		=8;
+   string	encrypt_key 	=9;		//加密key
+   string	guid 			=10;
 }
 
 //握手回复

@@ -25,5 +25,6 @@ echo "go proto"
 @.\protoc.exe --csharp_out=.. center.proto
 @.\protoc.exe --csharp_out=.. list.proto
 @.\protoc.exe --csharp_out=.. gateway.proto
+@.\protoc.exe --csharp_out=.. room.proto
 
 pause

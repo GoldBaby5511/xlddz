@@ -5,7 +5,7 @@ option go_package ="mango/api/types";
 
 message ErrorInfo{
 	int32	code = 1;
-	string info = 2;
+	string	info = 2;
 }
 
 enum PropType{
@@ -45,13 +45,13 @@ message BaseUserInfo {
 	uint32		reg_market_id = 12;		//注册主渠道
 	uint32		reg_site_id = 13;		//注册子渠道
 	string		register_data = 14;   	//注册时间
-	uint64 	gate_connid = 15; 		//关联的gate连接id
+	uint64 		gate_connid = 15; 		//关联的gate连接id
 }
 
 message UserRoomInfo{
 	BaseUserInfo 	base_info = 1;				//基础信息
-	uint64 		table_id = 2;				//所有桌子
-	uint32 		seat_id = 3;	   			//所在位置
+	uint64 			table_id = 2;				//所有桌子
+	uint32 			seat_id = 3;	   			//所在位置
 	uint32			user_state = 4;				//用户状态
 	uint32			lost_count = 5;				//玩家总输局
 	uint32			draw_count = 6;				//玩家总平局
