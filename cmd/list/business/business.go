@@ -31,7 +31,7 @@ func handleRoomRegisterReq(args []interface{}) {
 	rsp := list.RoomRegisterRsp{
 		ErrInfo: &types.ErrorInfo{
 			Info: "成功",
-			Code: int32(list.RoomRegisterRsp_SUCCESS),
+			Code: types.ErrorInfo_ResultCode(list.RoomRegisterRsp_SUCCESS),
 		},
 	}
 	g.SendData2App(srcApp.AppType, srcApp.AppId, n.AppList, uint32(list.CMDList_IDRoomRegisterRsp), &rsp)

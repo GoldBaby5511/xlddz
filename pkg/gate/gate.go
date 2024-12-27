@@ -401,8 +401,8 @@ func SendData(dataSrc n.BaseAgentInfo, bm n.BaseMessage) error {
 }
 
 func SendData2App(destAppType, destAppid, MainCmdID, SubCmdID uint32, m proto.Message) error {
-	cmd := n.TCPCommand{MainCmdID: uint16(MainCmdID), SubCmdID: uint16(SubCmdID)}
-	bm := n.BaseMessage{MyMessage: m, Cmd: cmd}
+	//cmd := n.TCPCommand{MainCmdID: uint16(MainCmdID), SubCmdID: uint16(SubCmdID)}
+	bm := n.BaseMessage{MyMessage: m, Cmd: n.TCPCommand{MainCmdID: uint16(MainCmdID), SubCmdID: uint16(SubCmdID)}}
 	return sendData(bm, destAppType, destAppid)
 }
 

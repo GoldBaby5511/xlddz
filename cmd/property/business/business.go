@@ -1,7 +1,6 @@
 package business
 
 import (
-	"github.com/golang/protobuf/proto"
 	"mango/api/property"
 	"mango/api/types"
 	g "mango/pkg/gate"
@@ -37,14 +36,16 @@ func handleQueryPropertyReq(args []interface{}) {
 
 	log.Debug("", "收到查询,appId=%d,userId=%d", srcApp.AppId, m.GetUserId())
 
-	var rsp property.QueryPropertyRsp
-	rsp.UserId = proto.Uint64(m.GetUserId())
+	rsp := property.QueryPropertyRsp{
+		UserId: m.GetUserId(),
+	}
 	p := &types.PropItem{
-		PropId:    types.PropType_Score,
-		PropCount: userList[m.GetUserId()],
+		Id:    types.PropItem_score,
+		Count: userList[m.GetUserId()],
 	}
 
 	rsp.UserProps = append(rsp.UserProps, p)
+
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDQueryPropertyRsp)}
 	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
 	g.SendData(srcApp, bm)
@@ -66,12 +67,13 @@ func handleModifyPropertyReq(args []interface{}) {
 		userList[m.GetUserId()] -= 100
 	}
 
-	var rsp property.ModifyPropertyRsp
-	rsp.UserId = proto.Uint64(m.GetUserId())
-	rsp.OpType = proto.Int32(m.GetOpType())
+	rsp := property.ModifyPropertyRsp{
+		UserId: m.GetUserId(),
+		OpType: m.GetOpType(),
+	}
 	p := &types.PropItem{
-		PropId:    types.PropType_Score,
-		PropCount: 100,
+		Id:    types.PropItem_score,
+		Count: 100,
 	}
 	rsp.UserProps = append(rsp.UserProps, p)
 	cmd := n.TCPCommand{MainCmdID: uint16(n.AppProperty), SubCmdID: uint16(property.CMDProperty_IDModifyPropertyRsp)}

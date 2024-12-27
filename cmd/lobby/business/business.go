@@ -19,6 +19,7 @@ var (
 func init() {
 	g.MsgRegister(&lobby.LoginReq{}, n.AppLobby, uint16(lobby.CMDLobby_IDLoginReq), handleLoginReq)
 	g.MsgRegister(&lobby.LogoutReq{}, n.AppLobby, uint16(lobby.CMDLobby_IDLogoutReq), handleLogoutReq)
+	g.MsgRegister(&lobby.QueryUserInfoReq{}, n.AppLobby, uint16(lobby.CMDLobby_IDQueryUserInfoReq), handleQueryUserInfoReq)
 	g.MsgRegister(&property.QueryPropertyRsp{}, n.AppProperty, uint16(property.CMDProperty_IDQueryPropertyRsp), handleQueryPropertyRsp)
 	g.CallBackRegister(g.CbAppControlNotify, appControlNotify)
 }
@@ -40,7 +41,7 @@ func handleLoginReq(args []interface{}) {
 	for _, v := range userList {
 		if v.GetAccount() == m.GetAccount() {
 			userId = v.GetUserId()
-			v.GateConnid = *proto.Uint64(gateConnId)
+			v.GateConnId = *proto.Uint64(gateConnId)
 		}
 	}
 	if userId == 0 {
@@ -49,12 +50,13 @@ func handleLoginReq(args []interface{}) {
 			Account:    m.GetAccount(),
 			UserId:     userId,
 			GameId:     userId,
-			GateConnid: gateConnId,
+			GateConnId: gateConnId,
 		}
 		userList[userId] = u
 	}
-	var req property.QueryPropertyReq
-	req.UserId = proto.Uint64(userId)
+	req := property.QueryPropertyReq{
+		UserId: userId,
+	}
 	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.AppProperty, uint32(property.CMDProperty_IDQueryPropertyReq), &req)
 }
 
@@ -64,6 +66,23 @@ func handleLogoutReq(args []interface{}) {
 	log.Debug("注销", "注销请求,userId=%v", m.GetUserId())
 }
 
+func handleQueryUserInfoReq(args []interface{}) {
+	b := args[n.DataIndex].(n.BaseMessage)
+	m := (b.MyMessage).(*lobby.QueryUserInfoReq)
+	srcApp := b.AgentInfo
+
+	log.Info("", "查询用户,uid=%d", m.GetUserId())
+
+	rsp := lobby.QueryUserInfoRsp{
+		UserInfo: userList[m.GetUserId()],
+		ErrInfo: &types.ErrorInfo{
+			Code: types.ErrorInfo_success,
+		},
+	}
+	cmd := n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDQueryUserInfoRsp)}
+	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
+	g.SendData(srcApp, bm)
+}
 func handleQueryPropertyRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*property.QueryPropertyRsp)
@@ -71,26 +90,26 @@ func handleQueryPropertyRsp(args []interface{}) {
 	if _, ok := userList[m.GetUserId()]; !ok {
 		return
 	}
-	userList[m.GetUserId()].UserProps = append(userList[m.GetUserId()].UserProps, m.GetUserProps()...)
+	userList[m.GetUserId()].Props = append(userList[m.GetUserId()].Props, m.GetUserProps()...)
 
-	log.Debug("", "财富查询,userId=%v,len=%v,gateConnId=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnid())
+	log.Debug("", "财富查询,userId=%v,len=%v,gateConnId=%d", m.GetUserId(), len(m.GetUserProps()), userList[m.GetUserId()].GetGateConnId())
 
 	authRsp := gateway.AuthInfo{
 		UserId:     m.GetUserId(),
-		GateConnId: userList[m.GetUserId()].GetGateConnid(),
+		GateConnId: userList[m.GetUserId()].GetGateConnId(),
 		Result:     uint32(lobby.LoginRsp_SUCCESS),
 	}
-	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnid()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
+	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnId()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
 
 	rsp := lobby.LoginRsp{
 		ErrInfo: &types.ErrorInfo{
 			Info: "成功",
-			Code: int32(lobby.LoginRsp_SUCCESS),
+			Code: types.ErrorInfo_ResultCode(lobby.LoginRsp_SUCCESS),
 		},
 	}
-	rsp.BaseInfo = new(types.BaseUserInfo)
-	rsp.BaseInfo = userList[m.GetUserId()]
+	rsp.UserInfo = new(types.BaseUserInfo)
+	rsp.UserInfo = userList[m.GetUserId()]
 	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
 	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDLoginRsp)}
-	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnid())
+	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnId())
 }

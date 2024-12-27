@@ -51,16 +51,17 @@ func connectSuccess(args []interface{}) {
 	userConnData[connId].a.AgentInfo().AppType = connId
 	userConnData[connId].a.AgentInfo().AppId = conf.AppInfo.Id
 
-	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v,info=%v",
-		connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id), *userConnData[connId].a.AgentInfo())
+	log.Debug("module", "来了老弟,connId=%v,当前连接数=%d,gateConnId=%v,%v",
+		connId, len(userConnData), util.MakeUint64FromUint32(connId, conf.AppInfo.Id), util.PrintStructFields(*userConnData[connId].a.AgentInfo()))
 }
 
 func disconnect(args []interface{}) {
 	if a, err := getUserConnData(args[g.AgentIndex].(n.AgentClient)); err == nil {
 		log.Debug("module", "走了老弟,userId=%v,connId=%v,当前连接数=%d,info=%v", a.userId, a.connId, len(userConnData), a.a.AgentInfo())
 
-		var logout lobby.LogoutReq
-		logout.UserId = proto.Uint64(a.userId)
+		logout := lobby.LogoutReq{
+			UserId: a.userId,
+		}
 		g.SendData2App(n.AppLobby, n.Send2AnyOne, n.AppLobby, uint32(lobby.CMDLobby_IDLogoutReq), &logout)
 
 		delete(userConnData, a.connId)
@@ -94,7 +95,7 @@ func handleTransferDataReq(args []interface{}) {
 		return
 	}
 
-	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,kind=%v,sub=%v,connId=%v,gateConnId=%v,AgentType=%v",
+	log.Debug("module", "n.AppGate,消息转发,type=%v,appid=%v,mainCmd=%v,subCmd=%v,connId=%v,gateConnId=%v,AgentType=%v",
 		m.GetDestApptype(), m.GetDestAppid(), m.GetMainCmdId(), m.GetSubCmdId(), connData.connId, m.GetGateConnId(), a.AgentInfo().AgentType)
 
 	//App->Client 消息
