@@ -1,26 +1,27 @@
 syntax = "proto3";
 import "types.proto";
 package bs.lobby;
-option go_package ="/lobby";
+option go_package ="mango/api/lobby";
 
 enum CMDLobby {
-	IDNone				= 0;
-	IDLoginReq 			= 1;		//登录请求
-	IDLoginRsp 			= 2;		//登录回复
-	IDLogoutReq 		= 3;		//注销登录
-	IDLogoutRsp 		= 4;		//注销登录
-	IDLogicRegReq 		= 5;		//逻辑注册
-	IDLogicRegRsp 		= 6;		//逻辑注册
-	IDUserState 		= 7;		//用户状态
+	IDNone							= 0;
+	IDLoginReq 						= 1;		//登录请求
+	IDLoginRsp 						= 2;		//登录回复
+	IDLogoutReq 					= 3;		//注销登录
+	IDLogoutRsp 					= 4;		//注销登录
+	IDLogicRegReq 					= 5;		//逻辑注册
+	IDLogicRegRsp 					= 6;		//逻辑注册
+	IDQueryUserInfoReq 				= 7;		//查询用户
+	IDQueryUserInfoRsp 				= 8;		//查询用户
 }
 
 //登录请求
 message LoginReq{
-   enum LoginType {
-		Account = 0;			//账号
-		Token = 1;				//
-		UnionId = 2;			//唯一标识(游客登录等)
-   }
+	enum LoginType {
+		acc		= 0;			//账号
+		token 	= 1;				//
+		unionId = 2;			//唯一标识(游客登录等)
+	}
    
 	uint32 			game_kind = 1;			//游戏种类
 	LoginType 		login_type = 2;			//登录类型
@@ -58,15 +59,15 @@ message LoginRsp{
    }
    
    Result 					result = 1;								//登录结果
-   types.BaseUserInfo		base_info = 2;							//基本信息
+   types.BaseUserInfo		user_info = 2;							//基本信息
    types.ErrorInfo			err_info = 99;
 }
 
 
 // 注销登录
 message LogoutReq{
-	uint64 				user_id = 1;
-	uint64 				GateConnId = 2; //客户端可不填
+	uint64 				user_id			= 1;
+	uint64 				gate_conn_id	= 2; //客户端可不填
 }
 
 // 注销登录
@@ -76,7 +77,7 @@ message LogoutRsp{
 		AnotherLogin = 1;   //被顶号
    }
 
-   LogoutReason		reason = 1;
+   LogoutReason			reason = 1;
    types.ErrorInfo		err_info = 99;
 }
 
@@ -89,15 +90,16 @@ message LogicRegRsp{
 	types.ErrorInfo		err_info = 99;
 }
 
-//用户状态
-message UserOnlineState{
-	enum OnlineStat {
-		None = 0;
-		Online = 1;
-		Disconnection = 2;
-		Reconnect = 3;
-		Offline = 4;
-	}
-	types.BaseUserInfo		user_info = 1;							//基本信息
-	OnlineStat				online_state = 2;
-}	
+//查询用户
+message QueryUserInfoReq{
+	uint64   			user_id 		= 1;        //用户ID
+	uint32				query_type		= 2;		//操作类型 0进房查询
+	uint64 				room_conn_id	= 19; 		//所在房间
+}
+
+//查询用户
+message QueryUserInfoRsp{
+	types.BaseUserInfo	user_info 	= 1;		//用户信息
+	uint32				query_type	= 2;		//操作类型 0进房查询
+	types.ErrorInfo		err_info 	= 99;
+}

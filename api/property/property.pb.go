@@ -24,6 +24,7 @@ const (
 type CMDProperty int32
 
 const (
+	CMDProperty_IDNone              CMDProperty = 0
 	CMDProperty_IDQueryPropertyReq  CMDProperty = 1 //查询财富
 	CMDProperty_IDQueryPropertyRsp  CMDProperty = 2 //查询财富
 	CMDProperty_IDModifyPropertyReq CMDProperty = 3 //修改财富
@@ -33,12 +34,14 @@ const (
 // Enum value maps for CMDProperty.
 var (
 	CMDProperty_name = map[int32]string{
+		0: "IDNone",
 		1: "IDQueryPropertyReq",
 		2: "IDQueryPropertyRsp",
 		3: "IDModifyPropertyReq",
 		4: "IDModifyPropertyRsp",
 	}
 	CMDProperty_value = map[string]int32{
+		"IDNone":              0,
 		"IDQueryPropertyReq":  1,
 		"IDQueryPropertyRsp":  2,
 		"IDModifyPropertyReq": 3,
@@ -68,16 +71,6 @@ func (x CMDProperty) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Do not use.
-func (x *CMDProperty) UnmarshalJSON(b []byte) error {
-	num, err := protoimpl.X.UnmarshalJSONEnum(x.Descriptor(), b)
-	if err != nil {
-		return err
-	}
-	*x = CMDProperty(num)
-	return nil
-}
-
 // Deprecated: Use CMDProperty.Descriptor instead.
 func (CMDProperty) EnumDescriptor() ([]byte, []int) {
 	return file_property_proto_rawDescGZIP(), []int{0}
@@ -88,7 +81,7 @@ type QueryPropertyReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId *uint64 `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"` //用户ID
+	UserId uint64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` //用户ID
 }
 
 func (x *QueryPropertyReq) Reset() {
@@ -122,8 +115,8 @@ func (*QueryPropertyReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *QueryPropertyReq) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
@@ -133,9 +126,9 @@ type QueryPropertyRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId    *uint64           `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`         //用户ID
-	UserProps []*types.PropItem `protobuf:"bytes,2,rep,name=user_props,json=userProps" json:"user_props,omitempty"` //用户道具
-	ErrInfo   *types.ErrorInfo  `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
+	UserId    uint64            `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`         //用户ID
+	UserProps []*types.PropItem `protobuf:"bytes,2,rep,name=user_props,json=userProps,proto3" json:"user_props,omitempty"` //用户道具
+	ErrInfo   *types.ErrorInfo  `protobuf:"bytes,99,opt,name=err_info,json=errInfo,proto3" json:"err_info,omitempty"`
 }
 
 func (x *QueryPropertyRsp) Reset() {
@@ -169,8 +162,8 @@ func (*QueryPropertyRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *QueryPropertyRsp) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
@@ -194,9 +187,9 @@ type ModifyPropertyReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId    *uint64           `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`         //用户ID
-	OpType    *int32            `protobuf:"varint,2,opt,name=op_type,json=opType" json:"op_type,omitempty"`         //操作类型
-	UserProps []*types.PropItem `protobuf:"bytes,3,rep,name=user_props,json=userProps" json:"user_props,omitempty"` //用户道具
+	UserId    uint64            `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`         //用户ID
+	OpType    int32             `protobuf:"varint,2,opt,name=op_type,json=opType,proto3" json:"op_type,omitempty"`         //操作类型
+	UserProps []*types.PropItem `protobuf:"bytes,3,rep,name=user_props,json=userProps,proto3" json:"user_props,omitempty"` //用户道具
 }
 
 func (x *ModifyPropertyReq) Reset() {
@@ -230,15 +223,15 @@ func (*ModifyPropertyReq) Descriptor() ([]byte, []int) {
 }
 
 func (x *ModifyPropertyReq) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
 
 func (x *ModifyPropertyReq) GetOpType() int32 {
-	if x != nil && x.OpType != nil {
-		return *x.OpType
+	if x != nil {
+		return x.OpType
 	}
 	return 0
 }
@@ -255,10 +248,10 @@ type ModifyPropertyRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserId    *uint64           `protobuf:"varint,1,opt,name=user_id,json=userId" json:"user_id,omitempty"`         //用户ID
-	OpType    *int32            `protobuf:"varint,2,opt,name=op_type,json=opType" json:"op_type,omitempty"`         //操作类型
-	UserProps []*types.PropItem `protobuf:"bytes,3,rep,name=user_props,json=userProps" json:"user_props,omitempty"` //用户道具
-	ErrInfo   *types.ErrorInfo  `protobuf:"bytes,99,opt,name=err_info,json=errInfo" json:"err_info,omitempty"`
+	UserId    uint64            `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`         //用户ID
+	OpType    int32             `protobuf:"varint,2,opt,name=op_type,json=opType,proto3" json:"op_type,omitempty"`         //操作类型
+	UserProps []*types.PropItem `protobuf:"bytes,3,rep,name=user_props,json=userProps,proto3" json:"user_props,omitempty"` //用户道具
+	ErrInfo   *types.ErrorInfo  `protobuf:"bytes,99,opt,name=err_info,json=errInfo,proto3" json:"err_info,omitempty"`
 }
 
 func (x *ModifyPropertyRsp) Reset() {
@@ -292,15 +285,15 @@ func (*ModifyPropertyRsp) Descriptor() ([]byte, []int) {
 }
 
 func (x *ModifyPropertyRsp) GetUserId() uint64 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
+	if x != nil {
+		return x.UserId
 	}
 	return 0
 }
 
 func (x *ModifyPropertyRsp) GetOpType() int32 {
-	if x != nil && x.OpType != nil {
-		return *x.OpType
+	if x != nil {
+		return x.OpType
 	}
 	return 0
 }
@@ -354,15 +347,17 @@ var file_property_proto_rawDesc = []byte{
 	0x65, 0x6d, 0x52, 0x09, 0x75, 0x73, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x70, 0x73, 0x12, 0x2e, 0x0a,
 	0x08, 0x65, 0x72, 0x72, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x63, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x13, 0x2e, 0x62, 0x73, 0x2e, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72,
-	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x65, 0x72, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x2a, 0x6f, 0x0a,
-	0x0b, 0x43, 0x4d, 0x44, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x12, 0x16, 0x0a, 0x12,
-	0x49, 0x44, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x52,
-	0x65, 0x71, 0x10, 0x01, 0x12, 0x16, 0x0a, 0x12, 0x49, 0x44, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
-	0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13,
-	0x49, 0x44, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
-	0x52, 0x65, 0x71, 0x10, 0x03, 0x12, 0x17, 0x0a, 0x13, 0x49, 0x44, 0x4d, 0x6f, 0x64, 0x69, 0x66,
-	0x79, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x52, 0x73, 0x70, 0x10, 0x04, 0x42, 0x0b,
-	0x5a, 0x09, 0x2f, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x65, 0x72, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x2a, 0x7b, 0x0a,
+	0x0b, 0x43, 0x4d, 0x44, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x12, 0x0a, 0x0a, 0x06,
+	0x49, 0x44, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x16, 0x0a, 0x12, 0x49, 0x44, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x52, 0x65, 0x71, 0x10, 0x01,
+	0x12, 0x16, 0x0a, 0x12, 0x49, 0x44, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x70, 0x65,
+	0x72, 0x74, 0x79, 0x52, 0x73, 0x70, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x49, 0x44, 0x4d, 0x6f,
+	0x64, 0x69, 0x66, 0x79, 0x50, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79, 0x52, 0x65, 0x71, 0x10,
+	0x03, 0x12, 0x17, 0x0a, 0x13, 0x49, 0x44, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x50, 0x72, 0x6f,
+	0x70, 0x65, 0x72, 0x74, 0x79, 0x52, 0x73, 0x70, 0x10, 0x04, 0x42, 0x14, 0x5a, 0x12, 0x6d, 0x61,
+	0x6e, 0x67, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x79,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

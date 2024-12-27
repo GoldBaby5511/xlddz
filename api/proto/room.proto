@@ -1,17 +1,24 @@
 syntax = "proto3";
 import "types.proto";
 package bs.room;
-option go_package ="/room";
+option go_package ="mango/api/room";
 
 enum CMDRoom {
 	IDNone					= 0;
-	IDGetChairReq			= 1;			//进入房间
-	IDGetChairRsp			= 2;			//进入房间
-	IDUserActionReq			= 3;			//用户动作
-	IDUserActionRsp			= 4;			//用户动作
-	IDExitReq				= 5;			//离开房间
-	IDExitRsp				= 6;			//离开房间
-	IDUserStatus			= 7;			//状态变化
+	IDEnterReq				= 1;			//进入房间
+	IDEnterRsp				= 2;			//进入房间
+	IDGetChairReq			= 3;			//请求座位
+	IDGetChairRsp			= 4;			//请求座位
+	IDUserStatus			= 5;			//用户状态
+	IDExitReq				= 6;			//离开房间
+	IDExitRsp				= 7;			//离开房间
+}
+
+message EnterReq{
+}
+
+message EnterRsp{
+	types.ErrorInfo				err_info = 99;
 }
 
 message GetChairReq{
@@ -22,32 +29,16 @@ message GetChairReq{
 
 message GetChairRsp{
 	uint32						app_id = 1;
-	types.ErrorInfo			err_info = 99;
-}
-
-enum ActionType {
-	None		= 0;
-	GetChair	= 2;
-	Ready		= 3;
-	Cancel		= 4;
-}
-	
-message UserActionReq{
-	ActionType action = 1;
-}
-
-message UserActionRsp{
-	ActionType 		action = 1;
-	types.ErrorInfo	err_info = 99;
+	types.ErrorInfo				err_info = 99;
 }
 
 message ExitReq{
 }
 
 message ExitRsp{
-	types.ErrorInfo	err_info = 99;
+	types.ErrorInfo			err_info = 99;
 }
 
 message UserStatus{
-	types.UserRoomInfo		user_info = 1;         	//用户信息
+	types.BaseUserInfo		user_info = 1;         	//用户信息
 }

@@ -1,9 +1,10 @@
-syntax = "proto2";
+syntax = "proto3";
 import "types.proto";
 package bs.property;
-option go_package ="/property";
+option go_package ="mango/api/property";
 
 enum CMDProperty {
+	IDNone						= 0;
 	IDQueryPropertyReq			= 1;			//查询财富
 	IDQueryPropertyRsp			= 2;			//查询财富
 	IDModifyPropertyReq			= 3;			//修改财富
@@ -11,24 +12,24 @@ enum CMDProperty {
 };
 
 message QueryPropertyReq{
-	optional uint64   	user_id = 1;         	//用户ID
+	uint64   	user_id = 1;         	//用户ID
 }
 
 message QueryPropertyRsp{
-	optional uint64   				user_id = 1;         	//用户ID
+	uint64   						user_id = 1;         	//用户ID
 	repeated types.PropItem 		user_props = 2;			//用户道具
-	optional types.ErrorInfo		err_info = 99;
+	types.ErrorInfo					err_info = 99;
 }
 
 message ModifyPropertyReq{
-	optional uint64   				user_id = 1;         	//用户ID
-	optional int32   				op_type = 2;         	//操作类型
+	uint64   						user_id = 1;         	//用户ID
+	int32   						op_type = 2;         	//操作类型
 	repeated types.PropItem 		user_props = 3;			//用户道具
 }
 
 message ModifyPropertyRsp{
-	optional uint64   				user_id = 1;         	//用户ID
-	optional int32   				op_type = 2;         	//操作类型
+	uint64   						user_id = 1;         	//用户ID
+	int32   						op_type = 2;         	//操作类型
 	repeated types.PropItem 		user_props = 3;			//用户道具
-	optional types.ErrorInfo		err_info = 99;
+	types.ErrorInfo					err_info = 99;
 }

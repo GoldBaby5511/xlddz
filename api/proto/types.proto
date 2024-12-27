@@ -4,18 +4,22 @@ option go_package ="mango/api/types";
 //option go_package ="/types";
 
 message ErrorInfo{
-	int32	code = 1;
-	string	info = 2;
-}
-
-enum PropType{
-	None	= 0;
-	Score	= 1;
+	enum ResultCode{
+		success = 0;
+		failed = 1;
+	}
+	
+	ResultCode	code = 1;
+	string		info = 2;
 }
 
 message PropItem{
-	PropType	prop_id = 1;
-	int64		prop_count = 2;
+	enum PropType{
+		none	= 0;
+		score	= 1;
+	}
+	PropType	id 		= 1;
+	int64		count 	= 2;
 }
 
 message BaseAppInfo{
@@ -26,46 +30,53 @@ message BaseAppInfo{
 }
 
 message BaseUserInfo {
+	//用户类型
 	enum UserType{
-		UNKNOW = 0;	//未知
-		Normal = 1;	//正常类型
-		Robot = 10;	//机器人
+		unknow = 0;	//未知
+		normal = 1;	//正常类型
+		robot = 10;	//机器人
 	}
-	string		account = 1;			//用户账号
-	uint64   	user_id = 2;         	//用户ID 
-	uint64   	game_id = 3;			//数字ID
-	uint32		gender = 4;				//性别
-	uint32		face_id = 5;			//头像id
-	string		custom_face = 6;		//自定义的图像地址
-	string		nick_name = 7;			//昵称
-	UserType 	user_type = 8;			//用户类别
-	repeated PropItem 	user_props = 9;			//用户道具
-	uint32		market_id = 10;			//登录主渠道
-	uint32		site_id = 11;         	//登录子渠道
-	uint32		reg_market_id = 12;		//注册主渠道
-	uint32		reg_site_id = 13;		//注册子渠道
-	string		register_data = 14;   	//注册时间
-	uint64 		gate_connid = 15; 		//关联的gate连接id
-}
-
-message UserRoomInfo{
-	BaseUserInfo 	base_info = 1;				//基础信息
-	uint64 			table_id = 2;				//所有桌子
-	uint32 			seat_id = 3;	   			//所在位置
-	uint32			user_state = 4;				//用户状态
-	uint32			lost_count = 5;				//玩家总输局
-	uint32			draw_count = 6;				//玩家总平局
-  	uint32			win_count = 7;				//玩家总胜局		
+	
+	//用户状态
+	enum UserStatus{
+		none					= 0x00;							//没有状态
+		free					= 0x01;							//站立状态
+		sit						= 0x02;							//坐下状态
+		ready					= 0x03;							//同意状态
+		lookon					= 0x04;							//旁观状态
+		playing					= 0x05;							//游戏状态
+		offline					= 0x06;							//断线状态
+	}
+	
+	string				account 					= 1;		//用户账号
+	uint64   			user_id 					= 2;        //用户ID 
+	uint64   			game_id 					= 3;		//数字ID
+	uint32				gender 						= 4;		//性别
+	uint32				face_id 					= 5;		//头像id
+	string				custom_face 				= 6;		//自定义的图像地址
+	string				nick_name 					= 7;		//用户昵称
+	UserType 			type 						= 8;		//用户类别
+	repeated PropItem 	props 						= 9;		//用户道具
+	uint64 				table_id 					= 10;		//所有桌子
+	uint32 				seat_id 					= 11;	   	//所在位置
+	UserStatus			status						= 12;		//用户状态
+	uint32				market_id 					= 13;		//登录主渠道
+	uint32				site_id 					= 14;		//登录子渠道
+	uint32				reg_market_id 				= 15;		//注册主渠道
+	uint32				reg_site_id 				= 16;		//注册子渠道
+	string				register_data 				= 17;   	//注册时间
+	uint64 				gate_conn_id 				= 18; 		//所在gate
+	uint64 				room_conn_id 				= 19; 		//所在房间
 }
 
 message RoomInfo{
 	enum RoomType{
-		None	= 0;
-		Gold	= 0x0001;	//金币
-		Private = 0x0010;	//私有
-		RedPack = 0x0020;	//红包
+		none	= 0;
+		gold	= 0x0001;	//金币
+		private = 0x0010;	//私有
+		redPack = 0x0020;	//红包
 	}
-	BaseAppInfo			app_info = 1;
+	BaseAppInfo				app_info = 1;
 	uint32					kind = 2;
 	RoomType				type = 3;
 	uint32					level = 4;
