@@ -57,7 +57,7 @@ message BaseUserInfo {
 	string				nick_name 					= 7;		//用户昵称
 	UserType 			type 						= 8;		//用户类别
 	repeated PropItem 	props 						= 9;		//用户道具
-	uint64 				table_id 					= 10;		//所有桌子
+	uint32 				table_id 					= 10;		//所有桌子
 	uint32 				seat_id 					= 11;	   	//所在位置
 	UserStatus			status						= 12;		//用户状态
 	uint32				market_id 					= 13;		//登录主渠道

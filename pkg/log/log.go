@@ -47,12 +47,12 @@ var (
 	mxTemLogList   sync.Mutex
 
 	levelName = map[int]string{
-		TraceLevel:   "[ trace	] ",
-		DebugLevel:   "[ debug	] ",
-		InfoLevel:    "[ info	] ",
-		WarningLevel: "[ warning] ",
-		ErrorLevel:   "[ error	] ",
-		FatalLevel:   "[ fatal	] ",
+		TraceLevel:   "[trace	] ",
+		DebugLevel:   "[debug	] ",
+		InfoLevel:    "[info	] ",
+		WarningLevel: "[warning	] ",
+		ErrorLevel:   "[error	] ",
+		FatalLevel:   "[fatal	] ",
 	}
 )
 
