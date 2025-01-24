@@ -10,8 +10,9 @@ enum CMDRoom {
 	IDGetChairReq			= 3;			//请求座位
 	IDGetChairRsp			= 4;			//请求座位
 	IDUserStatus			= 5;			//用户状态
-	IDExitReq				= 6;			//离开房间
-	IDExitRsp				= 7;			//离开房间
+	IDRequestFailure		= 6;			//请求失败
+	IDExitReq				= 10;			//离开房间
+	IDExitRsp				= 11;			//离开房间
 }
 
 message EnterReq{
@@ -41,4 +42,9 @@ message ExitRsp{
 
 message UserStatus{
 	types.BaseUserInfo		user_info = 1;         	//用户信息
+}
+
+//请求失败
+message RequestFailure{
+	types.ErrorInfo			err_info = 99;
 }

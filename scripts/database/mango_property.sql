@@ -10,6 +10,7 @@ CREATE TABLE `mango_property`.`wealth` (
   `user_id` BIGINT NOT NULL DEFAULT '0' COMMENT 'user_id',
   `ingot` BIGINT NOT NULL DEFAULT '0' COMMENT 'ingot',
   `coin` BIGINT NOT NULL DEFAULT '0' COMMENT 'coin',
+  `red_packet` BIGINT NOT NULL DEFAULT '0' COMMENT '红包券',
   `last_change_id` SMALLINT UNSIGNED NOT NULL DEFAULT '0' COMMENT '最后变化财富id<=100',
   `last_change_count` BIGINT NOT NULL DEFAULT '0' COMMENT '最后变化数量',
   `last_change_reason` INT NOT NULL DEFAULT '0' COMMENT '最后变化原因',

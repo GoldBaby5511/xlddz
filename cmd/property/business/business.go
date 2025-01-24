@@ -40,7 +40,7 @@ func handleQueryPropertyReq(args []interface{}) {
 		UserId: m.GetUserId(),
 	}
 	p := &types.PropItem{
-		Id:    types.PropItem_score,
+		Id:    types.PropItem_coin,
 		Count: userList[m.GetUserId()],
 	}
 
@@ -72,7 +72,7 @@ func handleModifyPropertyReq(args []interface{}) {
 		OpType: m.GetOpType(),
 	}
 	p := &types.PropItem{
-		Id:    types.PropItem_score,
+		Id:    types.PropItem_coin,
 		Count: 100,
 	}
 	rsp.UserProps = append(rsp.UserProps, p)

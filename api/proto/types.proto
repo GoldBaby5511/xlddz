@@ -15,8 +15,9 @@ message ErrorInfo{
 
 message PropItem{
 	enum PropType{
-		none	= 0;
-		score	= 1;
+		coin		= 0;
+		ingot		= 1;
+		red_packet	= 2;
 	}
 	PropType	id 		= 1;
 	int64		count 	= 2;

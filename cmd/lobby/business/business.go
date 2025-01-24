@@ -1,6 +1,7 @@
 package business
 
 import (
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"mango/api/gateway"
 	"mango/api/lobby"
@@ -34,9 +35,7 @@ func handleLoginReq(args []interface{}) {
 	srcData := b.AgentInfo
 	gateConnId := util.MakeUint64FromUint32(srcData.AppType, srcData.AppId)
 
-	log.Debug("登录", "收到登录,AppType=%v,AppID=%v,Account=%v,gateConnId=%d,子渠道=%d",
-		b.AgentInfo.AppType, b.AgentInfo.AppId, m.GetAccount(), gateConnId, m.GetSiteId())
-
+	//存在判断
 	var userId uint64 = 0
 	for _, v := range userList {
 		if v.GetAccount() == m.GetAccount() {
@@ -45,17 +44,26 @@ func handleLoginReq(args []interface{}) {
 		}
 	}
 	if userId == 0 {
-		userId = uint64(10000 + len(userList))
-		u := &types.BaseUserInfo{
-			Account:    m.GetAccount(),
-			UserId:     userId,
-			GameId:     userId,
-			GateConnId: gateConnId,
+		var err error
+		userId, err = dbUserLogin(gateConnId, m)
+		if err != nil {
+			log.Error("", "数据库登录失败,err=%v", err)
+			return
 		}
-		userList[userId] = u
 	}
+
+	log.Debug("登录", "收到登录,AppType=%v,AppID=%v,Account=%v,gateConnId=%d,userId=%d",
+		b.AgentInfo.AppType, b.AgentInfo.AppId, m.GetAccount(), gateConnId, userId)
+
+	if userId == 0 {
+		respondUserLogin(userId, gateConnId, int32(lobby.LoginRsp_NOTEXIST), "用户不存在")
+		return
+	}
+
+	//查询财富
 	req := property.QueryPropertyReq{
-		UserId: userId,
+		UserId:     userId,
+		GateConnId: gateConnId,
 	}
 	g.SendData2App(n.AppProperty, n.Send2AnyOne, n.AppProperty, uint32(property.CMDProperty_IDQueryPropertyReq), &req)
 }
@@ -70,8 +78,20 @@ func handleQueryUserInfoReq(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*lobby.QueryUserInfoReq)
 	srcApp := b.AgentInfo
+	userId := m.GetUserId()
 
-	log.Info("", "查询用户,uid=%d", m.GetUserId())
+	if _, ok := userList[userId]; !ok {
+		log.Warning("", "查询用户人没有?,uId=%v", userId)
+
+		g.SendData(srcApp, n.BaseMessage{MyMessage: &lobby.QueryUserInfoRsp{
+			ErrInfo: &types.ErrorInfo{
+				Code: types.ErrorInfo_failed,
+				Info: "查询用户人没有?",
+			},
+		}, Cmd: n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDQueryUserInfoRsp)}})
+		return
+	}
+	log.Info("", "查询用户,uid=%d,cId=%v", m.GetUserId(), userList[userId].GetGateConnId())
 
 	rsp := lobby.QueryUserInfoRsp{
 		UserInfo: userList[m.GetUserId()],
@@ -79,15 +99,18 @@ func handleQueryUserInfoReq(args []interface{}) {
 			Code: types.ErrorInfo_success,
 		},
 	}
-	cmd := n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDQueryUserInfoRsp)}
-	bm := n.BaseMessage{MyMessage: &rsp, Cmd: cmd}
-	g.SendData(srcApp, bm)
+	g.SendData(srcApp, n.BaseMessage{MyMessage: &rsp, Cmd: n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDQueryUserInfoRsp)}})
 }
 func handleQueryPropertyRsp(args []interface{}) {
 	b := args[n.DataIndex].(n.BaseMessage)
 	m := (b.MyMessage).(*property.QueryPropertyRsp)
 
-	if _, ok := userList[m.GetUserId()]; !ok {
+	userId := m.GetUserId()
+	connId := m.GetGateConnId()
+
+	if _, ok := userList[userId]; !ok {
+		log.Warning("", "财富回来人没了?,uId=%v,cId=%v,code=%v,Info=%v", userId, connId, m.GetErrInfo().GetCode(), m.GetErrInfo().GetInfo())
+		respondUserLogin(userId, connId, int32(lobby.LoginRsp_SERVERERROR), fmt.Sprintf("财富回来人没了?uId=%v", m.GetUserId()))
 		return
 	}
 	userList[m.GetUserId()].Props = append(userList[m.GetUserId()].Props, m.GetUserProps()...)
@@ -101,15 +124,22 @@ func handleQueryPropertyRsp(args []interface{}) {
 	}
 	g.SendData2App(n.AppGate, util.GetLUint32FromUint64(userList[m.GetUserId()].GetGateConnId()), n.AppGate, uint32(gateway.CMDGateway_IDAuthInfo), &authRsp)
 
+	//发送回复
+	respondUserLogin(userId, connId, int32(lobby.LoginRsp_SUCCESS), "登录成功")
+}
+
+func respondUserLogin(userId, connId uint64, errCode int32, errInfo string) {
+
+	log.Debug("", "登录回复,uId=%v,cId=%v,code=%v,errInfo=%v", userId, connId, errCode, errInfo)
+
 	rsp := lobby.LoginRsp{
 		ErrInfo: &types.ErrorInfo{
-			Info: "成功",
-			Code: types.ErrorInfo_ResultCode(lobby.LoginRsp_SUCCESS),
+			Info: errInfo,
+			Code: types.ErrorInfo_ResultCode(errCode),
 		},
 	}
 	rsp.UserInfo = new(types.BaseUserInfo)
-	rsp.UserInfo = userList[m.GetUserId()]
-	rspBm := n.BaseMessage{MyMessage: &rsp, TraceId: ""}
-	rspBm.Cmd = n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDLoginRsp)}
-	g.SendMessage2Client(rspBm, userList[m.GetUserId()].GetGateConnId())
+	rsp.UserInfo = userList[userId]
+	rspBm := n.BaseMessage{MyMessage: &rsp, Cmd: n.TCPCommand{MainCmdID: uint16(n.AppLobby), SubCmdID: uint16(lobby.CMDLobby_IDLoginRsp)}}
+	g.SendMessage2Client(rspBm, userList[userId].GetGateConnId())
 }

@@ -12,13 +12,15 @@ enum CMDProperty {
 };
 
 message QueryPropertyReq{
-	uint64   	user_id = 1;         	//用户ID
+	uint64   			user_id 					= 1;         	//用户ID
+	uint64 				gate_conn_id 				= 2; 			//所在gate
 }
 
 message QueryPropertyRsp{
-	uint64   						user_id = 1;         	//用户ID
-	repeated types.PropItem 		user_props = 2;			//用户道具
-	types.ErrorInfo					err_info = 99;
+	uint64   						user_id 					= 1;         	//用户ID
+	uint64 							gate_conn_id 				= 2; 			//所在gate
+	repeated types.PropItem 		user_props 					= 3;			//用户道具
+	types.ErrorInfo					err_info 					= 99;
 }
 
 message ModifyPropertyReq{

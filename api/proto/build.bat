@@ -25,6 +25,7 @@ echo "go proto"
 @.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol types.proto
 @.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol center.proto
 @.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol list.proto
+@.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol lobby.proto
 @.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol gateway.proto
 @.\protoc.exe --csharp_out=../../../mango-client/Assets/Scripts/Game/Protocol room.proto
 
