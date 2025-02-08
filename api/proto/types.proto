@@ -82,9 +82,22 @@ message RoomInfo{
 	RoomType				type = 3;
 	uint32					level = 4;
 	string					name = 5;
-	int64					base_score = 6;
-	int64					join_min = 7;
-	int64					join_max = 8;
-	int64					out_score = 9;
-	int64					win_limit = 10;
+	int64					cell_score = 6;
+	uint32					revenue_ratio = 7;						//税收比例
+	int64					service_score = 8;						//服务费用
+	int64					service_ingot = 9;						//服务费用
+
+	int64					restrict_score = 10;						//限制积分
+	int64					min_table_score = 11;						//最低积分
+	int64					min_enter_score = 12;						//最低积分
+	int64					max_enter_score = 13;						//最高积分
+}
+
+//桌子状态
+message TableStatus{
+	uint32						table_lock = 1;							//锁定标志
+	uint32						play_status = 2;						//游戏标志
+	uint32						club_num = 3;							//圈子号码
+	uint32						room_num = 4;							//房间号码
+	int32						cell_score = 5;							//单元积分
 }

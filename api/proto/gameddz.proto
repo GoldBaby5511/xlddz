@@ -1,69 +1,260 @@
-syntax = "proto2";
+syntax = "proto3";
 package bs.gameddz;
-option go_package ="/gameddz";
+option go_package ="mango/api/gameddz";
 
 enum CMDGameddz {
-	IDGameStart			= 1;			//
-	IDReSendCard		= 2;			//
-	IDCallLandReq		= 3;			//
-	IDCallLandRsp		= 4;			//
-	IDConfirmLand		= 5;			//
-	IDOutCardReq		= 6;			//
-	IDOutCardRsp		= 7;			//
-	IDGameDataReq		= 8;			//
-	IDGameDataRsp		= 9;			//
-	IDGameOver			= 10;			//
+	IDNone				= 0;
+	ID_S_GAME_START		= 100;                 // 游戏开始
+	ID_S_CALL_SCORE		= 101;                 // 用户叫分
+	ID_S_BANKER_INFO		= 102;                 // 庄家信息
+	ID_S_OUT_CARD			= 103;                 // 用户出牌
+	ID_S_PASS_CARD			= 104;                 // 用户放弃
+	ID_S_GAME_CONCLUDE     = 105;                 // 游戏结束
+	ID_S_SET_BASESCORE     = 106;                 // 设置基数
+	ID_S_CHEAT_CARD		= 107;                 // 作弊扑克
+	ID_S_TRUSTEE			= 108;                 // 托管
+	ID_S_ADDTIMES			= 109;					// 用户加倍
+	ID_S_OUT_CARD_FAIL		= 110;					// 出牌失败
+	ID_S_REOUT_CARD		= 111;					// 重新发牌
+	ID_C_CALL_SCORE		= 201;                 // 用户叫分
+	ID_C_OUT_CARD			= 202;                 // 用户出牌
+	ID_C_PASS_CARD			= 203;                 // 用户放弃
+	ID_C_TRUSTEE			= 204;                 // 用户托管
+	ID_C_ADDTIMES			= 205;				  // 用户加倍
 }
 
-message GameStart{
-	optional uint32 current_seat = 1;
-	repeated bytes 	hand_card = 2;
-	repeated bytes 	user_state = 3;
+//牌
+message CardInfo{
+	repeated uint32		card = 1;
 }
 
-message ReSendCard{
-	optional uint32 current_seat = 1;
-	repeated bytes 	hand_card = 2;
+//空闲状态
+message S_StatusFree{
+	//游戏属性
+	int64              	cell_score = 1;						// 基础积分
+	repeated uint32		times = 2;							// 最终倍数
+	
+	//时间信息
+	uint32              time_call_land = 3;					// 叫地主时间
+	uint32				time_add_time = 4;					// 加倍时间
+	uint32              time_head_out_card = 5;				// 首出时间
+	uint32              time_out_card = 6;					// 出牌时间
+	uint32				time_pass_card = 7;					// 要不起时间
+	repeated uint32		play_status = 8;      				// 用户状态
+
+	//历史积分
+	repeated int64      turn_score = 9;						// 积分信息
+	repeated int64      collect_score = 10;     			// 积分信息
 }
 
-message CallLandReq{
-	optional uint32 call_score = 1;
+//叫庄状态
+message S_StatusCall{
+	//时间信息
+	uint32              time_call_land = 1;					// 叫地主时间
+	uint32				time_add_time = 2;					// 加倍时间
+	uint32              time_head_out_card = 3;				// 首出时间
+	uint32              time_out_card = 4;					// 出牌时间
+	uint32				time_pass_card = 5;					// 要不起时间
+	repeated uint32		play_status = 6;      				// 用户状态
+
+	//游戏信息
+	int64              cell_score = 7;						// 单元积分
+	repeated uint32    times = 8;							// 最终倍数
+	uint32             current_user = 9;					// 当前玩家
+	repeated uint32    score_info = 10;						// 叫分信息
+	repeated uint32    hand_card_data = 11;   				// 手上扑克
+	repeated uint32    user_trustee = 12;     				// 托管标志
+	
+	//历史积分
+	repeated int64     turn_score = 13;						// 积分信息
+	repeated int64     collect_score = 14;     				// 积分信息
 }
 
-message CallLandRsp{
-	optional uint32 current_seat = 1;
-	optional uint32 call_seat = 2;
-	optional uint32 call_score = 3;
-	repeated uint32 cur_times = 4;
+//加倍状态
+message S_StatusAddTimes{
+	//时间信息
+	uint32            	time_call_land = 1;					// 叫地主时间
+	uint32				time_add_time = 2;					// 加倍时间
+	uint32            	time_head_out_card = 3;				// 首出时间
+	uint32            	time_out_card = 4;					// 出牌时间
+	uint32				time_pass_card = 5;					// 要不起时间
+	repeated uint32		play_status = 6;      				// 用户状态
+
+	int64				cell_score = 7;						// 单元积分
+	repeated uint32     times = 8;							// 最终倍数
+	uint32            	current_user = 9;					// 当前玩家
+	uint32				land_user = 10;						// 地主
+	repeated uint32     score_info = 11;					// 叫分信息
+	repeated uint32		add_times = 12;						// 加倍信息(0,不加倍；1，加倍；255，还没发送加倍消息)
+	repeated uint32     banker_card = 13;					// 游戏底牌
+	repeated uint32     hand_card_data = 14;				// 手上扑克
+	repeated uint32     user_trustee = 15;					// 托管标志
+
+	repeated int64      turn_score = 16;					// 积分信息
+	repeated int64      collect_score = 17;					// 积分信息
 }
 
-message ConfirmLand{
-	optional uint32 current_seat = 1;
-	optional uint32 land_seat = 2;
-	optional bytes 	bottom_card = 3;
-	repeated uint32 cur_times = 4;
+//游戏状态
+message S_StatusPlay{
+	//时间信息
+	uint32              time_call_land = 1;					// 叫地主时间
+	uint32				time_add_time = 2;					// 加倍时间
+	uint32              time_head_out_card = 3;				// 首出时间
+	uint32              time_out_card = 4;					// 出牌时间
+	uint32			    time_pass_card = 5;					// 要不起时间
+	repeated uint32		play_status = 6;      				// 用户状态
+
+	//游戏变量
+	int64              	cell_score = 7;						// 单元积分
+	repeated uint32     times = 8;							// 最终倍数
+	uint32              bomb_count = 9;						// 炸弹次数
+	uint32              banker_user = 10;					// 庄家用户
+	uint32              current_user = 11;					// 当前玩家
+
+	//出牌信息
+	uint32              turn_winer = 12;					// 胜利玩家
+	uint32              turn_card_count = 13;				// 出牌数目
+	repeated uint32     turn_card_data = 14;      			// 出牌数据
+
+	//扑克信息
+	repeated uint32     banker_card = 15;					// 游戏底牌
+	repeated uint32     hand_card_data = 16;      			// 手上扑克
+	repeated uint32     hand_card_count = 17;   			// 扑克数目
+	repeated uint32		last_out_state = 18;				// 上一次出牌态(0xff，初始态；0，不出；1，出）
+	repeated uint32     last_card_count = 19;				// 上一手出牌数
+	repeated CardInfo   last_card_data = 20;				// 上一手出牌
+	uint32				active = 21;						// 是否主动出牌(0,被动；1，主动)
+	uint32				search_count = 22;					// 解的个数
+	repeated uint32		search_card_count = 23;				// 每个解的牌数
+	repeated CardInfo	result_card = 24;					// 结果扑克
+				
+	//历史积分			
+	repeated int64      turn_score = 25;					// 积分信息
+	repeated int64      collect_score = 26;     			// 积分信息
+	repeated uint32     user_trustee = 27;     				// 托管标志
 }
 
-message OutCardReq{
-	optional bytes 	out_card = 1;
+// 游戏开始
+message S_GameStart{
+	uint32            	start_user = 1;						// 椅子ID,标明谁开始叫地主,
+	uint32            	valid_card_data = 2;				// 明牌扑克值
+	uint32            	valid_card_index = 3;				// 明牌位置，在51张牌里面随机出来的索引,取值 0-50
+	repeated uint32     card_data = 4;						// 本玩家收到的17张扑克
+	repeated uint32		play_status = 5;      				// 用户状态
 }
 
-message OutCardRsp{
-	optional uint32 current_seat = 1;
-	optional uint32 outcard_seat = 2;
-	optional bytes 	out_card = 3;
+// 重新发牌
+message S_ReOutCard{
+	uint32            	start_user = 1;						// 椅子ID,标明谁开始叫地主,
+	repeated uint32     card_data = 2;						// 本玩家收到的17张扑克
 }
 
-message UserState{
+//机器人扑克
+message S_AndroidCard{
+	repeated CardInfo   hand_card = 1;						// 手上扑克
+	repeated uint32     banker_card = 2;	
+	uint32              current_user = 3;            		//当前玩家
+	repeated uint32     is_android = 4;                     //用户类型
 }
 
-message GameDataReq{
+//作弊扑克
+message S_CheatCard{
+	repeated uint32     card_user = 1;						// 作弊玩家
+	uint32              user_count = 2;						// 作弊数量
+	repeated CardInfo   card_data = 3;						// 扑克列表
+	repeated uint32     card_count = 4;						// 扑克数量
 }
 
-message GameDataRsp{
+//用户抢地主
+message S_RobLand{
+	uint32				rob_land_user = 1;					// 这次抢地主的玩家
+	uint32				next_user = 2;						// 下一个抢地主的玩家
+	uint32				rob_land = 3;						// 抢地主标志（0，不叫;1，不抢；2，叫；3，抢）
+	repeated uint32		times = 4;							// 抢完地主之后的倍数
 }
 
-message GameOver{
-	optional uint32 win_seat = 1;
-	repeated int64 	score = 2;
+message S_AddTimes{
+	uint32             	user = 1;							// 触发加倍操作的玩家
+	uint32             	add_times = 2;						// 是否加倍（0，不加倍;1,加倍）
+	repeated uint32		times = 3;							// 此次加倍之后的总的倍数
+	uint32			 	can_out_card = 4;					// 是否可以出牌了
+}
+
+//地主消息
+message S_BankerInfo{
+	uint32            	banker_user = 1;					// 谁当了地主
+	repeated uint32		times = 2;							// 抢完地主之后的倍数
+	repeated uint32     banker_card = 3;					// 地主拿到的三张扑克
+	uint32				has_add_time = 4;					// 是否有加倍的流程
+}
+
+
+//用户出牌 S-C
+message S_OutCard{
+	uint32            	out_card_user = 1;					// 出牌玩家
+	uint32				card_type = 2;						// 出牌类型
+	uint32            	card_count = 3;						// 出牌数目
+	repeated uint32     card_data = 4;						// 扑克列表
+	repeated uint32		times = 5;							// 此次出牌之后各玩家的倍数
+	uint32            	next_user = 6;						// 下一个出牌玩家
+	uint32				next_user_can_out_card = 7;			// 下一家是否要得起	(0,要不起；1，要得起)
+	repeated uint32     rest_card_count = 8;				// 所有玩家余下扑克数目
+	uint32            	search_count = 9;					// 解的个数
+	repeated uint32     search_card_count = 10;				// 每个解的牌数
+	repeated CardInfo   result_card = 11;					// 结果扑克
+}
+
+//出牌失败
+message S_OutCardFail{
+	string				describe_string = 1;				// 错误描述
+}
+
+//放弃出牌
+message S_PassCard{
+	uint32            	turn_over = 1;						// 一轮结束
+	uint32            	pass_card_user = 2;					// 放弃玩家
+	uint32            	next_user = 3;						// 下一个出牌玩家
+	uint32				next_user_can_out_card = 4;			// 下一家是否要得起(0,要不起；1，要得起)
+	uint32            	search_count = 5;					// 解的个数
+	repeated uint32     search_card_count = 6;				// 每个解的牌数
+	repeated CardInfo   result_card = 7;					// 结果扑克
+}
+
+//游戏结束
+message S_GameConclude{
+	int64              	cell_score = 1;						// 单元积分
+	repeated int64      game_score = 2;						// 游戏积分
+	uint32              chun_tian = 3;						// 春天标志
+	uint32              fan_chun_tian = 4;					// 反春天标志
+	uint32              bomb_count = 5;						// 炸弹个数
+	repeated uint32     each_bomb_count = 6;				// 炸弹个数
+	repeated uint32     card_count = 7;						// 扑克数目
+	repeated CardInfo   card_data = 8; 						// 扑克列表
+}
+
+//托管
+message S_TRUSTEE{
+	uint32              trustee_user = 1;					// 托管玩家
+	uint32              trustee = 2;						// 托管标志
+}
+
+//用户叫分
+message C_RobLand{
+	uint32              rob_land = 1;						// 抢地主标志，0代表不抢，1代表抢
+}
+
+// 用户加倍
+message C_AddTimes{
+	uint32              bAddTimes = 1;						// 是否加倍(0,不加倍;1,加倍)
+}
+
+//用户出牌
+message C_OutCard{
+	uint32              card_count = 1;						// 出牌数目
+	repeated uint32     card_data = 2;						// 扑克数据
+}
+
+//托管
+message C_TRUSTEE{
+	uint32              trustee = 1;             			// 托管标志(1，托管；0，取消托管)
 }

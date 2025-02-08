@@ -13,6 +13,13 @@ enum CMDRoom {
 	IDRequestFailure		= 6;			//请求失败
 	IDExitReq				= 10;			//离开房间
 	IDExitRsp				= 11;			//离开房间
+	IDConfigServer			= 12;			//房间配置
+	IDUserEnter				= 13;			//用户进入
+	IDTableInfo				= 14;			//桌子信息
+	IDTableStatus			= 15;			//桌子信息
+	IDLogonFinish			= 16;			//登录完成
+	IDGameOption			= 17;			//游戏配置
+	IDGameStatus			= 18;			//游戏环境
 }
 
 message EnterReq{
@@ -47,4 +54,94 @@ message UserStatus{
 //请求失败
 message RequestFailure{
 	types.ErrorInfo			err_info = 99;
+}
+
+//房间配置
+message ConfigServer{
+	uint32							table_count = 1;						//桌子数目
+	uint32							chair_count = 2;						//椅子数目
+
+	//房间配置
+	uint32							server_type = 3;						//房间类型
+	uint32							server_rule = 4;						//房间规则
+	int64							min_table_score = 5;					//最低积分
+}
+
+//用户进入
+message UserEnter{
+	//用户属性
+	uint32							game_id = 1;							//游戏 I D
+	uint32							user_id = 2;							//用户 I D
+	uint32							group_id = 3;							//社团 I D
+
+	//头像信息
+	uint32							face_id = 4;							//头像索引
+	uint32							custom_id = 5;							//自定标识
+
+	//用户属性
+	bool							is_android = 6;							//机器标识
+	uint32							gender = 7;								//用户性别
+	uint32							member_order = 8;						//会员等级
+	uint32							master_order = 9;						//管理等级
+	uint32							user_type = 10;							//用户类型
+
+	//用户状态
+	uint32							table_id = 11;							//桌子索引
+	uint32							chair_id = 12;							//椅子索引
+	uint32							user_status = 13;						//用户状态
+
+	//GPS信息
+	float							latitude = 14;							//用户纬度
+	float							longitude = 15;							//用户经度
+	float							height = 16;							//用户高度
+
+	//积分信息
+	int64							score = 17;								//用户分数
+	int64							grade = 18;								//用户成绩
+	int64							insure = 19;							//用户银行
+	int64							ingot = 20;								//用户元宝
+	int64							red_revelopes = 21;						//用户红包
+	double							beans = 22;								//用户游戏豆
+
+	//游戏信息
+	uint32							win_count = 23;							//胜利盘数
+	uint32							lost_count = 24;						//失败盘数
+	uint32							draw_count = 25;						//和局盘数
+	uint32							flee_count = 26;						//逃跑盘数
+	uint32							experience = 27;						//用户经验
+	int32							love_liness = 28;						//用户魅力
+	int64							integral_count = 29;					//积分总数(当前房间)
+
+	//代理信息
+	uint32							agent_id = 30;							//代理 I D
+}
+
+//桌子信息
+message TableInfo{
+	uint32							table_count = 1;						//桌子数目
+	repeated types.TableStatus		table_status_array = 2;					//桌子状态
+}
+
+//桌子状态
+message TableStatus{
+	uint32							table_id = 1;							//桌子号码
+	types.TableStatus				table_status = 2;						//桌子状态
+}
+
+//登录完成
+message LogonFinish{
+	bool							guide_task = 1;							//引领任务
+}
+
+//游戏配置
+message GameOption{
+	uint32							allow_lookon = 1;						//旁观标志
+	uint32							frame_version = 2;						//框架版本
+	uint32							client_version = 3;						//游戏版本
+}
+
+//游戏环境
+message GameStatus{
+	uint32							game_status = 1;						//游戏状态
+	uint32							allow_lookon = 2;						//旁观标志
 }

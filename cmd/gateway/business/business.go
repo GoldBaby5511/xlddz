@@ -102,7 +102,7 @@ func handleTransferDataReq(args []interface{}) {
 	if m.GetGateConnId() != 0 && a.AgentInfo().AgentType == n.CommonServer {
 		a, err := getUserAgent(m.GetGateConnId())
 		if err != nil {
-			log.Warning("消息转发", "为找到可能已下线,"+
+			log.Warning("消息转发", "未找到可能已下线,"+
 				"AttGateconnid=%v,connId=%v",
 				m.GetGateConnId(),
 				util.GetHUint32FromUint64(m.GetGateConnId()))
