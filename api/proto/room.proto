@@ -20,6 +20,9 @@ enum CMDRoom {
 	IDLogonFinish			= 16;			//登录完成
 	IDGameOption			= 17;			//游戏配置
 	IDGameStatus			= 18;			//游戏环境
+	IDGameScene				= 19;			//游戏场景
+	IDUserReady				= 20;			//用户准备
+	IDSystemMessage			= 21;			//系统消息
 }
 
 message EnterReq{
@@ -145,3 +148,10 @@ message GameStatus{
 	uint32							game_status = 1;						//游戏状态
 	uint32							allow_lookon = 2;						//旁观标志
 }
+
+//系统消息
+message SystemMessage{
+	uint32							type = 1;								//消息类型
+	uint32							length = 2;								//消息长度
+	string							info = 3;								//消息内容
+};

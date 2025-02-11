@@ -245,7 +245,7 @@ message C_RobLand{
 
 // 用户加倍
 message C_AddTimes{
-	uint32              bAddTimes = 1;						// 是否加倍(0,不加倍;1,加倍)
+	uint32              add_times = 1;						// 是否加倍(0,不加倍;1,加倍)
 }
 
 //用户出牌
